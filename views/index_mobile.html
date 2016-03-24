@@ -194,7 +194,7 @@
      $('#fabu_content').hide();
     $.ajax({
         type: 'GET',
-        url: 'v1/last',
+        url: 'api/last',
         success: function (data) {
             var code=data.code;
             if(code!=0){
@@ -310,7 +310,7 @@
              }
               $.ajax({
               type: 'GET',
-              url: 'v1/mobile/list/dev?page='+opage,
+              url: 'api/mobile/list/dev?page='+opage,
               success: function (data) {
                  var code=data.code;
                   if(code!=0){
@@ -411,7 +411,7 @@
              }
               $.ajax({
               type: 'GET',
-              url: 'v1/mobile/list/release?page='+opage,
+              url: 'api/mobile/list/release?page='+opage,
               success: function (data) {
                  var code=data.code;
                   if(code!=0){

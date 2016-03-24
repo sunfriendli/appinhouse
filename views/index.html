@@ -321,7 +321,7 @@
     
     $.ajax({
         type: 'GET',
-        url: 'v1/last',
+        url: 'api/last',
         success: function (data) {
             var code=data.code;
             if(code!=0){
@@ -450,16 +450,16 @@
               }
              
              }
-            var url="v1/list/ios/release?page="+opage;
+            var url="api/list/ios/release?page="+opage;
              if(platform=="ios"){
                 if(env!="release"){
-                  url="v1/list/ios/dev?page="+opage;
+                  url="api/list/ios/dev?page="+opage;
                 }
              }else{
                 if(env!="release"){
-                  url="v1/list/android/dev?page="+opage;
+                  url="api/list/android/dev?page="+opage;
                 }else{
-                  url="v1/list/android/release?page="+opage;
+                  url="api/list/android/release?page="+opage;
                 }
              }
            
