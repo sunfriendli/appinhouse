@@ -7,12 +7,14 @@ import (
 
 type ItemsResponseDto struct {
 	Code  ErrCode    `json:"code"`
+	Msg   string     `json:"msg"`
 	Items []*ItemDto `json:"items"`
 }
 
 func NewSuccessItemsResponseDto() *ItemsResponseDto {
 	i := &ItemsResponseDto{
-		Code: ErrOk,
+		Code:  ErrOk,
+		Items: []*ItemDto{},
 	}
 	return i
 }
@@ -31,6 +33,7 @@ type ItemDto struct {
 }
 type ItemsResponsePageDto struct {
 	Code      ErrCode   `json:"code"`
+	Msg       string    `json:"msg"`
 	Items     *ItemsDto `json:"items"`
 	Page      int       `json:"page"`
 	TotalPage int       `json:"total_page"`
@@ -40,6 +43,18 @@ func NewSuccessItemsResponsePageDto() *ItemsResponsePageDto {
 	i := &ItemsResponsePageDto{
 		Code:  ErrOk,
 		Items: new(ItemsDto),
+	}
+	return i
+}
+
+type ResponseDto struct {
+	Code ErrCode `json:"code"`
+	Msg  string  `json:"msg"`
+}
+
+func NewSuccessResponseDto() *ResponseDto {
+	i := &ResponseDto{
+		Code: ErrOk,
 	}
 	return i
 }

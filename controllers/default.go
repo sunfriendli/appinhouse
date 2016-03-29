@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"io/ioutil"
-	//	"path/filepath"
 
 	"os"
 
@@ -42,36 +41,29 @@ type MainController struct {
 	beego.Controller
 }
 
-func (c *MainController) Index() {
-	userAgent := c.Ctx.Request.UserAgent()
-	osType := util.CheckAgent(userAgent)
-	switch osType {
-	case util.OS_ANDROID:
-		c.TplName = "index_mobile.html"
-		break
-	case util.OS_IOS:
-		c.TplName = "index_mobile.html"
-		break
-	default:
-		c.TplName = "index_mobile.html"
-		break
-	}
-
-}
-
 func (c *MainController) Last() {
 	dto := NewSuccessItemsResponseDto()
 	userAgent := c.Ctx.Request.UserAgent()
+	appParam := c.Ctx.Input.Param(":app")
+
+	app, err := GetApp(appParam)
+	if err != nil {
+		beego.Info("Last param app  error !app:", appParam)
+		dto.Code = GetErrCode(err)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
 	osType := util.CheckAgent(userAgent)
 	ret := make([]*ItemDto, 0, 4)
 	switch osType {
 	case util.OS_ANDROID:
-		androiddev, err := getLastOne(Android, Dev)
+		androiddev, err := getLastOne(Android, Dev, app)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
 		}
-		androidre, err := getLastOne(Android, Release)
+		androidre, err := getLastOne(Android, Release, app)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
@@ -84,12 +76,12 @@ func (c *MainController) Last() {
 		}
 		break
 	case util.OS_IOS:
-		iosdev, err := getLastOne(Ios, Dev)
+		iosdev, err := getLastOne(Ios, Dev, app)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
 		}
-		iosre, err := getLastOne(Ios, Release)
+		iosre, err := getLastOne(Ios, Release, app)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
@@ -102,47 +94,40 @@ func (c *MainController) Last() {
 		}
 		break
 	default:
-		iosdev, err := getLastOne(Ios, Dev)
+		iosdev, err := getLastOne(Ios, Dev, app)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
 		}
-		iosre, err := getLastOne(Ios, Release)
+		iosre, err := getLastOne(Ios, Release, app)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
 		}
+		androiddev, err := getLastOne(Android, Dev, app)
+		if err != nil {
+			dto.Code = GetErrCode(err)
+			break
+		}
+		androidre, err := getLastOne(Android, Release, app)
+		if err != nil {
+			dto.Code = GetErrCode(err)
+			break
+		}
+
+		if androiddev != nil {
+			ret = append(ret, androiddev)
+		}
+		if androidre != nil {
+			ret = append(ret, androidre)
+		}
+
 		if iosdev != nil {
 			ret = append(ret, iosdev)
 		}
 		if iosre != nil {
 			ret = append(ret, iosre)
 		}
-		//		androiddev, err := getLastOne(Android, Dev)
-		//		if err != nil {
-		//			dto.Code = GetErrCode(err)
-		//			break
-		//		}
-		//		androidre, err := getLastOne(Android, Release)
-		//		if err != nil {
-		//			dto.Code = GetErrCode(err)
-		//			break
-		//		}
-		//		iosdev, _ := getLastOne(Ios, Dev)
-		//		iosre, _ := getLastOne(Ios, Release)
-		//		if androiddev != nil {
-		//			ret = append(ret, androiddev)
-		//		}
-		//		if androidre != nil {
-		//			ret = append(ret, androidre)
-		//		}
-
-		//		if iosdev != nil {
-		//			ret = append(ret, iosdev)
-		//		}
-		//		if iosre != nil {
-		//			ret = append(ret, iosre)
-		//		}
 		break
 	}
 
@@ -150,11 +135,84 @@ func (c *MainController) Last() {
 	c.Data["json"] = dto
 	c.ServeJSON()
 }
-func (c *MainController) DevList() {
+func (c *MainController) List() {
 	dto := NewSuccessItemsResponsePageDto()
 	page, _ := c.GetInt("page", 1)
 	if page <= 0 || page > Max_Page {
+		beego.Info("List param page  error !page:", page)
 		dto.Code = ErrParams
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	var err error
+	appParam := c.Ctx.Input.Param(":app")
+	app, err := GetApp(appParam)
+	if err != nil {
+		beego.Info("List param app  error !app:", appParam)
+		dto.Code = GetErrCode(err)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	platformParam := c.Ctx.Input.Param(":platform")
+	platform, err := GetPlaform(platformParam)
+	if err != nil {
+		beego.Info("List param platform  error !platform:", platformParam)
+		dto.Code = GetErrCode(err)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	envParam := c.Ctx.Input.Param(":environment")
+	env, err := GetEnvironment(envParam)
+	if err != nil {
+		beego.Info("List param environment  error !environment:", envParam)
+		dto.Code = GetErrCode(err)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	start := util.GetStartForPage(page, Page_Size)
+	end := util.GetEndForPage(page, Page_Size)
+
+	ret, total, err := getList(platform, env, start, end, app)
+
+	if err != nil {
+		dto.Code = GetErrCode(err)
+	} else {
+		dto.Items = ret
+		dto.Page = page
+		dto.TotalPage = util.GetTotalPage(total, Page_Size)
+	}
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
+func (c *MainController) List4Mobile() {
+	dto := NewSuccessItemsResponsePageDto()
+	page, _ := c.GetInt("page", 1)
+	if page <= 0 || page > Max_Page {
+		beego.Info("List4Mobile param page  error !page:", page)
+		dto.Code = ErrParams
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	var err error
+	appParam := c.Ctx.Input.Param(":app")
+	app, err := GetApp(appParam)
+	if err != nil {
+		beego.Info("List4Mobile param app  error !app:", appParam)
+		dto.Code = GetErrCode(err)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	envParam := c.Ctx.Input.Param(":environment")
+	env, err := GetEnvironment(envParam)
+	if err != nil {
+		beego.Info("List4Mobile param environment  error !environment:", envParam)
+		dto.Code = GetErrCode(err)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -165,16 +223,15 @@ func (c *MainController) DevList() {
 	osType := util.CheckAgent(userAgent)
 	var ret *ItemsDto
 	total := 0
-	var err error
 	switch osType {
 	case util.OS_ANDROID:
-		ret, total, err = getList(Android, Dev, start, end)
+		ret, total, err = getList(Android, env, start, end, app)
 		break
 	case util.OS_IOS:
-		ret, total, err = getList(Ios, Dev, start, end)
+		ret, total, err = getList(Ios, env, start, end, app)
 		break
 	default:
-		ret, total, err = getList(Android, Dev, start, end)
+		ret, total, err = getList(Android, env, start, end, app)
 		break
 	}
 
@@ -188,7 +245,178 @@ func (c *MainController) DevList() {
 	c.Data["json"] = dto
 	c.ServeJSON()
 }
-func (c *MainController) ReleaseList() {
+func (c *MainController) PList() {
+	dto := NewSuccessResponseDto()
+	id := c.GetString("id")
+	version := c.GetString("version")
+	title := c.GetString("title")
+	if id == "" || version == "" || title == "" {
+		beego.Info("PList Params fail .id:", id, "version:", version, "title:", title)
+		dto.Code = ErrParams
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	var err error
+	appParam := c.Ctx.Input.Param(":app")
+	app, err := GetApp(appParam)
+	if err != nil {
+		beego.Info("PList param app  error !app:", appParam)
+		dto.Code = GetErrCode(err)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+
+	envParam := c.Ctx.Input.Param(":environment")
+	env, err := GetEnvironment(envParam)
+	if err != nil {
+		beego.Info("PList param environment  error !environment:", envParam)
+		dto.Code = GetErrCode(err)
+		c.ServeJSON()
+		return
+	}
+	file := getDataPath(Ios, env, app) + version
+	files, err := ioutil.ReadDir(file)
+	if err != nil {
+		beego.Info("PList ReadDir fail :", err.Error())
+		dto.Code = ErrSystemError
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	fullUrl := ""
+	softwareUrl := ""
+	displayUrl := ""
+	staticPath := Domain + getStaticPath(Ios, env, app) + version + Slash
+	for _, file := range files {
+		if strings.HasSuffix(file.Name(), Ipa) {
+			softwareUrl = Https_Str + staticPath + file.Name()
+		}
+		if file.Name() == Full_Size_Image {
+			fullUrl = Http_Str + staticPath + file.Name()
+		}
+		if file.Name() == Display_Image {
+			displayUrl = Http_Str + staticPath + file.Name()
+		}
+	}
+
+	plist, err := models.NewPlist(id, version, title, softwareUrl, fullUrl, displayUrl)
+
+	if err != nil {
+		beego.Info("PList NewPlist error :", err.Error())
+		dto.Code = GetErrCode(err)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+
+	plistName := file + Slash + version + Plist
+	_, err = filePutContent(plistName, plist)
+	if err != nil {
+		beego.Info("PList CreatPlit fail :", err.Error())
+		dto.Code = ErrCreateFileError
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
+func (c *MainController) Delete() {
+	dto := NewSuccessResponseDto()
+	residue, _ := c.GetInt("residue", -1)
+	if residue < Min_Residue {
+		beego.Info("Delete param residue  error !residue:", residue)
+		dto.Code = ErrParams
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	var err error
+	appParam := c.Ctx.Input.Param(":app")
+	app, err := GetApp(appParam)
+	if err != nil {
+		beego.Info("Delete param app  error !app:", appParam)
+		dto.Code = GetErrCode(err)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	platformParam := c.Ctx.Input.Param(":platform")
+	platform, err := GetPlaform(platformParam)
+	if err != nil {
+		beego.Info("Delete param platform  error !platform:", platformParam)
+		dto.Code = GetErrCode(err)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	envParam := c.Ctx.Input.Param(":environment")
+	env, err := GetEnvironment(envParam)
+	if err != nil {
+		beego.Info("Delete param environment  error !environment:", envParam)
+		dto.Code = GetErrCode(err)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	repositorys, err := getAll(platform, env, app)
+	if err != nil {
+		beego.Info("Delete call  getAll error :" + err.Error())
+		dto.Code = GetErrCode(err)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+
+	res := *repositorys
+	size := len(res)
+
+	if residue < size {
+		for i := residue; i < size; i++ {
+			list := getListPath(platform, env, app) + res[i].Name
+			info, err := models.InitConfig(list)
+			if err != nil {
+				beego.Info("Delete call  models.InitConfig error:"+err.Error(), "path:", list)
+				dto.Code = GetErrCode(err)
+				c.Data["json"] = dto
+				c.ServeJSON()
+				return
+			}
+			data := getDataPath(platform, env, app) + info.Version
+			err = removeAll(data)
+			if err != nil {
+				beego.Info("Delete call  remove error:"+err.Error(), "path:", data)
+				dto.Code = GetErrCode(err)
+				c.Data["json"] = dto
+				c.ServeJSON()
+				return
+			}
+			err = remove(list)
+			if err != nil {
+				beego.Info("Delete call remove error:"+err.Error(), "path:", list)
+				dto.Code = GetErrCode(err)
+				c.Data["json"] = dto
+				c.ServeJSON()
+				return
+			}
+
+		}
+	}
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
+func filePutContent(file string, content []byte) (int, error) {
+	fs, e := os.Create(file)
+	if e != nil {
+		return 0, e
+	}
+	defer fs.Close()
+	return fs.Write(content)
+}
+
+func (c *MainController) getList(platform Platform, env Environment, app string) {
 	dto := NewSuccessItemsResponsePageDto()
 	page, _ := c.GetInt("page", 1)
 	if page <= 0 || page > Max_Page {
@@ -199,23 +427,8 @@ func (c *MainController) ReleaseList() {
 	}
 	start := util.GetStartForPage(page, Page_Size)
 	end := util.GetEndForPage(page, Page_Size)
-	userAgent := c.Ctx.Request.UserAgent()
-	osType := util.CheckAgent(userAgent)
-	var err error
-	var ret *ItemsDto
-	total := 0
-	switch osType {
-	case util.OS_ANDROID:
-		ret, total, err = getList(Android, Release, start, end)
 
-		break
-	case util.OS_IOS:
-		ret, total, err = getList(Ios, Release, start, end)
-		break
-	default:
-		ret, total, err = getList(Android, Release, start, end)
-		break
-	}
+	ret, total, err := getList(platform, env, start, end, app)
 	if err != nil {
 		dto.Code = GetErrCode(err)
 	} else {
@@ -223,47 +436,13 @@ func (c *MainController) ReleaseList() {
 		dto.Page = page
 		dto.TotalPage = util.GetTotalPage(total, Page_Size)
 	}
-	c.Data["json"] = dto
-	c.ServeJSON()
-}
-func (c *MainController) AndroidDevList() {
-	c.getList(Android, Dev)
-}
-func (c *MainController) AndroidReleaseList() {
-	c.getList(Android, Release)
-}
-func (c *MainController) IosDevList() {
-	c.getList(Ios, Dev)
-}
-func (c *MainController) IosReleaseList() {
-	c.getList(Ios, Release)
-}
-func (c *MainController) getList(platform, env int) {
-	dto := NewSuccessItemsResponsePageDto()
-	page, _ := c.GetInt("page", 1)
-	if page <= 0 || page > Max_Page {
-		dto.Code = ErrParams
-		c.Data["json"] = dto
-		c.ServeJSON()
-		return
-	}
-	start := util.GetStartForPage(page, Page_Size)
-	end := util.GetEndForPage(page, Page_Size)
 
-	ret, total, err := getList(platform, env, start, end)
-	if err != nil {
-		dto.Code = GetErrCode(err)
-	} else {
-		dto.Items = ret
-		dto.Page = page
-		dto.TotalPage = util.GetTotalPage(total, Page_Size)
-	}
 	c.Data["json"] = dto
 	c.ServeJSON()
 }
 
-func getLastOne(platform int, environment int) (*ItemDto, error) {
-	repositorys, err := getAll(platform, environment)
+func getLastOne(platform Platform, environment Environment, app string) (*ItemDto, error) {
+	repositorys, err := getAll(platform, environment, app)
 	if err != nil {
 		beego.Error("getLastOne  call getall error:" + err.Error())
 		return nil, err
@@ -273,14 +452,14 @@ func getLastOne(platform int, environment int) (*ItemDto, error) {
 	}
 	a := *repositorys
 	path := a[0].Name
-	info, err := models.InitConfig(getListPath(platform, environment) + path)
+	info, err := models.InitConfig(getListPath(platform, environment, app) + path)
 	if err != nil {
 		beego.Error("getLastOne  call InitConfig:" + err.Error())
 		return nil, err
 	}
-	return converInfoTOItem(info, platform, environment), nil
+	return converInfoTOItem(info, platform, environment, app), nil
 }
-func converInfoTOItem(info *models.Info, platform int, environment int) *ItemDto {
+func converInfoTOItem(info *models.Info, platform Platform, environment Environment, app string) *ItemDto {
 
 	item := new(ItemDto)
 	switch platform {
@@ -301,37 +480,36 @@ func converInfoTOItem(info *models.Info, platform int, environment int) *ItemDto
 	}
 	item.Channel = info.Channel
 	item.Description = info.Description
-	item.Down = getDownPath(platform, environment, info.Channel, info.Version)
+	item.Down = getDownPath(platform, environment, info.Channel, info.Version, app)
 	item.Time = info.Time
 	item.Url = info.Description
 	item.Version = info.Version
 
 	return item
 }
-func getStaticPath(platform, environment int) string {
-	ret := ""
+func getStaticPath(platform Platform, environment Environment, app string) string {
+	file := ""
 	if platform == Ios {
 		if environment == Dev {
-			ret = Ios_Dev_Static_Path
+			file = Slash + Static_Path + app + Slash + Dev_Path + Ios_Path + Data_Path
 		} else {
-			ret = Ios_Release_Static_Path
+			file = Slash + Static_Path + app + Slash + Release_Path + Ios_Path + Data_Path
 		}
 
 	} else {
 		if environment == Dev {
-			ret = Android_Dev_Static_Path
-
+			file = Slash + Static_Path + app + Slash + Dev_Path + Android_Path + Data_Path
 		} else {
-			ret = Android_Release_Static_Path
+			file = Slash + Static_Path + app + Slash + Release_Path + Android_Path + Data_Path
 		}
 	}
-	return ret
+	return file
 }
-func getDownPath(platform, environment int, channel, version string) string {
-	data := getDataPath(platform, environment) + version + "/"
+func getDownPath(platform Platform, environment Environment, channel, version, app string) string {
+	data := getDataPath(platform, environment, app) + version + Slash
 	files, err := ioutil.ReadDir(data)
-	staticPath := getStaticPath(platform, environment)
-	staticPath = staticPath + "/" + version + "/"
+	staticPath := ""
+	staticPath = getStaticPath(platform, environment, app) + version + Slash
 	if err != nil {
 		return ""
 	}
@@ -339,7 +517,7 @@ func getDownPath(platform, environment int, channel, version string) string {
 		if channel == Ios_Channel {
 			for _, file := range files {
 				if strings.HasSuffix(file.Name(), Plist) {
-					return Domain + staticPath + file.Name()
+					return Https_Str + Domain + staticPath + file.Name()
 				}
 			}
 		} else {
@@ -361,9 +539,9 @@ func getDownPath(platform, environment int, channel, version string) string {
 	return ""
 }
 
-func getList(platform, environment, start, end int) (*ItemsDto, int, error) {
+func getList(platform Platform, environment Environment, start, end int, app string) (*ItemsDto, int, error) {
 
-	repositorys, err := getAll(platform, environment)
+	repositorys, err := getAll(platform, environment, app)
 	if err != nil {
 		beego.Error("getList call  getAll error :" + err.Error())
 		return nil, 0, err
@@ -372,7 +550,7 @@ func getList(platform, environment, start, end int) (*ItemsDto, int, error) {
 	res := *repositorys
 	size := len(*repositorys)
 	if start > size {
-		beego.Error("getList call page start greate than size" + err.Error())
+		beego.Info("getList call page start greate than size" + err.Error())
 		return nil, 0, ErrorPageOut
 	}
 	if end > size {
@@ -381,68 +559,72 @@ func getList(platform, environment, start, end int) (*ItemsDto, int, error) {
 
 	items := new(ItemsDto)
 	for i := start; i <= end; i++ {
-		info, err := models.InitConfig(getListPath(platform, environment) + res[i].Name)
+		info, err := models.InitConfig(getListPath(platform, environment, app) + res[i].Name)
 		if err != nil {
-			beego.Error("getList call  models.InitConfig error:" + err.Error())
+			beego.Info("getList call  models.InitConfig error:" + err.Error())
 			return nil, 0, ErrorParseConf
 		}
-		*items = append(*items, converInfoTOItem(info, platform, environment))
+		*items = append(*items, converInfoTOItem(info, platform, environment, app))
 	}
 
 	return items, size, nil
 }
-func getAll(platform int, environment int) (*FileRepos, error) {
-	file := getListPath(platform, environment)
+func getAll(platform Platform, environment Environment, app string) (*FileRepos, error) {
+	file := getListPath(platform, environment, app)
 	files, _ := ioutil.ReadDir(file)
 	repositorys, _ := sortRepository(files)
 	return repositorys, nil
 }
 func InitDirectory() {
-	createFile(getListPath(Ios, Dev))
-	createFile(getListPath(Android, Dev))
-	createFile(getListPath(Ios, Release))
-	createFile(getListPath(Android, Release))
-	createFile(getDataPath(Ios, Dev))
-	createFile(getDataPath(Android, Dev))
-	createFile(getDataPath(Ios, Release))
-	createFile(getDataPath(Android, Release))
+	apps := GetApps()
+	for _, app := range apps {
+		createFile(getListPath(Ios, Dev, app))
+		createFile(getListPath(Android, Dev, app))
+		createFile(getListPath(Ios, Release, app))
+		createFile(getListPath(Android, Release, app))
+		createFile(getDataPath(Ios, Dev, app))
+		createFile(getDataPath(Android, Dev, app))
+		createFile(getDataPath(Ios, Release, app))
+		createFile(getDataPath(Android, Release, app))
+	}
+
 }
-func GetDownDirectory(platform int, environment int) string {
-	return getDataPath(platform, environment)
+func GetDownDirectory(platform Platform, environment Environment, app string) string {
+	return getDataPath(platform, environment, app)
 }
 
-func getListPath(platform int, environment int) string {
+func getListPath(platform Platform, environment Environment, app string) string {
 	file := ""
 	if platform == Ios {
 		if environment == Dev {
-			file = Root_Dir + App_Dir + Dev_Path + Ios_Path + List_Path
+			file = Root_Dir + app + Slash + Dev_Path + Ios_Path + List_Path
 		} else {
-			file = Root_Dir + App_Dir + Release_Path + Ios_Path + List_Path
+			file = Root_Dir + app + Slash + Release_Path + Ios_Path + List_Path
 		}
 
 	} else {
 		if environment == Dev {
-			file = Root_Dir + App_Dir + Dev_Path + Android_Path + List_Path
+			file = Root_Dir + app + Slash + Dev_Path + Android_Path + List_Path
 		} else {
-			file = Root_Dir + App_Dir + Release_Path + Android_Path + List_Path
+			file = Root_Dir + app + Slash + Release_Path + Android_Path + List_Path
 		}
 	}
 	return file
 }
-func getDataPath(platform int, environment int) string {
+func getDataPath(platform Platform, environment Environment, app string) string {
 	file := ""
 	if platform == Ios {
 		if environment == Dev {
-			file = Root_Dir + App_Dir + Dev_Path + Ios_Path + Data_Path
+			file = Root_Dir + app + Slash + Dev_Path + Ios_Path + Data_Path
 		} else {
-			file = Root_Dir + App_Dir + Release_Path + Ios_Path + Data_Path
+			file = Root_Dir + app + Slash + Release_Path + Ios_Path + Data_Path
 		}
 
 	} else {
 		if environment == Dev {
-			file = Root_Dir + App_Dir + Dev_Path + Android_Path + Data_Path
+			file = Root_Dir + app + Slash + Dev_Path + Android_Path + Data_Path
 		} else {
-			file = Root_Dir + App_Dir + Release_Path + Android_Path + Data_Path
+			file = Root_Dir + app + Slash + Release_Path + Android_Path + Data_Path
 		}
 	}
 	return file
@@ -455,7 +637,7 @@ func createFile(dir string) (string, error) {
 
 	if err := os.MkdirAll(src, 0777); err != nil {
 		if os.IsPermission(err) {
-			beego.Error("permission denied path:" + src)
+			beego.Info("permission denied path:" + src)
 			panic("permission denied")
 		}
 		return "", err
@@ -487,6 +669,17 @@ func sortRepository(files []os.FileInfo) (*FileRepos, error) {
 	return result, nil
 }
 
-func unlink(file string) error {
-	return os.Remove(file)
+func remove(file string) error {
+	err := os.Remove(file)
+	if err != nil {
+		return ErrorDeleteFileError
+	}
+	return err
+}
+func removeAll(file string) error {
+	err := os.RemoveAll(file)
+	if err != nil {
+		return ErrorDeleteFileError
+	}
+	return err
 }

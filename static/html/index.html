@@ -1,0 +1,61 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>神之遗迹2企业内部发布渠道</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="shortcut icon" href="../img/favicon_16.ico"/>
+    <link rel="bookmark" href="../img/favicon_16.ico"/>
+    <!-- site css -->
+    <link rel="stylesheet" href="../css/site.min.css">
+
+    <script type="text/javascript" src="../js/site.min.js"></script>
+  </head>
+  <body>
+    <!--nav-->
+    <nav role="navigation" class="navbar navbar-custom">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button data-target="#menu2" data-toggle="collapse" class="navbar-toggle" type="button">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a href="#" class="navbar-brand">  <img src="../img/dh.png"></img></a>
+
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+        
+    
+        </div><!-- /.container-fluid -->
+      </nav>
+    <!--header-->
+
+  </body>
+</html>
+<script type="text/javascript">
+  browserRedirect();
+   function browserRedirect() {
+            var sUserAgent = navigator.userAgent.toLowerCase();
+            var bIsIpad = sUserAgent.match(/ipad/i) == "ios";
+            var bIsIphone = sUserAgent.match(/iphone/i) == "ios";
+            var bIsIpod = sUserAgent.match(/ipod/i) == "ios";
+            if (bIsIpad || bIsIphone || bIsIpod ) {
+                window.location.href = "/html/index_mobile.html";
+				
+                return
+            }
+            var bIsAndroid = sUserAgent.match(/android/i) == "android";
+            if (bIsAndroid ) {
+                  window.location.href = "/html/index_mobile.html";
+                 return
+            }
+            // window.location.href = "/html/index_pc.html";
+		  window.location.href = "/html/index_mobile.html";
+          
+        }
+
+      
+</script>

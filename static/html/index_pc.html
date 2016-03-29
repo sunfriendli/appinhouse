@@ -1,15 +1,14 @@
-<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <title>神之遗迹2企业内部发布渠道</title>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="shortcut icon" href="static/img/favicon_16.ico"/>
-    <link rel="bookmark" href="static/img/favicon_16.ico"/>
+    <link rel="shortcut icon" href="../img/favicon_16.ico"/>
+    <link rel="bookmark" href="../img/favicon_16.ico"/>
     <!-- site css -->
-    <link rel="stylesheet" href="static/css/site.min.css">
+    <link rel="stylesheet" href="../css/site.min.css">
 
-    <script type="text/javascript" src="static/js/site.min.js"></script>
+    <script type="text/javascript" src="../js/site.min.js"></script>
   </head>
   <body>
     <!--nav-->
@@ -23,7 +22,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a href="#" class="navbar-brand">  <img src="static/img/dh.png"></img></a>
+            <a href="#" class="navbar-brand">  <img src="../img/dh.png"></img></a>
 
           </div>
 
@@ -237,6 +236,7 @@
   </body>
 </html>
 <script type="text/javascript">
+  var domain="http://localhost/"
    initpage();
    zuixin();
    menu_android_release();
@@ -316,12 +316,12 @@
         });
    }
     function reqZuixin() {
-       
+    
       $('#zuixin_row').show();
     
     $.ajax({
         type: 'GET',
-        url: 'api/last',
+        url: domain+'api/rog2/last',
         success: function (data) {
             var code=data.code;
             if(code!=0){
@@ -350,7 +350,7 @@
                           $('#ios_dev_down').unbind('click')
                           $('#ios_dev_down').text('失效')
                         }else{
-                           var down="itms-services://?action=download-manifest&url=https://127.0.0.1"+item.down 
+                           var down="itms-services://?action=download-manifest&url=https://localhost"+item.down 
                           $('#ios_dev_down').attr('href', down);
                         }
                     }else{
@@ -385,7 +385,7 @@
                           $('#ios_release_down').unbind('click')
                           $('#ios_release_down').text('失效')
                         }else{
-                          var down="itms-services://?action=download-manifest&url=https://127.0.0.1"+item.down 
+                          var down="itms-services://?action=download-manifest&url=https://localhost"+item.down 
                           $('#ios_release_down').attr('href', down);
                         }
                     }else{
@@ -426,6 +426,7 @@
     });
   }
     function reqList(status) {
+      
           $('#list_row').show();
           $('#zuixin_row').hide();
           var opage =$('#page').val();
@@ -450,16 +451,17 @@
               }
              
              }
-            var url="api/list/ios/release?page="+opage;
+             var url=domain+"api/rog2/list/ios/release?page="+opage;
+
              if(platform=="ios"){
                 if(env!="release"){
-                  url="api/list/ios/dev?page="+opage;
+                  url=domain+"api/rog2/list/ios/dev?page="+opage;
                 }
              }else{
                 if(env!="release"){
-                  url="api/list/android/dev?page="+opage;
+                  url=domain+"api/rog2/list/android/dev?page="+opage;
                 }else{
-                  url="api/list/android/release?page="+opage;
+                  url=domain+"api/rog2/list/android/release?page="+opage;
                 }
              }
            
