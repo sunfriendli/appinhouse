@@ -1,11 +1,11 @@
 package main
 
 import (
-	. "appinhouse/constants"
+	. "appinhouse/service/constants"
 
-	_ "appinhouse/routers"
+	_ "appinhouse/service/routers"
 
-	"appinhouse/controllers"
+	"appinhouse/service/controllers"
 
 	"strings"
 

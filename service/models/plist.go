@@ -2,7 +2,7 @@
 package models
 
 import (
-	. "appinhouse/constants"
+	. "appinhouse/service/constants"
 
 	"github.com/DHowett/go-plist"
 )

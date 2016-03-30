@@ -1,9 +1,9 @@
 package routers
 
 import (
-	. "appinhouse/constants"
+	. "appinhouse/service/constants"
 
-	"appinhouse/controllers"
+	"appinhouse/service/controllers"
 
 	"github.com/astaxie/beego"
 )
