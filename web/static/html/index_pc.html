@@ -350,7 +350,7 @@
                           $('#ios_dev_down').unbind('click')
                           $('#ios_dev_down').text('失效')
                         }else{
-                           var down="itms-services://?action=download-manifest&url=https://localhost"+item.down 
+                           var down="itms-services://?action=download-manifest&url="+item.down 
                           $('#ios_dev_down').attr('href', down);
                         }
                     }else{
@@ -385,7 +385,7 @@
                           $('#ios_release_down').unbind('click')
                           $('#ios_release_down').text('失效')
                         }else{
-                          var down="itms-services://?action=download-manifest&url=https://localhost"+item.down 
+                          var down="itms-services://?action=download-manifest&url="+item.down 
                           $('#ios_release_down').attr('href', down);
                         }
                     }else{

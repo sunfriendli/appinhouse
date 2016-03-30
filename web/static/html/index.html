@@ -39,9 +39,9 @@
   browserRedirect();
    function browserRedirect() {
             var sUserAgent = navigator.userAgent.toLowerCase();
-            var bIsIpad = sUserAgent.match(/ipad/i) == "ios";
-            var bIsIphone = sUserAgent.match(/iphone/i) == "ios";
-            var bIsIpod = sUserAgent.match(/ipod/i) == "ios";
+            var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+            var bIsIphone = sUserAgent.match(/iphone/i) == "iphone";
+            var bIsIpod = sUserAgent.match(/ipod/i) == "ipod";
             if (bIsIpad || bIsIphone || bIsIpod ) {
                 window.location.href = "/html/index_mobile.html";
 				
