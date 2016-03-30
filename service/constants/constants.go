@@ -32,6 +32,7 @@ var (
 		ErrorDeleteFileError.Error():  ErrDeleteFileError,
 	}
 	Root_Dir    = ""
+	Log_Dir     = ""
 	Ios_Channel = ""
 	Domain      = ""
 	platforms   = map[string]Platform{
@@ -149,4 +150,5 @@ const (
 	Slash       = "/"
 	Http_Str    = "http://"
 	Https_Str   = "https://"
+	Log_File    = "appinhouse.log"
 )

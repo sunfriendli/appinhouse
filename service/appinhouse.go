@@ -13,14 +13,20 @@ import (
 )
 
 func main() {
+	setLog()
 	setParam()
 	controllers.InitDirectory()
-	beego.SetLevel(beego.LevelInformational)
-	beego.SetLogFuncCall(true)
-	beego.SetLogger("file", `{"filename":"appinhouse.log"}`)
 	beego.Run()
 }
+func setLog() {
+	Log_Dir = beego.AppConfig.String("users::log_dir")
+	controllers.InitLogDirectory()
+	beego.SetLevel(beego.LevelInformational)
+	beego.SetLogFuncCall(true)
+	beego.SetLogger("file", `{"filename":"`+Log_Dir+Log_File+`"}`)
+}
 func setParam() {
+	Log_Dir = beego.AppConfig.String("users::log_dir")
 	Root_Dir = beego.AppConfig.String("users::root_dir")
 	beego.Info("app.conf-> Root_Dir:", Root_Dir)
 	if Root_Dir == "" {

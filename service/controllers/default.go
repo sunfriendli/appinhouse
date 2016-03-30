@@ -589,6 +589,9 @@ func InitDirectory() {
 	}
 
 }
+func InitLogDirectory() {
+	createFile(Log_Dir)
+}
 func GetDownDirectory(platform Platform, environment Environment, app string) string {
 	return getDataPath(platform, environment, app)
 }
