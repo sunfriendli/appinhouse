@@ -53,7 +53,7 @@ stop()
 
 start()
 {
-    nohup java -jar $RUNNABLE_JAR > /dev/null 2>&1 &
+    nohup  ./$ARTIFACT > /dev/null 2>&1 &
     local PID=$!
     disown $PID
     echo $PID > "$PID_FILE"
