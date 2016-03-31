@@ -7,10 +7,10 @@ CURDIR=`pwd`
 OLDGOPATH="$GOPATH"
 HOME=env | grep ^HOME= | cut -c 6-
 TARGET=appinhouse_server
-
+APPNAME=inhouse_service
 export GOPATH="$CURDIR"
 
-cd src/appinhouse/inhouse_service
+cd src/appinhouse/$APPNAME
 
 echo 'get and build'
 go get -v
@@ -29,6 +29,6 @@ if [ ! -d $TARGET ];
         echo "File $TARGET not found."
 		mkdir $TARGET
 fi
-tar -zxvf service.tar.gz -C $TARGET
+tar -zxvf $APPNAME.tar.gz -C $TARGET
 echo "deploy file in $HOME/$TARGET" 
 echo 'finished'
