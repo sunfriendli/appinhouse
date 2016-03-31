@@ -10,7 +10,7 @@ TARGET=appinhouse_server
 
 export GOPATH="$CURDIR"
 
-cd src/appinhouse/service
+cd src/appinhouse/inhouse_service
 
 echo 'get and build'
 go get -v
