@@ -2,7 +2,7 @@
 package models
 
 import (
-	. "appinhouse/service/constants"
+	. "appinhouse/inhouse_service/constants"
 
 	"github.com/Unknwon/goconfig"
 )

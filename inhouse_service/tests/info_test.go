@@ -2,7 +2,7 @@
 package test
 
 import (
-	"appinhouse/models"
+	"appinhouse/inhouse_service/models"
 	"fmt"
 	"testing"
 )

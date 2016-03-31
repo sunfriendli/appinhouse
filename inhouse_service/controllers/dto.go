@@ -2,7 +2,7 @@
 package controllers
 
 import (
-	. "appinhouse/service/constants"
+	. "appinhouse/inhouse_service/constants"
 )
 
 type ItemsResponseDto struct {

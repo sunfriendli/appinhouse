@@ -7,11 +7,11 @@ import (
 
 	"sort"
 
-	"appinhouse/service/models"
+	"appinhouse/inhouse_service/models"
 
-	"appinhouse/service/util"
+	"appinhouse/inhouse_service/util"
 
-	. "appinhouse/service/constants"
+	. "appinhouse/inhouse_service/constants"
 
 	"strings"
 
