@@ -86,6 +86,8 @@
                           <p id="ios_release_version"></p>
                           <h3>时间</h3>
                           <p id="ios_release_time"></p>
+                          <h3>构建url</h3>
+                          <p id="ios_release_url"></p>
                           <h3>描述</h3>
                           <p id="ios_release_desc"></p>
                           <p><a id="ios_release_down" href="#" class="btn btn-primary" role="button">下载</a>  
@@ -114,6 +116,8 @@
                           <p id="ios_dev_version"></p>
                           <h3>时间</h3>
                           <p id="ios_dev_time"></p>
+                          <h3>构建url</h3>
+                          <p id="ios_dev_url"></p>
                           <h3>描述</h3>
                           <p id="ios_dev_desc"></p>
                           <p><a id="ios_dev_down" href="#" class="btn btn-success" role="button">下载</a>  
@@ -143,6 +147,8 @@
                           <p id="android_release_version"></p>
                           <h3>时间</h3>
                           <p id="android_release_time"></p>
+                           <h3>构建url</h3>
+                          <p id="android_release_url"></p>
                           <h3>描述</h3>
                           <p id="android_release_desc"></p>
                           <p><a id="android_release_down" href="#" class="btn btn-info" role="button">下载</a>  
@@ -172,6 +178,8 @@
                           <p id="android_dev_version"></p>
                           <h3>时间</h3>
                           <p id="android_dev_time"></p>
+                            <h3>构建url</h3>
+                          <p id="android_dev_url"></p>
                           <h3>描述</h3>
                           <p id="android_dev_desc"></p>
                           <p><a id="android_dev_down" href="#" class="btn btn-warning" role="button">下载</a>  
@@ -200,6 +208,7 @@
                             <th>渠道</th>
                             <th>版本</th>
                             <th>描述</th>
+                            <th>构建url</th>
                             <th>下载</th>
                           </tr>
                         </thead>
@@ -343,6 +352,7 @@
                         $('#ios_dev_channel').text(item.channel);
                         $('#ios_dev_env').text(env);
                         $('#ios_dev_time').text(item.time);
+                         $('#ios_dev_url').text(item.url);
                         $('#ios_dev_version').text(item.version);
                         $('#ios_dev_desc').text(item.description);
                        
@@ -360,6 +370,7 @@
                         $('#android_dev_channel').text(item.channel);
                         $('#android_dev_env').text(env);
                         $('#android_dev_time').text(item.time);
+                          $('#android_dev_url').text(item.url);
                         $('#android_dev_version').text(item.version);
                         $('#android_dev_desc').text(item.description);
                        
@@ -378,6 +389,7 @@
                         $('#ios_release_channel').text(item.channel);
                         $('#ios_release_env').text(env);
                         $('#ios_release_time').text(item.time);
+                        $('#ios_release_url').text(item.url);
                         $('#ios_release_version').text(item.version);
                         $('#ios_release_desc').text(item.description);
                        
@@ -395,6 +407,7 @@
                         $('#android_release_channel').text(item.channel);
                         $('#android_release_env').text(env);
                         $('#android_release_time').text(item.time);
+                        $('#android_release_url').text(item.url);
                         $('#android_release_version').text(item.version);
                         $('#android_release_desc').text(item.description);
                        
@@ -511,6 +524,7 @@
                             '<td>'+item.channel+'</td>'+
                             '<td>'+item.version+'</td>'+
                             '<td>'+item.description+'</td>'+
+                            '<td>'+item.url+'</td>'+
                             '<td><a href="'+down+'" >'+down_str+'</a></td>'+
                           '</tr>')
                          
