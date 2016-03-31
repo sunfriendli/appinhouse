@@ -18,7 +18,7 @@ go get -v
 go build 
 
 echo 'package...'
-bee pack -o "$HOME"
+bee pack -o "$HOME" -exr install.sh
 
 export GOPATH="$OLDGOPATH"
 
@@ -30,5 +30,5 @@ if [ ! -d $TARGET ];
 		mkdir $TARGET
 fi
 tar -zxvf service.tar.gz -C $TARGET
-
+echo "deploy file in $HOME/$TARGET" 
 echo 'finished'
