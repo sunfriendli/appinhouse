@@ -20,8 +20,8 @@ var (
 	ErrorCreateFileError  = errors.New("appinhouse:create File fail")
 	ErrorIPANotExistError = errors.New("appinhouse:not have IPA ")
 	ErrorDeleteFileError  = errors.New("appinhouse:delete File fail")
-
-	errCodeToError = map[string]ErrCode{
+	ErrorPathError        = errors.New("appinhouse:path error")
+	errCodeToError        = map[string]ErrCode{
 		ErrorUnknown.Error():          ErrUnknown,
 		ErrorParam.Error():            ErrParams,
 		ErrorFileNotExist.Error():     ErrFileNotExist,
@@ -30,6 +30,7 @@ var (
 		ErrorCreateFileError.Error():  ErrCreateFileError,
 		ErrorIPANotExistError.Error(): ErrIPANotExistError,
 		ErrorDeleteFileError.Error():  ErrDeleteFileError,
+		ErrorPathError.Error():        ErrPathError,
 	}
 	Root_Dir    = ""
 	Log_Dir     = ""
@@ -118,6 +119,7 @@ const (
 	ErrCreateFileError  = ErrCode(1005)
 	ErrIPANotExistError = ErrCode(1006)
 	ErrDeleteFileError  = ErrCode(1007)
+	ErrPathError        = ErrCode(1008)
 )
 const (
 	Dev_Path     = "dev/"

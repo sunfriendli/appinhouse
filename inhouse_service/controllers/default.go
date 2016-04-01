@@ -280,7 +280,7 @@ func (c *MainController) PList() {
 	files, err := ioutil.ReadDir(file)
 	if err != nil {
 		beego.Info("PList ReadDir fail :", err.Error())
-		dto.Code = ErrSystemError
+		dto.Code = ErrParams
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -482,7 +482,7 @@ func converInfoTOItem(info *models.Info, platform Platform, environment Environm
 	item.Description = info.Description
 	item.Down = getDownPath(platform, environment, info.Channel, info.Version, app)
 	item.Time = info.Time
-	item.Url = info.Description
+	item.Url = info.Url
 	item.Version = info.Version
 
 	return item
