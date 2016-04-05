@@ -28,6 +28,7 @@
 
 ###environment
 打包的应用程序所对应的运行环境，`枚举值`
+
 | value     |     dev|   release|
 | :-------- | --------:| :------:|
 | 含义       |   开发环境|  发布环境|
@@ -118,9 +119,9 @@ GET
       "down": "/download/rog2/dev/android/data/1.0.11/d1.0.11.apk",
       "channel": "none"
     },
-	........,
-	........,
-	........,
+	.,
+	.,
+	.,
     {
       "platform": "android",
       "environment": "dev",
@@ -250,9 +251,9 @@ GET
       "down": "/download/rog2/dev/android/data/1.0.11/d1.0.11.apk",
       "channel": "none"
     },
-	........,
-	........,
-	........,
+	.,
+	.,
+	.,
     {
       "platform": "android",
       "environment": "dev",

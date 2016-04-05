@@ -34,7 +34,7 @@ cd /home/当前用户/appinhouse_server/bin
 * 查看任一版本的客户端的详细信息，其中包括回溯到Jenkins上的此次构建
 * 提供plist生成
 ##文档
-* [api文档]
+* [api文档](inhouse_service/controllers/README.md)
 * [客户端（ipa/apk)的归档]
 * [nginx配置]  
 
