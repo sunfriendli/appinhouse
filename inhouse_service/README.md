@@ -1,3 +1,1 @@
-## inhouse_service
-后端服务，提供 RESTful 风格的API服务
-
+## 客户端（ipa/apk)的归档

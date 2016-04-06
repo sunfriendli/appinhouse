@@ -35,8 +35,8 @@ cd /home/当前用户/appinhouse_server/bin
 * 提供plist生成
 ##文档
 * [api文档](inhouse_service/controllers/README.md)
-* [客户端（ipa/apk)的归档]
-* [nginx配置]  
+* [客户端（ipa/apk)的归档]()
+* [nginx配置]()  
 
 
 
