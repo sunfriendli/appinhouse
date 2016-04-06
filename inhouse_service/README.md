@@ -59,8 +59,8 @@
 
 - 在`data`文件夹下创建以本次版本号命名的目录。
 - 将`.ipa`文件放到`版本号`目录下，`.ipa`文件名字自定义。
-- 将`full-size-image`文件放到`版本号`目录下，`.ipa`文件名字固定，`full_size.png`。
-- 将`display-image`文件放到`版本号`目录下，`.icon`文件名字固定，`display.png`。
+- 将`full-size-image`文件放到`版本号`目录下，`full-size-image`文件名字固定，`full_size.png`。
+- 将`display-image`文件放到`版本号`目录下，`display-image`文件名字固定，`display.png`。
 - 将描述文件放到`list`目录下，描述文件名字自定义。描述文件类型为`txt`，`channel` 苹果官方的值 ，见***[应用配置文档](controllers/README.md#生成plist)***，`描述文件示例：`
 
 	```bash
@@ -68,7 +68,7 @@
 	time=2016-8-9 00:00:00  #打包时间
 	description=小测试描述ios #打包描述
 	url=http://example.me #构建的url，例：jenkins上本次构建的url
-	channel=appstore #渠道，苹果官方为appstore ，其余越狱渠道用户自定义。
+	channel=appstore #渠道，苹果官方为应用配置文件中定义 ，其余越狱渠道用户自定义。
 	```
 	
 - 调用API生成plist，见***[API文档](controllers/README.md#生成plist)***。
