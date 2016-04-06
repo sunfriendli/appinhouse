@@ -15,6 +15,8 @@ import (
 
 	"strings"
 
+	"os/exec"
+
 	"github.com/astaxie/beego"
 )
 
@@ -586,6 +588,8 @@ func InitDirectory() {
 		createFile(getDataPath(Android, Dev, app))
 		createFile(getDataPath(Ios, Release, app))
 		createFile(getDataPath(Android, Release, app))
+		//因为是ftp目录，需要777
+		chmod(app)
 	}
 
 }
@@ -647,6 +651,18 @@ func createFile(dir string) (string, error) {
 	}
 
 	return src, nil
+}
+func chmod(app string) error {
+	src := Root_Dir + app
+	if !isExist(src) {
+		return ErrorPathError
+	}
+	cmd := exec.Command("chmod", "-R", "777", src)
+	err := cmd.Start()
+	if err != nil {
+		panic("permission denied")
+	}
+	return nil
 }
 func isExist(path string) bool {
 	_, err := os.Stat(path)
