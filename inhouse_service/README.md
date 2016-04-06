@@ -46,6 +46,7 @@
 - 在`data`文件夹下创建以本次版本号命名的目录。
 - 将`.apk`文件放到`版本号`目录下，`.apk`文件名字自定义。
 - 将描述文件放到`list`目录下，描述文件名字自定义。描述文件类型为`txt`，`描述文件示例：`
+
 	```bash
 	version=1.0.0    #版本号
 	time=2016-8-9 00:00:00  #打包时间
@@ -53,6 +54,7 @@
 	url=http://example.me #构建的url，例：jenkins上本次构建的url
 	channel=mi #渠道，用户自定义，例：小米渠道，mi，没有渠道`无`
 	```
+	
 #####ios
 
 - 在`data`文件夹下创建以本次版本号命名的目录。
@@ -60,6 +62,7 @@
 - 将`full-size-image`文件放到`版本号`目录下，`.ipa`文件名字固定，`full_size.png`。
 - 将`display-image`文件放到`版本号`目录下，`.icon`文件名字固定，`display.png`。
 - 将描述文件放到`list`目录下，描述文件名字自定义。描述文件类型为`txt`，`channel` 苹果官方的值 ，见***[应用配置文档](controllers/README.md#生成plist)***，`描述文件示例：`
+
 	```bash
 	version=1.0.0    #版本号
 	time=2016-8-9 00:00:00  #打包时间
@@ -67,4 +70,5 @@
 	url=http://example.me #构建的url，例：jenkins上本次构建的url
 	channel=appstore #渠道，苹果官方为appstore ，其余越狱渠道用户自定义。
 	```
-- 调用API生成plist，见***[API文档](controllers/README.md#生成plist)***
+	
+- 调用API生成plist，见***[API文档](controllers/README.md#生成plist)***。
