@@ -579,7 +579,13 @@ func getAll(platform Platform, environment Environment, app string) (*FileRepos,
 }
 func InitDirectory() {
 	apps := GetApps()
+	newApp := false
 	for _, app := range apps {
+		if isExist() {
+			newApp = false
+		} else {
+			newApp = true
+		}
 		createFile(getListPath(Ios, Dev, app))
 		createFile(getListPath(Android, Dev, app))
 		createFile(getListPath(Ios, Release, app))
@@ -588,8 +594,11 @@ func InitDirectory() {
 		createFile(getDataPath(Android, Dev, app))
 		createFile(getDataPath(Ios, Release, app))
 		createFile(getDataPath(Android, Release, app))
-		//因为是ftp目录，需要777
-		chmod(app)
+		//只有添加了新应用才修改
+		if newApp {
+			//因为是ftp目录，需要777
+			chmod(app)
+		}
 	}
 
 }
