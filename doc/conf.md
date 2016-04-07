@@ -56,6 +56,6 @@ plist里display_image 文件的名字。
 
 最大页数值。
 
-#####max_page 
+#####page_size 
 
 每页显示的记录数。
