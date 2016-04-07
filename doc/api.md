@@ -119,9 +119,6 @@ GET
       "down": "/download/rog2/dev/android/data/1.0.11/d1.0.11.apk",
       "channel": "none"
     },
-
-	// ...	
-
     {
       "platform": "android",
       "environment": "dev",
@@ -251,9 +248,6 @@ GET
       "down": "/download/rog2/dev/android/data/1.0.11/d1.0.11.apk",
       "channel": "none"
     },
-	
-	// ...
-	
     {
       "platform": "android",
       "environment": "dev",
