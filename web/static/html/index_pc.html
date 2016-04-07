@@ -245,7 +245,8 @@
   </body>
 </html>
 <script type="text/javascript">
-   var domain="https://appinhouse.rog2.org/"
+   //var domain="https://appinhouse.rog2.org/"
+   var domain="http://localhost/"
    initpage();
    zuixin();
    menu_android_release();
@@ -360,8 +361,14 @@
                           $('#ios_dev_down').unbind('click')
                           $('#ios_dev_down').text('失效')
                         }else{
-                           var down="itms-services://?action=download-manifest&url="+item.down 
-                          $('#ios_dev_down').attr('href', down);
+                          if(item.channel=="appstore"){
+                            var down="itms-services://?action=download-manifest&url="+item.down 
+                            
+                            $('#ios_dev_down').attr('href', down);
+                          }else{
+                            $('#ios_dev_down').attr('href', item.down);
+                          }
+                          
                         }
                     }else{
                         hasAndroidDev=true
@@ -397,8 +404,13 @@
                           $('#ios_release_down').unbind('click')
                           $('#ios_release_down').text('失效')
                         }else{
-                          var down="itms-services://?action=download-manifest&url="+item.down 
-                          $('#ios_release_down').attr('href', down);
+                          if(item.channel=="appstore"){
+                            var down="itms-services://?action=download-manifest&url="+item.down 
+                            
+                            $('#ios_release_down').attr('href', down);
+                          }else{
+                            $('#ios_release_down').attr('href', item.down);
+                          }
                         }
                     }else{
                         hasAndroidRe=true
@@ -496,7 +508,16 @@
                     var down_str="失效";
 
                     if (item.down!="") {
-                      down= item.down;
+                      if(item.platform=="ios"){
+                        if(item.channel=="appstore"){
+                            down="itms-services://?action=download-manifest&url="+item.down 
+                            
+                          }else{
+                             down=item.down;
+                          }
+                      }else{
+                         down=item.down;
+                      }
                       down_str="下载"
                     }
                     var trclass="active"

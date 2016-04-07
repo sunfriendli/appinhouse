@@ -168,7 +168,8 @@
 
  
 <script type="text/javascript">
-    var domain="https://appinhouse.rog2.org/"
+   // var domain="https://appinhouse.rog2.org/"
+    var domain="http://localhost/"
     kaifa();
     initpage();
     zuixin();
@@ -223,10 +224,13 @@
                        $('#dev_down').text('失效')
                     }else{
                       if(platform=="ios"){
- 
-                        var down="itms-services://?action=download-manifest&url="+item.down 
-                        
-                        $('#dev_down').attr('href', down);
+                          if(item.channel=="appstore"){
+                            var down="itms-services://?action=download-manifest&url="+item.down 
+                            
+                            $('#dev_down').attr('href', down);
+                          }else{
+                              $('#dev_down').attr('href', item.down);
+                          }
                       }else{
                          $('#dev_down').attr('href', item.down);
                       }
@@ -247,10 +251,13 @@
                        $('#release_down').text('失效')
                     }else{
                       if(platform=="ios"){
-
-                        var down="itms-services://?action=download-manifest&url="+item.down 
-                      
-                        $('#release_down').attr('href', down);
+                        if(item.channel=="appstore"){
+                            var down="itms-services://?action=download-manifest&url="+item.down 
+                            
+                            $('#release_down').attr('href', down);
+                          }else{
+                              $('#release_down').attr('href', item.down);
+                          }
                       }else{
                          $('#release_down').attr('href', item.down);
                       }
@@ -322,11 +329,20 @@
                    $('#kaifa_panel_list').empty();
                   $.each(data.items, function (index, item) {
                     var down="#";
-                    var down_str="下载";
+                    var down_str="失效";
                     var platform=item.platform
 
                     if (item.down!="") {
-                      down= item.down;
+                      if(platform=="ios"){
+                        if(item.channel=="appstore"){
+                            down="itms-services://?action=download-manifest&url="+item.down 
+                            
+                          }else{
+                             down=item.down;
+                          }
+                      }else{
+                         down=item.down;
+                      }
                       down_str="下载"
                     }
                     var collapse="collapse";
@@ -426,7 +442,16 @@
                     var down_str="失效";
 
                     if (item.down!="") {
-                      down= item.down;
+                     if(item.platform=="ios"){
+                        if(item.channel=="appstore"){
+                            down="itms-services://?action=download-manifest&url="+item.down 
+                            
+                          }else{
+                             down=item.down;
+                          }
+                      }else{
+                         down=item.down;
+                      }
                       down_str="下载"
                     }
                     var collapse="collapse";
@@ -443,7 +468,7 @@
 
                           '<div id="fabu_panel'+index+'" class="panel-collapse '+collapse+'">'+
                             '<div class="panel-body">'+
-                              '<p><span>'+item.version+'</span> <a href="'+down+' class="btn btn-link"><span class="badge badge-primary">'+down_str+'</span></a></p>'+
+                              '<p><span>'+item.version+'</span> <a href="'+down+'" class="btn btn-link"><span class="badge badge-primary">'+down_str+'</span></a></p>'+
                              item.description+
                             '</div>'+
                           '</div>'+
