@@ -32,12 +32,12 @@
 | value     |     dev|   release|
 | :-------- | --------:| :------:|
 | 含义       |   开发环境|  发布环境|
-###pageSize
-一页显示多少记录，`配置值page_size` ，详见详见[*应用配置*](#应用配置)。
-###maxPage
-最大页数，`配置值max_page`，详见详见[*应用配置*](#应用配置)。
-### minResidue
-最小文件保留值，`配置值min_residue`，详见详见[*应用配置*](#应用配置)。
+###page_size
+一页显示多少记录，`配置值page_size` ，详见详见[***应用配置文档***](#conf.md#pagesize)。
+###max_page
+最大页数，`配置值max_page`，详见详见[***应用配置文档***](#conf.md#maxpage)。
+### min_residue
+最小文件保留值，`配置值min_residue`，详见详见[***应用配置文档***](#conf.md#min_residue)。
 ### 移动端获得最新打包版本
 #####接口说明
 移动设备会根据`userAgent`自动显示出该手机平台所需要的最新安装包。
@@ -93,7 +93,7 @@ GET
 
 ### 移动端获取历史列表
 #####接口说明
-移动设备会根据`userAgent`自动显示出该手机平台所需要的历史列表。限制[**maxPage**](#maxPage),[**pageSize**](#pageSize)
+移动设备会根据`userAgent`自动显示出该手机平台所需要的历史列表。限制[**max_page**](#maxpage),[**page_size**](#pagesize)
 
 #####URL
 /api/[**[app]**](#app)/mobile/list/[**[environment]**](#environment)?page=1
@@ -226,7 +226,7 @@ GET
 |channel|item| 渠道|  string|     是| 
 ### 获取历史列表
 #####接口说明
-pc端获得不同平台，不同环境的历史版本。限制[**maxPage**](#maxPage),[**pageSize**](#pageSize)
+pc端获得不同平台，不同环境的历史版本。限制[**max_page**](#maxpage),[**page_size**](#pagesize)。
 #####URL
 /api/[**[app]**](#app)/list/[**[platform]**](#platform)/[**[environment]**](#environment)?page=1
 #####请求方式
@@ -286,7 +286,7 @@ GET
 |channel|item| 渠道|  string|     是|
 ### 生成plist
 #####接口说明
-生成plist文件。生成前需先先上传必要文件。详见[*客户端（ipa/apk)的归档*](#客户端的归档)
+生成plist文件。生成前需先先上传必要文件。详见[*客户端（ipa/apk)的归档*](#archive.md)
 #####URL
 /api/[**[app]**](#app)/plist/[**[environment]**](#environment)
 #####请求方式
@@ -311,7 +311,7 @@ POST
 |msg             | 无    | 提示信息|  string|        否|
 ### 整理历史版本
 #####接口说明
-删除过久的历史版本，只保留最新的一些版本。residue的限制[**minResidue**](#minresidue)
+删除过久的历史版本，只保留最新的一些版本。residue的限制[**min_residue**](#minresidue)
 #####URL
 /api/[**[app]**](#app)/delete/[**[platform]**](#platform)/[**[environment]**](#environment)?residue=10
 #####请求方式

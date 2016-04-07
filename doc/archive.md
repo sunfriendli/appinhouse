@@ -61,7 +61,7 @@
 - 将`.ipa`文件放到`版本号`目录下，`.ipa`文件名字自定义。
 - 将`full-size-image`文件放到`版本号`目录下，`full-size-image`文件名字固定，`full_size.png`。
 - 将`display-image`文件放到`版本号`目录下，`display-image`文件名字固定，`display.png`。
-- 将描述文件放到`list`目录下，描述文件名字自定义。描述文件类型为`txt`，`channel` 苹果官方的值 ，见***[应用配置文档](controllers/README.md#生成plist)***，`描述文件示例：`
+- 将描述文件放到`list`目录下，描述文件名字自定义。描述文件类型为`txt`，`channel` 苹果官方的值 ，见***[应用配置文档](conf.md#ioschannel)***，`描述文件示例：`
 
 	```bash
 	version=1.0.0    #版本号
@@ -71,4 +71,4 @@
 	channel=appstore #渠道，苹果官方为应用配置文件中定义 ，其余越狱渠道用户自定义。
 	```
 	
-- 调用API生成plist，见***[API文档](controllers/README.md#生成plist)***。
+- 调用API生成plist，见***[API文档](api.md#生成plist)***。
