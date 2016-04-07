@@ -33,11 +33,11 @@
 | :-------- | --------:| :------:|
 | 含义       |   开发环境|  发布环境|
 ###page_size
-一页显示多少记录，`配置值page_size` ，详见详见[***应用配置文档***](#conf.md#page_size)。
+一页显示多少记录，`配置值page_size` ，详见详见[***应用配置文档***](conf.md#page_size)。
 ###max_page
-最大页数，`配置值max_page`，详见详见[***应用配置文档***](#conf.md#max_page)。
+最大页数，`配置值max_page`，详见详见[***应用配置文档***](conf.md#max_page)。
 ### min_residue
-最小文件保留值，`配置值min_residue`，详见详见[***应用配置文档***](#conf.md#min_residue)。
+最小文件保留值，`配置值min_residue`，详见详见[***应用配置文档***](conf.md#min_residue)。
 ### 移动端获得最新打包版本
 #####接口说明
 移动设备会根据`userAgent`自动显示出该手机平台所需要的最新安装包。
@@ -226,7 +226,7 @@ GET
 |channel|item| 渠道|  string|     是| 
 ### 获取历史列表
 #####接口说明
-pc端获得不同平台，不同环境的历史版本。限制[**max_page**](#maxpage),[**page_size**](#page_size)。
+pc端获得不同平台，不同环境的历史版本。限制[**max_page**](#max_page),[**page_size**](#page_size)。
 #####URL
 /api/[**[app]**](#app)/list/[**[platform]**](#platform)/[**[environment]**](#environment)?page=1
 #####请求方式
@@ -286,7 +286,7 @@ GET
 |channel|item| 渠道|  string|     是|
 ### 生成plist
 #####接口说明
-生成plist文件。生成前需先先上传必要文件。详见[*客户端（ipa/apk)的归档*](#archive.md)
+生成plist文件。生成前需先先上传必要文件。详见[*客户端（ipa/apk)的归档*](archive.md)
 #####URL
 /api/[**[app]**](#app)/plist/[**[environment]**](#environment)
 #####请求方式
