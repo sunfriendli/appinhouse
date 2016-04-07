@@ -93,7 +93,7 @@ GET
 
 ### 移动端获取历史列表
 #####接口说明
-移动设备会根据`userAgent`自动显示出该手机平台所需要的历史列表。限制[**max_page**](#maxpage),[**page_size**](#pagesize)
+移动设备会根据`userAgent`自动显示出该手机平台所需要的历史列表。限制[**max_page**](#max_page),[**page_size**](#page_)size)
 
 #####URL
 /api/[**[app]**](#app)/mobile/list/[**[environment]**](#environment)?page=1
