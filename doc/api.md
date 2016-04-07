@@ -33,9 +33,9 @@
 | :-------- | --------:| :------:|
 | 含义       |   开发环境|  发布环境|
 ###page_size
-一页显示多少记录，`配置值page_size` ，详见详见[***应用配置文档***](#conf.md#pagesize)。
+一页显示多少记录，`配置值page_size` ，详见详见[***应用配置文档***](#conf.md#page_size)。
 ###max_page
-最大页数，`配置值max_page`，详见详见[***应用配置文档***](#conf.md#maxpage)。
+最大页数，`配置值max_page`，详见详见[***应用配置文档***](#conf.md#max_page)。
 ### min_residue
 最小文件保留值，`配置值min_residue`，详见详见[***应用配置文档***](#conf.md#min_residue)。
 ### 移动端获得最新打包版本
@@ -93,7 +93,7 @@ GET
 
 ### 移动端获取历史列表
 #####接口说明
-移动设备会根据`userAgent`自动显示出该手机平台所需要的历史列表。限制[**max_page**](#max_page),[**page_size**](#page_)size)
+移动设备会根据`userAgent`自动显示出该手机平台所需要的历史列表。限制[**max_page**](#max_page),[**page_size**](#page_size)
 
 #####URL
 /api/[**[app]**](#app)/mobile/list/[**[environment]**](#environment)?page=1
@@ -226,7 +226,7 @@ GET
 |channel|item| 渠道|  string|     是| 
 ### 获取历史列表
 #####接口说明
-pc端获得不同平台，不同环境的历史版本。限制[**max_page**](#maxpage),[**page_size**](#pagesize)。
+pc端获得不同平台，不同环境的历史版本。限制[**max_page**](#maxpage),[**page_size**](#page_size)。
 #####URL
 /api/[**[app]**](#app)/list/[**[platform]**](#platform)/[**[environment]**](#environment)?page=1
 #####请求方式
@@ -311,7 +311,7 @@ POST
 |msg             | 无    | 提示信息|  string|        否|
 ### 整理历史版本
 #####接口说明
-删除过久的历史版本，只保留最新的一些版本。residue的限制[**min_residue**](#minresidue)
+删除过久的历史版本，只保留最新的一些版本。residue的限制[**min_residue**](#min_residue)
 #####URL
 /api/[**[app]**](#app)/delete/[**[platform]**](#platform)/[**[environment]**](#environment)?residue=10
 #####请求方式

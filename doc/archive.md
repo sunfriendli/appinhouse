@@ -61,7 +61,7 @@
 - 将`.ipa`文件放到`版本号`目录下，`.ipa`文件名字自定义。
 - 将`full-size-image`文件放到`版本号`目录下，`full-size-image`文件名字固定，`full_size.png`。
 - 将`display-image`文件放到`版本号`目录下，`display-image`文件名字固定，`display.png`。
-- 将描述文件放到`list`目录下，描述文件名字自定义。描述文件类型为`txt`，`channel` 苹果官方的值 ，见***[应用配置文档](conf.md#ioschannel)***，`描述文件示例：`
+- 将描述文件放到`list`目录下，描述文件名字自定义。描述文件类型为`txt`，`channel` 苹果官方的值 ，见***[应用配置文档](conf.md#ios_channel)***，`描述文件示例：`
 
 	```bash
 	version=1.0.0    #版本号
