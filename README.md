@@ -45,25 +45,12 @@ cd /home/当前用户/appinhouse_server/bin
 
 ####第二步，部署nginx
 
-#####环境
-
-```bash
-./install_nginx.sh  #文件位置web/nginx/install_nginx.sh
-```
-
-#####配置
-
-```bash
-cd /etc/nginx/conf.d
-#在这个文件夹，创建你的conf
-sudo vi appinhouse_ssl.conf #文件位置web/nginx/appinhouse_ssl.conf
-sudo service nginx  reload
-```
+见[***nginx配置文档***](doc/nginx.md) 。
 
 ####第三步，部署ftp
 
 
-见[***ftp配置文档***](doc/ftp.md)  。
+见[***ftp配置文档***](doc/ftp.md) 。
 
 
 ##功能特点
@@ -80,6 +67,7 @@ sudo service nginx  reload
 * [客户端（ipa/apk)的归档](doc/archive.md)
 * [应用配置文档](doc/conf.md)
 * [ftp配置文档](doc/ftp.md)  
+* [nginx配置文档](doc/ftp.md)  
 
 
 
