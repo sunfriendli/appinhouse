@@ -53,6 +53,12 @@ cd /home/当前用户/appinhouse_server/bin
 见[***ftp配置文档***](doc/ftp.md) 。
 
 
+####第四步，归档
+
+
+见[***客户端（ipa/apk)的归档***](doc/archive.md) 。
+
+
 ##功能特点
 
 * RESTful 风格
