@@ -93,6 +93,8 @@ virtual_use_local_privs=YES #虚拟用户和本地用户拥有一样的权限
 user_config_dir=/etc/vsftpd/vsftpd_user_conf #指定每个虚拟用户账号配置目录
 dual_log_enable=YES
 xferlog_file=/var/log/vsftpd.log
+
+sudo service vsftpd reload
 ```
 
 ##注意
