@@ -36,7 +36,8 @@ tcp        0      0 0.0.0.0:21              0.0.0.0:*               LISTEN      
 #####为虚拟用户创建本地系统用户
 
 ```bash
-sudo useradd vftpuser -d /home/vsftpd -s /bin/false #不能登录系统
+sudo useradd vftpuser -d /home/vftpuser -s /bin/false #不能登录系统，用户名自定义
+sudo chown vftpuser:vftpuser  /home/vftpuser #必须执行
 ```
 
 #####创建虚拟用户数据库
@@ -51,20 +52,21 @@ yyyy
 user3
 zzzz
 #注意：奇数行为账户名，偶数行为密码。也就是1.3.5.等行为用户名，2.4.6行为密码；
-#最后一行需要回车（否则建立数据库文件时无法识别最后一行，导致报奇数行错误）。
-sudo dbx.x_load -T -t hash -f login_user.txt /etc/vsftpd/vsftpd_login.db
+#db-util老版本 可能最后一行需要回车（否则建立数据库文件时无法识别最后一行，导致报奇数行错误）。
+sudo dbx.x_load -T -t hash -f login_user.txt /etc/vsftpd/vsftpd_login.db #dbx.x_load x为你安装的版本
 sudo chmod 600 /etc/vsftpd/vsftpd_login.db
 ```
 
 #####配置PAM文件
 见`vsftpd`文件
 ```bash
+cd /etc/pam.d/
 # 加入下面两行，其余注掉
 auth sufficient pam_userdb.so db=/etc/vsftpd/vsftpd_login
 account sufficient pam_userdb.so db=/etc/vsftpd/vsftpd_login
 
 ```
-#####配置/etc/vsftpd_user_conf
+#####配置/vsftpd_user_conf/
 
 `为每个虚拟用户单独配置权限`，见目录`vsftpd_user_conf`下的文件，***`vsftpd_user_conf`的文件名要和虚拟用户数据库中的账户名一致***
 
@@ -81,18 +83,21 @@ local_umask=000
 
 #####配置vsftpd.conf文件
 
+默认的配置里会有一些配置，如果没有的话，见[参考资料](#参考资料)。
 在`vsftpd.conf`加入下列配置项
 
 ```bash
 guest_enable=YES 
 guest_username=vftpuser #指定上文为虚拟用户创建的本地用户
 virtual_use_local_privs=YES #虚拟用户和本地用户拥有一样的权限
-user_config_dir=/etc/vsftpd_user_conf #指定每个虚拟用户账号配置目录
-pam_service_name=vsftpd #配置pam
+user_config_dir=/etc/vsftpd/vsftpd_user_conf #指定每个虚拟用户账号配置目录
+dual_log_enable=YES
+xferlog_file=/var/log/vsftpd.log
 ```
 
 ##注意
 
+1. `配置文件中不能有空格`
 1. 如果只是`ftp` 那么local_root的属组和属主应该是[为虚拟用户创建本地系统用户](#为虚拟用户创建本地系统用户)
 2. 如果是和`web`应用共用，不涉及到删除 那么`local_root`属组和属主应该是[为虚拟用户创建本地系统用户](#为虚拟用户创建本地系统用户) ，并且权限需要`755`
 3. 如果是和`web`应用共用，涉及到删除 那么`local_root`属组和属主是谁都行，但权限需要`777`

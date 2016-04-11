@@ -11,7 +11,7 @@
 ####安装
 
 ```bash
- ./install_nginx.sh  #文件位置web/nginx/install_nginx.sh
+ sudo ./install_nginx.sh  #文件位置web/nginx/install_nginx.sh
 ```
 ####证书
 

@@ -12,11 +12,19 @@
 
 ```bash
 #安装go
-$ sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
-$ sudo apt-get update
-$ sudo apt-get install golang
+sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
+sudo apt-get update
+sudo apt-get install golang
 #安装git
 sudo apt-get install git
+#安装bee
+sudo vi /etc/profile
+export GOPATH=/xxx/xxxx #设置你指定的目录
+#保存，重启客户端
+cd $GOPATH
+go get github.com/beego/bee
+cd bin
+sudo  cp bee /usr/bin/
 ```
 
 #####下载
