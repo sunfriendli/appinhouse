@@ -12,25 +12,27 @@ type Platform int32
 type Environment int32
 
 var (
-	ErrorFileNotExist     = errors.New("appinhouse: file not exist")
-	ErrorUnknown          = errors.New("appinhouse: unknown error")
-	ErrorPageOut          = errors.New("appinhouse: page size out of total")
-	ErrorParseConf        = errors.New("appinhouse: conf file parse error")
-	ErrorParam            = errors.New("appinhouse: param error")
-	ErrorCreateFileError  = errors.New("appinhouse: create File fail")
-	ErrorIPANotExistError = errors.New("appinhouse: not have IPA ")
-	ErrorDeleteFileError  = errors.New("appinhouse: delete File fail")
-	ErrorFileExist        = errors.New("appinhouse: file exist")
-	errCodeToError        = map[string]ErrCode{
-		ErrorUnknown.Error():          ErrUnknown,
-		ErrorParam.Error():            ErrParams,
-		ErrorFileNotExist.Error():     ErrFileNotExist,
-		ErrorPageOut.Error():          ErrPageOut,
-		ErrorParseConf.Error():        ErrParseConf,
-		ErrorCreateFileError.Error():  ErrCreateFileError,
-		ErrorIPANotExistError.Error(): ErrIPANotExistError,
-		ErrorDeleteFileError.Error():  ErrDeleteFileError,
-		ErrorFileExist.Error():        ErrFileExist,
+	ErrorFileNotExist       = errors.New("appinhouse: file not exist")
+	ErrorUnknown            = errors.New("appinhouse: unknown error")
+	ErrorPageOut            = errors.New("appinhouse: page size out of total")
+	ErrorParseConf          = errors.New("appinhouse: conf file parse error")
+	ErrorParam              = errors.New("appinhouse: param error")
+	ErrorCreateFileError    = errors.New("appinhouse: create File fail")
+	ErrorIPANotExistError   = errors.New("appinhouse: not have IPA ")
+	ErrorPlistNotExistError = errors.New("appinhouse: not have Plist ")
+	ErrorDeleteFileError    = errors.New("appinhouse: delete File fail")
+	ErrorFileExist          = errors.New("appinhouse: file exist")
+	errCodeToError          = map[string]ErrCode{
+		ErrorUnknown.Error():            ErrUnknown,
+		ErrorParam.Error():              ErrParams,
+		ErrorFileNotExist.Error():       ErrFileNotExist,
+		ErrorPageOut.Error():            ErrPageOut,
+		ErrorParseConf.Error():          ErrParseConf,
+		ErrorCreateFileError.Error():    ErrCreateFileError,
+		ErrorIPANotExistError.Error():   ErrIPANotExistError,
+		ErrorDeleteFileError.Error():    ErrDeleteFileError,
+		ErrorFileExist.Error():          ErrFileExist,
+		ErrorPlistNotExistError.Error(): ErrPlistNotExist,
 	}
 	errCodeToMsg = map[ErrCode]string{
 		ErrOk:               "成功",
@@ -44,6 +46,7 @@ var (
 		ErrIPANotExistError: "归档文件不存在",
 		ErrDeleteFileError:  "删除文件错误",
 		ErrFileExist:        "文件已存在",
+		ErrPlistNotExist:    "plist文件不存在",
 	}
 	Ftp_Root_Dir = ""
 	Root_Dir     = ""
@@ -140,6 +143,7 @@ const (
 	ErrIPANotExistError = ErrCode(1006)
 	ErrDeleteFileError  = ErrCode(1007)
 	ErrFileExist        = ErrCode(1008)
+	ErrPlistNotExist    = ErrCode(1009)
 )
 const (
 	Dev_Path     = "dev/"

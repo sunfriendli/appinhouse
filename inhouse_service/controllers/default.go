@@ -477,8 +477,19 @@ func (c *MainController) Desc() {
 		}
 	}
 	hasFile := false
+	if platform == Ios {
+		file := getDataPath(platform, env, app) + version + Slash + version + Plist
+		if !isExist(file) {
+			dto.Code = ErrPlistNotExist
+			dto.Msg = GetMsg(dto.Code)
+			c.Data["json"] = dto
+			c.ServeJSON()
+			return
+		}
+	}
 	for _, file := range ftpFiles {
 		if platform == Ios {
+
 			if strings.HasSuffix(file.Name(), Ipa) {
 				hasFile = true
 				break
@@ -675,18 +686,9 @@ func getStaticPath(platform Platform, environment Environment, app string) strin
 	return file
 }
 func getDownPath(platform Platform, environment Environment, channel, version, app string) string {
-	data := getDataPath(platform, environment, app) + version + Slash
+
 	ftpData := getFtpDataPath(platform, environment, app) + version + Slash
-	files, err := ioutil.ReadDir(data)
-	if err != nil {
-		beego.Info("getDownPath error.read dir:", data)
-		return ""
-	} else {
-		if len(files) == 0 {
-			beego.Info("getDownPath files len is zero.read dir:", data)
-			return ""
-		}
-	}
+
 	ftpFiles, err := ioutil.ReadDir(ftpData)
 	if err != nil {
 		beego.Info("getDownPath error.read ftp dir:", ftpData)
@@ -704,6 +706,17 @@ func getDownPath(platform Platform, environment Environment, channel, version, a
 	}
 	if platform == Ios {
 		if channel == Ios_Channel {
+			data := getDataPath(platform, environment, app) + version + Slash
+			files, err := ioutil.ReadDir(data)
+			if err != nil {
+				beego.Info("getDownPath error.read dir:", data)
+				return ""
+			} else {
+				if len(files) == 0 {
+					beego.Info("getDownPath files len is zero.read dir:", data)
+					return ""
+				}
+			}
 			for _, file := range files {
 				if strings.HasSuffix(file.Name(), Plist) {
 					return Https_Str + Domain + staticPath + file.Name()
@@ -737,9 +750,12 @@ func getList(platform Platform, environment Environment, start, end int, app str
 	}
 
 	res := *repositorys
-	size := len(*repositorys)
+	size := len(res)
+	if size == 0 {
+		return nil, 0, nil
+	}
 	if start > size {
-		beego.Info("getList call page start greate than size" + err.Error())
+		beego.Info("getList call page start greate than size")
 		return nil, 0, ErrorPageOut
 	}
 	if end > size {
