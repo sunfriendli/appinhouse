@@ -4,6 +4,8 @@ package models
 import (
 	. "appinhouse/inhouse_service/constants"
 
+	"bytes"
+
 	"github.com/Unknwon/goconfig"
 )
 
@@ -22,6 +24,23 @@ type Info struct {
 	Description string
 	Url         string
 	Channel     string
+}
+
+func SaveConfig(info *Info, path string) error {
+	c, err := goconfig.LoadFromReader(bytes.NewBuffer([]byte("")))
+	if err != nil {
+		return ErrorCreateFileError
+	}
+	c.SetValue("", version, info.Version)
+	c.SetValue("", channel, info.Channel)
+	c.SetValue("", url, info.Url)
+	c.SetValue("", time, info.Time)
+	c.SetValue("", description, info.Description)
+	err = goconfig.SaveConfigFile(c, path)
+	if err != nil {
+		return ErrorCreateFileError
+	}
+	return nil
 }
 
 func InitConfig(path string) (*Info, error) {
@@ -50,5 +69,6 @@ func InitConfig(path string) (*Info, error) {
 	if err != nil {
 		return nil, ErrorParseConf
 	}
+
 	return info, nil
 }

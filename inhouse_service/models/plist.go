@@ -83,7 +83,7 @@ func NewPlist(id, version, title, softvareUrl, fullUrl, displayUrl string) ([]by
 
 	plist, err := plist.MarshalIndent(data, plist.XMLFormat, "\t")
 	if err != nil {
-		return nil, err
+		return nil, ErrorCreateFileError
 	}
 	return plist, nil
 }

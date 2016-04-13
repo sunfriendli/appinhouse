@@ -15,8 +15,6 @@ import (
 
 	"strings"
 
-	"os/exec"
-
 	"github.com/astaxie/beego"
 )
 
@@ -39,6 +37,44 @@ func (r FileRepos) Swap(i, j int) {
 	r[i], r[j] = r[j], r[i]
 }
 
+func InitDirectory() {
+	apps := GetApps()
+	for _, app := range apps {
+		createFile(getListPath(Ios, Dev, app))
+		createFile(getListPath(Android, Dev, app))
+		createFile(getListPath(Ios, Release, app))
+		createFile(getListPath(Android, Release, app))
+		createFile(getDataPath(Ios, Dev, app))
+		createFile(getDataPath(Android, Dev, app))
+		createFile(getDataPath(Ios, Release, app))
+		createFile(getDataPath(Android, Release, app))
+	}
+}
+func CheckFtpDirectory() {
+	apps := GetApps()
+	for _, app := range apps {
+		exist := isExist(getFtpDataPath(Ios, Dev, app))
+		if !exist {
+			panic(app + " directory is error. path:" + getFtpDataPath(Ios, Dev, app))
+		}
+		exist = isExist(getFtpDataPath(Android, Dev, app))
+		if !exist {
+			panic(app + " directory is error. path:" + getFtpDataPath(Android, Dev, app))
+		}
+		exist = isExist(getFtpDataPath(Ios, Release, app))
+		if !exist {
+			panic(app + " directory is error. path:" + getFtpDataPath(Ios, Release, app))
+		}
+		exist = isExist(getFtpDataPath(Android, Release, app))
+		if !exist {
+			panic(app + " directory is error. path:" + getFtpDataPath(Android, Release, app))
+		}
+	}
+}
+func InitLogDirectory() {
+	createFile(Log_Dir)
+}
+
 type MainController struct {
 	beego.Controller
 }
@@ -52,6 +88,7 @@ func (c *MainController) Last() {
 	if err != nil {
 		beego.Info("Last param app  error !app:", appParam)
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -132,7 +169,7 @@ func (c *MainController) Last() {
 		}
 		break
 	}
-
+	dto.Msg = GetMsg(dto.Code)
 	dto.Items = ret
 	c.Data["json"] = dto
 	c.ServeJSON()
@@ -143,6 +180,7 @@ func (c *MainController) List() {
 	if page <= 0 || page > Max_Page {
 		beego.Info("List param page  error !page:", page)
 		dto.Code = ErrParams
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -153,6 +191,7 @@ func (c *MainController) List() {
 	if err != nil {
 		beego.Info("List param app  error !app:", appParam)
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -162,6 +201,7 @@ func (c *MainController) List() {
 	if err != nil {
 		beego.Info("List param platform  error !platform:", platformParam)
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -171,6 +211,7 @@ func (c *MainController) List() {
 	if err != nil {
 		beego.Info("List param environment  error !environment:", envParam)
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -182,6 +223,7 @@ func (c *MainController) List() {
 
 	if err != nil {
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 	} else {
 		dto.Items = ret
 		dto.Page = page
@@ -196,6 +238,7 @@ func (c *MainController) List4Mobile() {
 	if page <= 0 || page > Max_Page {
 		beego.Info("List4Mobile param page  error !page:", page)
 		dto.Code = ErrParams
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -206,6 +249,7 @@ func (c *MainController) List4Mobile() {
 	if err != nil {
 		beego.Info("List4Mobile param app  error !app:", appParam)
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -215,6 +259,7 @@ func (c *MainController) List4Mobile() {
 	if err != nil {
 		beego.Info("List4Mobile param environment  error !environment:", envParam)
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -239,6 +284,7 @@ func (c *MainController) List4Mobile() {
 
 	if err != nil {
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 	} else {
 		dto.Items = ret
 		dto.Page = page
@@ -255,6 +301,7 @@ func (c *MainController) PList() {
 	if id == "" || version == "" || title == "" {
 		beego.Info("PList Params fail .id:", id, "version:", version, "title:", title)
 		dto.Code = ErrParams
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -265,6 +312,7 @@ func (c *MainController) PList() {
 	if err != nil {
 		beego.Info("PList param app  error !app:", appParam)
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -275,14 +323,40 @@ func (c *MainController) PList() {
 	if err != nil {
 		beego.Info("PList param environment  error !environment:", envParam)
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
+		c.Data["json"] = dto
 		c.ServeJSON()
 		return
 	}
-	file := getDataPath(Ios, env, app) + version
-	files, err := ioutil.ReadDir(file)
+
+	ftpData := getFtpDataPath(Ios, env, app) + version + Slash
+	ftpFiles, err := ioutil.ReadDir(ftpData)
 	if err != nil {
-		beego.Info("PList ReadDir fail :", err.Error())
-		dto.Code = ErrParams
+		beego.Info("PList error.read ftp dir:", ftpData)
+		dto.Code = ErrIPANotExistError
+		dto.Msg = GetMsg(dto.Code)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	} else {
+		if len(ftpFiles) == 0 {
+			beego.Info("PList files len is zero.read dir:", ftpData)
+			dto.Code = ErrIPANotExistError
+			dto.Msg = GetMsg(dto.Code)
+			c.Data["json"] = dto
+			c.ServeJSON()
+			return
+		}
+	}
+	file := getDataPath(Ios, env, app) + version
+	if !isExist(file) {
+		createFile(file)
+	}
+	plistName := file + Slash + version + Plist
+	if isExist(plistName) {
+		beego.Info("PList is exist!path:", plistName)
+		dto.Code = ErrFileExist
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -291,7 +365,7 @@ func (c *MainController) PList() {
 	softwareUrl := ""
 	displayUrl := ""
 	staticPath := Domain + getStaticPath(Ios, env, app) + version + Slash
-	for _, file := range files {
+	for _, file := range ftpFiles {
 		if strings.HasSuffix(file.Name(), Ipa) {
 			softwareUrl = Https_Str + staticPath + file.Name()
 		}
@@ -308,16 +382,134 @@ func (c *MainController) PList() {
 	if err != nil {
 		beego.Info("PList NewPlist error :", err.Error())
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
 	}
 
-	plistName := file + Slash + version + Plist
 	_, err = filePutContent(plistName, plist)
 	if err != nil {
-		beego.Info("PList CreatPlit fail :", err.Error())
+		beego.Info("PList CreatPlist fail :", err.Error())
 		dto.Code = ErrCreateFileError
+		dto.Msg = GetMsg(dto.Code)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
+func (c *MainController) Desc() {
+	dto := NewSuccessResponseDto()
+
+	version := c.GetString("version")
+	ctime := c.GetString("time")
+	description := c.GetString("description")
+	url := c.GetString("url")
+	channel := c.GetString("channel")
+	if ctime == "" || version == "" || url == "" || channel == "" {
+		beego.Info("Desc Params fail version:", version, "time:", ctime, "description:", description, "url:", url, "channel:", channel)
+		dto.Code = ErrParams
+		dto.Msg = GetMsg(dto.Code)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	var err error
+	appParam := c.Ctx.Input.Param(":app")
+	app, err := GetApp(appParam)
+	if err != nil {
+		beego.Info("Desc param app  error !app:", appParam)
+		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	platformParam := c.Ctx.Input.Param(":platform")
+	platform, err := GetPlaform(platformParam)
+	if err != nil {
+		beego.Info("Desc param platform  error !platform:", platformParam)
+		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	envParam := c.Ctx.Input.Param(":environment")
+	env, err := GetEnvironment(envParam)
+	if err != nil {
+		beego.Info("Desc param environment  error !environment:", envParam)
+		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+
+	file := getListPath(platform, env, app) + channel + "_" + version + ".txt"
+	exist := isExist(file)
+	if exist {
+		dto.Code = ErrFileExist
+		dto.Msg = GetMsg(dto.Code)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	ftpData := getFtpDataPath(platform, env, app) + version
+	ftpFiles, err := ioutil.ReadDir(ftpData)
+	if err != nil {
+		beego.Info("Desc error.read ftp dir:", ftpData)
+		dto.Code = ErrIPANotExistError
+		dto.Msg = GetMsg(dto.Code)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	} else {
+		if len(ftpFiles) == 0 {
+			beego.Info("ftpData files len is zero.read dir:", ftpData)
+			dto.Code = ErrIPANotExistError
+			dto.Msg = GetMsg(dto.Code)
+			c.Data["json"] = dto
+			c.ServeJSON()
+			return
+		}
+	}
+	hasFile := false
+	for _, file := range ftpFiles {
+		if platform == Ios {
+			if strings.HasSuffix(file.Name(), Ipa) {
+				hasFile = true
+				break
+			}
+		} else {
+			if strings.HasSuffix(file.Name(), Apk) {
+				hasFile = true
+				break
+			}
+		}
+	}
+	if !hasFile {
+		if len(ftpFiles) == 0 {
+			beego.Info("ftpData files not have ipa or apk.read dir:", ftpData)
+			dto.Code = ErrIPANotExistError
+			dto.Msg = GetMsg(dto.Code)
+			c.Data["json"] = dto
+			c.ServeJSON()
+			return
+		}
+	}
+	info := new(models.Info)
+	info.Channel = channel
+	info.Description = description
+	info.Version = version
+	info.Time = ctime
+	info.Url = url
+	err = models.SaveConfig(info, file)
+	if err != nil {
+		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -331,6 +523,7 @@ func (c *MainController) Delete() {
 	if residue < Min_Residue {
 		beego.Info("Delete param residue  error !residue:", residue)
 		dto.Code = ErrParams
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -341,6 +534,7 @@ func (c *MainController) Delete() {
 	if err != nil {
 		beego.Info("Delete param app  error !app:", appParam)
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -350,6 +544,7 @@ func (c *MainController) Delete() {
 	if err != nil {
 		beego.Info("Delete param platform  error !platform:", platformParam)
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -359,6 +554,7 @@ func (c *MainController) Delete() {
 	if err != nil {
 		beego.Info("Delete param environment  error !environment:", envParam)
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -367,6 +563,7 @@ func (c *MainController) Delete() {
 	if err != nil {
 		beego.Info("Delete call  getAll error :" + err.Error())
 		dto.Code = GetErrCode(err)
+		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
@@ -383,6 +580,7 @@ func (c *MainController) Delete() {
 				beego.Info("Delete call  models.InitConfig error:"+err.Error(), "path:", list)
 				dto.Code = GetErrCode(err)
 				c.Data["json"] = dto
+				dto.Msg = GetMsg(dto.Code)
 				c.ServeJSON()
 				return
 			}
@@ -391,6 +589,7 @@ func (c *MainController) Delete() {
 			if err != nil {
 				beego.Info("Delete call  remove error:"+err.Error(), "path:", data)
 				dto.Code = GetErrCode(err)
+				dto.Msg = GetMsg(dto.Code)
 				c.Data["json"] = dto
 				c.ServeJSON()
 				return
@@ -399,6 +598,7 @@ func (c *MainController) Delete() {
 			if err != nil {
 				beego.Info("Delete call remove error:"+err.Error(), "path:", list)
 				dto.Code = GetErrCode(err)
+				dto.Msg = GetMsg(dto.Code)
 				c.Data["json"] = dto
 				c.ServeJSON()
 				return
@@ -406,39 +606,6 @@ func (c *MainController) Delete() {
 
 		}
 	}
-	c.Data["json"] = dto
-	c.ServeJSON()
-}
-func filePutContent(file string, content []byte) (int, error) {
-	fs, e := os.Create(file)
-	if e != nil {
-		return 0, e
-	}
-	defer fs.Close()
-	return fs.Write(content)
-}
-
-func (c *MainController) getList(platform Platform, env Environment, app string) {
-	dto := NewSuccessItemsResponsePageDto()
-	page, _ := c.GetInt("page", 1)
-	if page <= 0 || page > Max_Page {
-		dto.Code = ErrParams
-		c.Data["json"] = dto
-		c.ServeJSON()
-		return
-	}
-	start := util.GetStartForPage(page, Page_Size)
-	end := util.GetEndForPage(page, Page_Size)
-
-	ret, total, err := getList(platform, env, start, end, app)
-	if err != nil {
-		dto.Code = GetErrCode(err)
-	} else {
-		dto.Items = ret
-		dto.Page = page
-		dto.TotalPage = util.GetTotalPage(total, Page_Size)
-	}
-
 	c.Data["json"] = dto
 	c.ServeJSON()
 }
@@ -450,7 +617,7 @@ func getLastOne(platform Platform, environment Environment, app string) (*ItemDt
 		return nil, err
 	}
 	if len(*repositorys) == 0 {
-		return nil, err
+		return nil, nil
 	}
 	a := *repositorys
 	path := a[0].Name
@@ -509,7 +676,27 @@ func getStaticPath(platform Platform, environment Environment, app string) strin
 }
 func getDownPath(platform Platform, environment Environment, channel, version, app string) string {
 	data := getDataPath(platform, environment, app) + version + Slash
+	ftpData := getFtpDataPath(platform, environment, app) + version + Slash
 	files, err := ioutil.ReadDir(data)
+	if err != nil {
+		beego.Info("getDownPath error.read dir:", data)
+		return ""
+	} else {
+		if len(files) == 0 {
+			beego.Info("getDownPath files len is zero.read dir:", data)
+			return ""
+		}
+	}
+	ftpFiles, err := ioutil.ReadDir(ftpData)
+	if err != nil {
+		beego.Info("getDownPath error.read ftp dir:", ftpData)
+		return ""
+	} else {
+		if len(ftpFiles) == 0 {
+			beego.Info("getDownPath files len is zero.read dir:", ftpData)
+			return ""
+		}
+	}
 	staticPath := ""
 	staticPath = getStaticPath(platform, environment, app) + version + Slash
 	if err != nil {
@@ -523,7 +710,7 @@ func getDownPath(platform Platform, environment Environment, channel, version, a
 				}
 			}
 		} else {
-			for _, file := range files {
+			for _, file := range ftpFiles {
 
 				if strings.HasSuffix(file.Name(), Ipa) {
 					return staticPath + file.Name()
@@ -532,7 +719,7 @@ func getDownPath(platform Platform, environment Environment, channel, version, a
 		}
 
 	} else {
-		for _, file := range files {
+		for _, file := range ftpFiles {
 			if strings.HasSuffix(file.Name(), Apk) {
 				return staticPath + file.Name()
 			}
@@ -577,38 +764,6 @@ func getAll(platform Platform, environment Environment, app string) (*FileRepos,
 	repositorys, _ := sortRepository(files)
 	return repositorys, nil
 }
-func InitDirectory() {
-	apps := GetApps()
-	newApp := false
-	for _, app := range apps {
-		if isExist(Root_Dir + app) {
-			newApp = false
-		} else {
-			newApp = true
-		}
-		createFile(getListPath(Ios, Dev, app))
-		createFile(getListPath(Android, Dev, app))
-		createFile(getListPath(Ios, Release, app))
-		createFile(getListPath(Android, Release, app))
-		createFile(getDataPath(Ios, Dev, app))
-		createFile(getDataPath(Android, Dev, app))
-		createFile(getDataPath(Ios, Release, app))
-		createFile(getDataPath(Android, Release, app))
-		//只有添加了新应用才修改
-		if newApp {
-			//因为是ftp目录，需要777
-			chmod(app)
-		}
-	}
-
-}
-func InitLogDirectory() {
-	createFile(Log_Dir)
-}
-func GetDownDirectory(platform Platform, environment Environment, app string) string {
-	return getDataPath(platform, environment, app)
-}
-
 func getListPath(platform Platform, environment Environment, app string) string {
 	file := ""
 	if platform == Ios {
@@ -645,13 +800,31 @@ func getDataPath(platform Platform, environment Environment, app string) string 
 	}
 	return file
 }
+func getFtpDataPath(platform Platform, environment Environment, app string) string {
+	file := ""
+	if platform == Ios {
+		if environment == Dev {
+			file = Ftp_Root_Dir + app + Slash + Dev_Path + Ios_Path + Data_Path
+		} else {
+			file = Ftp_Root_Dir + app + Slash + Release_Path + Ios_Path + Data_Path
+		}
+
+	} else {
+		if environment == Dev {
+			file = Ftp_Root_Dir + app + Slash + Dev_Path + Android_Path + Data_Path
+		} else {
+			file = Ftp_Root_Dir + app + Slash + Release_Path + Android_Path + Data_Path
+		}
+	}
+	return file
+}
 func createFile(dir string) (string, error) {
 	src := dir
 	if isExist(src) {
 		return src, nil
 	}
 
-	if err := os.MkdirAll(src, 0777); err != nil {
+	if err := os.MkdirAll(src, 0757); err != nil {
 		if os.IsPermission(err) {
 			beego.Info("permission denied path:" + src)
 			panic("permission denied")
@@ -660,18 +833,6 @@ func createFile(dir string) (string, error) {
 	}
 
 	return src, nil
-}
-func chmod(app string) error {
-	src := Root_Dir + app
-	if !isExist(src) {
-		return ErrorPathError
-	}
-	cmd := exec.Command("chmod", "-R", "777", src)
-	err := cmd.Start()
-	if err != nil {
-		panic("permission denied")
-	}
-	return nil
 }
 func isExist(path string) bool {
 	_, err := os.Stat(path)
@@ -710,4 +871,12 @@ func removeAll(file string) error {
 		return ErrorDeleteFileError
 	}
 	return err
+}
+func filePutContent(file string, content []byte) (int, error) {
+	fs, e := os.Create(file)
+	if e != nil {
+		return 0, e
+	}
+	defer fs.Close()
+	return fs.Write(content)
 }

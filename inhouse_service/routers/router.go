@@ -16,4 +16,5 @@ func init() {
 	beego.Router("/api/:app/list/:platform/:environment", &controllers.MainController{}, "get:List")
 	beego.Router("/api/:app/plist/:environment", &controllers.MainController{}, "post:PList")
 	beego.Router("/api/:app/delete/:platform/:environment", &controllers.MainController{}, "delete:Delete")
+	beego.Router("/api/:app/desc/:platform/:environment", &controllers.MainController{}, "post:Desc")
 }

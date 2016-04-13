@@ -16,11 +16,11 @@ var (
 	ErrorUnknown          = errors.New("appinhouse: unknown error")
 	ErrorPageOut          = errors.New("appinhouse: page size out of total")
 	ErrorParseConf        = errors.New("appinhouse: conf file parse error")
-	ErrorParam            = errors.New("appinhouse:param error")
-	ErrorCreateFileError  = errors.New("appinhouse:create File fail")
-	ErrorIPANotExistError = errors.New("appinhouse:not have IPA ")
-	ErrorDeleteFileError  = errors.New("appinhouse:delete File fail")
-	ErrorPathError        = errors.New("appinhouse:path error")
+	ErrorParam            = errors.New("appinhouse: param error")
+	ErrorCreateFileError  = errors.New("appinhouse: create File fail")
+	ErrorIPANotExistError = errors.New("appinhouse: not have IPA ")
+	ErrorDeleteFileError  = errors.New("appinhouse: delete File fail")
+	ErrorFileExist        = errors.New("appinhouse: file exist")
 	errCodeToError        = map[string]ErrCode{
 		ErrorUnknown.Error():          ErrUnknown,
 		ErrorParam.Error():            ErrParams,
@@ -30,13 +30,27 @@ var (
 		ErrorCreateFileError.Error():  ErrCreateFileError,
 		ErrorIPANotExistError.Error(): ErrIPANotExistError,
 		ErrorDeleteFileError.Error():  ErrDeleteFileError,
-		ErrorPathError.Error():        ErrPathError,
+		ErrorFileExist.Error():        ErrFileExist,
 	}
-	Root_Dir    = ""
-	Log_Dir     = ""
-	Ios_Channel = ""
-	Domain      = ""
-	platforms   = map[string]Platform{
+	errCodeToMsg = map[ErrCode]string{
+		ErrOk:               "成功",
+		ErrSystemError:      "系统错误",
+		ErrUnknown:          "未知错误",
+		ErrParams:           "参数错误，请参考API文档",
+		ErrFileNotExist:     "文件不存在",
+		ErrPageOut:          "page超出最大值",
+		ErrParseConf:        "解析描述文件错误",
+		ErrCreateFileError:  "创建文件错误",
+		ErrIPANotExistError: "归档文件不存在",
+		ErrDeleteFileError:  "删除文件错误",
+		ErrFileExist:        "文件已存在",
+	}
+	Ftp_Root_Dir = ""
+	Root_Dir     = ""
+	Log_Dir      = ""
+	Ios_Channel  = ""
+	Domain       = ""
+	platforms    = map[string]Platform{
 		Android_Str: Android,
 		Ios_Str:     Ios,
 	}
@@ -77,7 +91,7 @@ func GetApp(app string) (string, error) {
 	if ret, ok := apps[app]; ok {
 		return ret, nil
 	}
-	return "", ErrorUnknown
+	return "", ErrorParam
 }
 
 func GetEnvironment(environment string) (Environment, error) {
@@ -87,7 +101,7 @@ func GetEnvironment(environment string) (Environment, error) {
 	if ret, ok := environments[environment]; ok {
 		return ret, nil
 	}
-	return 0, ErrorUnknown
+	return 0, ErrorParam
 }
 func GetPlaform(platform string) (Platform, error) {
 	if platform == "" {
@@ -96,7 +110,7 @@ func GetPlaform(platform string) (Platform, error) {
 	if ret, ok := platforms[platform]; ok {
 		return ret, nil
 	}
-	return 0, ErrorUnknown
+	return 0, ErrorParam
 }
 func GetErrCode(e error) ErrCode {
 	if e == nil {
@@ -106,6 +120,12 @@ func GetErrCode(e error) ErrCode {
 		return err
 	}
 	return ErrUnknown
+}
+func GetMsg(code ErrCode) string {
+	if msg, ok := errCodeToMsg[code]; ok {
+		return msg
+	}
+	return errCodeToMsg[ErrUnknown]
 }
 
 const (
@@ -119,7 +139,7 @@ const (
 	ErrCreateFileError  = ErrCode(1005)
 	ErrIPANotExistError = ErrCode(1006)
 	ErrDeleteFileError  = ErrCode(1007)
-	ErrPathError        = ErrCode(1008)
+	ErrFileExist        = ErrCode(1008)
 )
 const (
 	Dev_Path     = "dev/"
