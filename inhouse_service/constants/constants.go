@@ -151,9 +151,10 @@ const (
 	Android_Path = "android/"
 	Ios_Path     = "ios/"
 
-	List_Path   = "list/"
-	Data_Path   = "data/"
-	Static_Path = "download/"
+	List_Path         = "list/"
+	Data_Path         = "data/"
+	Static_Path       = "download/"
+	Static_Path_Plist = "plist/"
 )
 const (
 	Ios     = Platform(1)

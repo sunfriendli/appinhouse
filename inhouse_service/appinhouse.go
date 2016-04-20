@@ -43,10 +43,10 @@ func setParam() {
 	if Domain == "" {
 		panic("app.conf not have users::domain ")
 	}
-	apps := beego.AppConfig.String("users::apps")
-	beego.Info("app.conf-> apps:", apps)
+	apps := beego.AppConfig.String("users::app_names")
+	beego.Info("app.conf-> app_names:", apps)
 	if apps == "" {
-		panic("app.conf not have users::apps ")
+		panic("app.conf not have users::app_names ")
 	}
 
 	AddApps(strings.Split(apps, ";"))

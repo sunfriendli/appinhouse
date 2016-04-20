@@ -685,6 +685,15 @@ func getStaticPath(platform Platform, environment Environment, app string) strin
 	}
 	return file
 }
+func getPlistStaticPath(environment Environment, app string) string {
+	file := ""
+	if environment == Dev {
+		file = Slash + Static_Path_Plist + app + Slash + Dev_Path + Ios_Path + Data_Path
+	} else {
+		file = Slash + Static_Path_Plist + app + Slash + Release_Path + Ios_Path + Data_Path
+	}
+	return file
+}
 func getDownPath(platform Platform, environment Environment, channel, version, app string) string {
 
 	ftpData := getFtpDataPath(platform, environment, app) + version + Slash
@@ -717,6 +726,7 @@ func getDownPath(platform Platform, environment Environment, channel, version, a
 					return ""
 				}
 			}
+			staticPath = getPlistStaticPath(environment, app)
 			for _, file := range files {
 				if strings.HasSuffix(file.Name(), Plist) {
 					return Https_Str + Domain + staticPath + file.Name()

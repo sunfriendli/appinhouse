@@ -28,6 +28,9 @@ if [ ! -d $TARGET ];
     then
         echo "File $TARGET not found."
 		mkdir $TARGET
+    else
+        rm -rf $TARGET
+        mkdir $TARGET
 fi
 tar -zxvf $APPNAME.tar.gz -C $TARGET
 echo "deploy file in $HOME/$TARGET" 
