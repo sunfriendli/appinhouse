@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-# Installs Nginx package with instructions in:
+#Installs Nginx package with instructions in:
 # http://nginx.org/en/linux_packages.html
 #
 # NOTE: Run this script as ROOT
@@ -28,3 +28,11 @@ echo "deb-src http://nginx.org/packages/ubuntu/ $CODENAME nginx" >> "$APT_SOURCE
 echo 'Installing nginx by apt-get ...'
 apt-get -y update
 apt-get -y install nginx
+
+# appinhouse nginx conf 
+echo 'copy conf'
+INHOUSE_DEFAULT_LOCATION="/home/appinhouse"
+GIT_DIR=appinhouse_git
+CONF=$INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/web/nginx/appinhouse_ssl.conf
+sudo cp $CONF /etc/nginx/conf.d/
+sudo service nginx reload
