@@ -11,6 +11,10 @@ type Platform int32
 
 type Environment int32
 
+type ArchiveFileType int32
+
+type PathType int32
+
 var (
 	ErrorFileNotExist       = errors.New("appinhouse: file not exist")
 	ErrorUnknown            = errors.New("appinhouse: unknown error")
@@ -48,12 +52,12 @@ var (
 		ErrFileExist:        "文件已存在",
 		ErrPlistNotExist:    "plist文件不存在",
 	}
-	Ftp_Root_Dir = ""
-	Root_Dir     = ""
-	Log_Dir      = ""
-	Ios_Channel  = ""
-	Domain       = ""
-	platforms    = map[string]Platform{
+	Archive_File_Domain = ""
+	Root_Dir            = ""
+	Log_Dir             = ""
+	Ios_Channel         = ""
+	Domain              = ""
+	platforms           = map[string]Platform{
 		Android_Str: Android,
 		Ios_Str:     Ios,
 	}
@@ -175,7 +179,18 @@ const (
 	AndroidDown = "androidown"
 	IOSDown     = "iosdown"
 	Slash       = "/"
+	Underline   = "_"
 	Http_Str    = "http://"
 	Https_Str   = "https://"
 	Log_File    = "appinhouse.log"
+)
+const (
+	APK           = ArchiveFileType(0)
+	IPA           = ArchiveFileType(1)
+	FullSizeImage = ArchiveFileType(2)
+	DisplayImage  = ArchiveFileType(3)
+)
+const (
+	List = PathType(0)
+	Data = PathType(1)
 )

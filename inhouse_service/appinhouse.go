@@ -16,7 +16,6 @@ func main() {
 	setLog()
 	setParam()
 	controllers.InitDirectory()
-	controllers.CheckFtpDirectory()
 	beego.Run()
 }
 func setLog() {
@@ -75,9 +74,9 @@ func setParam() {
 	if Max_Page == 0 {
 		panic("app.conf not have users::max_page or not int")
 	}
-	Ftp_Root_Dir = beego.AppConfig.String("users::ftp_root_dir")
-	beego.Info("app.conf-> ftp_root_dir:", Ftp_Root_Dir)
+	Archive_File_Domain = beego.AppConfig.String("users::archive_file_domain")
+	beego.Info("app.conf-> archive_file_domain:", Archive_File_Domain)
 	if Max_Page == 0 {
-		panic("app.conf not have users::ftp_root_dir")
+		panic("app.conf not have users::archive_file_domain")
 	}
 }

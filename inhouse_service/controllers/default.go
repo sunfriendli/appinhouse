@@ -1,18 +1,14 @@
 package controllers
 
 import (
-	"io/ioutil"
-
-	"os"
-
-	"sort"
-
-	"appinhouse/inhouse_service/models"
-
-	"appinhouse/inhouse_service/util"
-
 	. "appinhouse/inhouse_service/constants"
-
+	"appinhouse/inhouse_service/models"
+	"appinhouse/inhouse_service/util"
+	"bytes"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"sort"
 	"strings"
 
 	"github.com/astaxie/beego"
@@ -48,27 +44,6 @@ func InitDirectory() {
 		createFile(getDataPath(Android, Dev, app))
 		createFile(getDataPath(Ios, Release, app))
 		createFile(getDataPath(Android, Release, app))
-	}
-}
-func CheckFtpDirectory() {
-	apps := GetApps()
-	for _, app := range apps {
-		exist := isExist(getFtpDataPath(Ios, Dev, app))
-		if !exist {
-			panic(app + " directory is error. path:" + getFtpDataPath(Ios, Dev, app))
-		}
-		exist = isExist(getFtpDataPath(Android, Dev, app))
-		if !exist {
-			panic(app + " directory is error. path:" + getFtpDataPath(Android, Dev, app))
-		}
-		exist = isExist(getFtpDataPath(Ios, Release, app))
-		if !exist {
-			panic(app + " directory is error. path:" + getFtpDataPath(Ios, Release, app))
-		}
-		exist = isExist(getFtpDataPath(Android, Release, app))
-		if !exist {
-			panic(app + " directory is error. path:" + getFtpDataPath(Android, Release, app))
-		}
 	}
 }
 func InitLogDirectory() {
@@ -329,24 +304,15 @@ func (c *MainController) PList() {
 		return
 	}
 
-	ftpData := getFtpDataPath(Ios, env, app) + version + Slash
-	ftpFiles, err := ioutil.ReadDir(ftpData)
-	if err != nil {
-		beego.Info("PList error.read ftp dir:", ftpData)
+	softwareUrl := getArchiveFilePath(Ios, env, app, version, IPA)
+
+	if !existHttpPath(softwareUrl) {
+		beego.Info("PList error ipa not exsit,url:", softwareUrl)
 		dto.Code = ErrIPANotExistError
 		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
-	} else {
-		if len(ftpFiles) == 0 {
-			beego.Info("PList files len is zero.read dir:", ftpData)
-			dto.Code = ErrIPANotExistError
-			dto.Msg = GetMsg(dto.Code)
-			c.Data["json"] = dto
-			c.ServeJSON()
-			return
-		}
 	}
 	file := getDataPath(Ios, env, app) + version
 	if !isExist(file) {
@@ -361,20 +327,13 @@ func (c *MainController) PList() {
 		c.ServeJSON()
 		return
 	}
-	fullUrl := ""
-	softwareUrl := ""
-	displayUrl := ""
-	staticPath := Domain + getStaticPath(Ios, env, app) + version + Slash
-	for _, file := range ftpFiles {
-		if strings.HasSuffix(file.Name(), Ipa) {
-			softwareUrl = Https_Str + staticPath + file.Name()
-		}
-		if file.Name() == Full_Size_Image {
-			fullUrl = Http_Str + staticPath + file.Name()
-		}
-		if file.Name() == Display_Image {
-			displayUrl = Http_Str + staticPath + file.Name()
-		}
+	fullUrl := getArchiveFilePath(Ios, env, app, version, FullSizeImage)
+	displayUrl := getArchiveFilePath(Ios, env, app, version, DisplayImage)
+	if !existHttpPath(fullUrl) {
+		fullUrl = ""
+	}
+	if !existHttpPath(displayUrl) {
+		displayUrl = ""
 	}
 
 	plist, err := models.NewPlist(id, version, title, softwareUrl, fullUrl, displayUrl)
@@ -448,35 +407,16 @@ func (c *MainController) Desc() {
 		return
 	}
 
-	file := getListPath(platform, env, app) + channel + "_" + version + ".txt"
-	exist := isExist(file)
-	if exist {
-		dto.Code = ErrFileExist
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
-		return
-	}
-	ftpData := getFtpDataPath(platform, env, app) + version
-	ftpFiles, err := ioutil.ReadDir(ftpData)
-	if err != nil {
-		beego.Info("Desc error.read ftp dir:", ftpData)
+	softwareUrl := getArchiveFilePath4Client(platform, env, app, version)
+
+	if !existHttpPath(softwareUrl) {
+		beego.Info("PList error archive file not exsit,url:", softwareUrl)
 		dto.Code = ErrIPANotExistError
 		dto.Msg = GetMsg(dto.Code)
 		c.Data["json"] = dto
 		c.ServeJSON()
 		return
-	} else {
-		if len(ftpFiles) == 0 {
-			beego.Info("ftpData files len is zero.read dir:", ftpData)
-			dto.Code = ErrIPANotExistError
-			dto.Msg = GetMsg(dto.Code)
-			c.Data["json"] = dto
-			c.ServeJSON()
-			return
-		}
 	}
-	hasFile := false
 	if platform == Ios {
 		file := getDataPath(platform, env, app) + version + Slash + version + Plist
 		if !isExist(file) {
@@ -487,29 +427,14 @@ func (c *MainController) Desc() {
 			return
 		}
 	}
-	for _, file := range ftpFiles {
-		if platform == Ios {
-
-			if strings.HasSuffix(file.Name(), Ipa) {
-				hasFile = true
-				break
-			}
-		} else {
-			if strings.HasSuffix(file.Name(), Apk) {
-				hasFile = true
-				break
-			}
-		}
-	}
-	if !hasFile {
-		if len(ftpFiles) == 0 {
-			beego.Info("ftpData files not have ipa or apk.read dir:", ftpData)
-			dto.Code = ErrIPANotExistError
-			dto.Msg = GetMsg(dto.Code)
-			c.Data["json"] = dto
-			c.ServeJSON()
-			return
-		}
+	file := getListPath(platform, env, app) + channel + "_" + version + ".txt"
+	exist := isExist(file)
+	if exist {
+		dto.Code = ErrFileExist
+		dto.Msg = GetMsg(dto.Code)
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
 	}
 	info := new(models.Info)
 	info.Channel = channel
@@ -667,52 +592,11 @@ func converInfoTOItem(info *models.Info, platform Platform, environment Environm
 
 	return item
 }
-func getStaticPath(platform Platform, environment Environment, app string) string {
-	file := ""
-	if platform == Ios {
-		if environment == Dev {
-			file = Slash + Static_Path + app + Slash + Dev_Path + Ios_Path + Data_Path
-		} else {
-			file = Slash + Static_Path + app + Slash + Release_Path + Ios_Path + Data_Path
-		}
 
-	} else {
-		if environment == Dev {
-			file = Slash + Static_Path + app + Slash + Dev_Path + Android_Path + Data_Path
-		} else {
-			file = Slash + Static_Path + app + Slash + Release_Path + Android_Path + Data_Path
-		}
-	}
-	return file
-}
-func getPlistStaticPath(environment Environment, app string) string {
-	file := ""
-	if environment == Dev {
-		file = Slash + Static_Path_Plist + app + Slash + Dev_Path + Ios_Path + Data_Path
-	} else {
-		file = Slash + Static_Path_Plist + app + Slash + Release_Path + Ios_Path + Data_Path
-	}
-	return file
-}
 func getDownPath(platform Platform, environment Environment, channel, version, app string) string {
 
-	ftpData := getFtpDataPath(platform, environment, app) + version + Slash
+	softwareUrl := getArchiveFilePath4Client(platform, environment, app, version)
 
-	ftpFiles, err := ioutil.ReadDir(ftpData)
-	if err != nil {
-		beego.Info("getDownPath error.read ftp dir:", ftpData)
-		return ""
-	} else {
-		if len(ftpFiles) == 0 {
-			beego.Info("getDownPath files len is zero.read dir:", ftpData)
-			return ""
-		}
-	}
-	staticPath := ""
-	staticPath = getStaticPath(platform, environment, app) + version + Slash
-	if err != nil {
-		return ""
-	}
 	if platform == Ios {
 		if channel == Ios_Channel {
 			data := getDataPath(platform, environment, app) + version + Slash
@@ -726,29 +610,15 @@ func getDownPath(platform Platform, environment Environment, channel, version, a
 					return ""
 				}
 			}
-			staticPath = getPlistStaticPath(environment, app)
+			staticPath := getPlistStaticPath(environment, app)
 			for _, file := range files {
 				if strings.HasSuffix(file.Name(), Plist) {
 					return Https_Str + Domain + staticPath + file.Name()
 				}
 			}
-		} else {
-			for _, file := range ftpFiles {
-
-				if strings.HasSuffix(file.Name(), Ipa) {
-					return staticPath + file.Name()
-				}
-			}
-		}
-
-	} else {
-		for _, file := range ftpFiles {
-			if strings.HasSuffix(file.Name(), Apk) {
-				return staticPath + file.Name()
-			}
 		}
 	}
-	return ""
+	return softwareUrl
 }
 
 func getList(platform Platform, environment Environment, start, end int, app string) (*ItemsDto, int, error) {
@@ -790,59 +660,110 @@ func getAll(platform Platform, environment Environment, app string) (*FileRepos,
 	repositorys, _ := sortRepository(files)
 	return repositorys, nil
 }
-func getListPath(platform Platform, environment Environment, app string) string {
-	file := ""
-	if platform == Ios {
-		if environment == Dev {
-			file = Root_Dir + app + Slash + Dev_Path + Ios_Path + List_Path
-		} else {
-			file = Root_Dir + app + Slash + Release_Path + Ios_Path + List_Path
-		}
-
+func getPlistStaticPath(environment Environment, app string) string {
+	var buffer bytes.Buffer
+	buffer.WriteString(Slash)
+	buffer.WriteString(Static_Path_Plist)
+	buffer.WriteString(app)
+	buffer.WriteString(Slash)
+	if environment == Dev {
+		buffer.WriteString(Dev_Path)
 	} else {
-		if environment == Dev {
-			file = Root_Dir + app + Slash + Dev_Path + Android_Path + List_Path
-		} else {
-			file = Root_Dir + app + Slash + Release_Path + Android_Path + List_Path
-		}
+		buffer.WriteString(Release_Path)
 	}
-	return file
+	buffer.WriteString(Ios_Path)
+	buffer.WriteString(Data_Path)
+
+	return buffer.String()
+}
+func getListPath(platform Platform, environment Environment, app string) string {
+	return getPath(platform, environment, app, List)
 }
 func getDataPath(platform Platform, environment Environment, app string) string {
-	file := ""
-	if platform == Ios {
-		if environment == Dev {
-			file = Root_Dir + app + Slash + Dev_Path + Ios_Path + Data_Path
-		} else {
-			file = Root_Dir + app + Slash + Release_Path + Ios_Path + Data_Path
-		}
-
-	} else {
-		if environment == Dev {
-			file = Root_Dir + app + Slash + Dev_Path + Android_Path + Data_Path
-		} else {
-			file = Root_Dir + app + Slash + Release_Path + Android_Path + Data_Path
-		}
-	}
-	return file
+	return getPath(platform, environment, app, Data)
 }
-func getFtpDataPath(platform Platform, environment Environment, app string) string {
-	file := ""
-	if platform == Ios {
-		if environment == Dev {
-			file = Ftp_Root_Dir + app + Slash + Dev_Path + Ios_Path + Data_Path
-		} else {
-			file = Ftp_Root_Dir + app + Slash + Release_Path + Ios_Path + Data_Path
-		}
-
+func getPath(platform Platform, environment Environment, app string, ptype PathType) string {
+	var buffer bytes.Buffer
+	buffer.WriteString(Root_Dir)
+	buffer.WriteString(app)
+	buffer.WriteString(Slash)
+	if environment == Dev {
+		buffer.WriteString(Dev_Path)
 	} else {
-		if environment == Dev {
-			file = Ftp_Root_Dir + app + Slash + Dev_Path + Android_Path + Data_Path
-		} else {
-			file = Ftp_Root_Dir + app + Slash + Release_Path + Android_Path + Data_Path
-		}
+		buffer.WriteString(Release_Path)
 	}
-	return file
+
+	if platform == Ios {
+		buffer.WriteString(Ios_Path)
+	} else {
+		buffer.WriteString(Android_Path)
+	}
+	if ptype == Data {
+		buffer.WriteString(Data_Path)
+	} else {
+		buffer.WriteString(List_Path)
+	}
+
+	return buffer.String()
+}
+func getArchiveFilePath4Client(platform Platform, environment Environment, app, version string) string {
+	fileType := APK
+	if platform == Ios {
+		fileType = IPA
+	}
+	return getArchiveFilePath(platform, environment, app, version, fileType)
+}
+func getArchiveFilePath(platform Platform, environment Environment, app, version string, fileType ArchiveFileType) string {
+	var buffer bytes.Buffer
+	buffer.WriteString(Http_Str)
+	buffer.WriteString(Archive_File_Domain)
+	buffer.WriteString(Slash)
+	buffer.WriteString(Static_Path)
+	buffer.WriteString(app)
+	buffer.WriteString(Slash)
+	envStr := ""
+	if environment == Dev {
+		envStr = Dev_Str
+		buffer.WriteString(Dev_Path)
+	} else {
+		envStr = Release_Str
+		buffer.WriteString(Release_Path)
+	}
+	if platform == Ios {
+
+		buffer.WriteString(Ios_Path)
+	} else {
+		buffer.WriteString(Android_Path)
+	}
+	buffer.WriteString(Data_Path)
+	buffer.WriteString(version)
+	buffer.WriteString(Slash)
+	switch fileType {
+	case APK:
+		buffer.WriteString(app)
+		buffer.WriteString(Underline)
+		buffer.WriteString(envStr)
+		buffer.WriteString(Underline)
+		buffer.WriteString(version)
+		buffer.WriteString(Apk)
+		break
+	case IPA:
+		buffer.WriteString(app)
+		buffer.WriteString(Underline)
+		buffer.WriteString(envStr)
+		buffer.WriteString(Underline)
+		buffer.WriteString(version)
+		buffer.WriteString(Ipa)
+		break
+	case FullSizeImage:
+		buffer.WriteString(Full_Size_Image)
+		break
+	case DisplayImage:
+		buffer.WriteString(Display_Image)
+		break
+	}
+
+	return buffer.String()
 }
 func createFile(dir string) (string, error) {
 	src := dir
@@ -898,6 +819,8 @@ func removeAll(file string) error {
 	}
 	return err
 }
+
+//向文件中写内容
 func filePutContent(file string, content []byte) (int, error) {
 	fs, e := os.Create(file)
 	if e != nil {
@@ -905,4 +828,17 @@ func filePutContent(file string, content []byte) (int, error) {
 	}
 	defer fs.Close()
 	return fs.Write(content)
+}
+
+//判断服务器上的文件是否存在
+func existHttpPath(url string) bool {
+	resp, err := http.Head(url)
+	if err != nil {
+		beego.Info("existHttpPath error url:", url, " error:", err.Error())
+		return false
+	}
+	if resp.StatusCode == http.StatusOK {
+		return true
+	}
+	return false
 }
