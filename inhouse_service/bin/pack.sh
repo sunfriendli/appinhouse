@@ -4,7 +4,6 @@ echo 'start'
 cd ../../../..
 
 CURDIR=`pwd`
-OLDGOPATH="$GOPATH"
 HOME=env | grep ^HOME= | cut -c 6-
 TARGET=appinhouse_server
 APPNAME=inhouse_service
@@ -20,7 +19,6 @@ go build
 echo 'package...'
 bee pack -o "$HOME" -exr pack.sh
 
-export GOPATH="$OLDGOPATH"
 
 echo 'deploy...'
 cd ~

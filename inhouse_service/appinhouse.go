@@ -76,7 +76,17 @@ func setParam() {
 	}
 	Archive_File_Domain = beego.AppConfig.String("users::archive_file_domain")
 	beego.Info("app.conf-> archive_file_domain:", Archive_File_Domain)
-	if Max_Page == 0 {
+	if Archive_File_Domain == "" {
 		panic("app.conf not have users::archive_file_domain")
+	}
+	Archive_File_Static_Path = beego.AppConfig.String("users::archive_file_root_dir_alias")
+	beego.Info("app.conf-> archive_file_root_dir_alias:", Archive_File_Static_Path)
+	if Archive_File_Static_Path == "" {
+		panic("app.conf not have users::archive_file_root_dir_alias")
+	}
+	Plist_Static_Path = beego.AppConfig.String("users::plist_root_dir_alias")
+	beego.Info("app.conf-> plist_root_dir_alias:", Plist_Static_Path)
+	if Plist_Static_Path == "" {
+		panic("app.conf not have users::plist_root_dir_alias")
 	}
 }

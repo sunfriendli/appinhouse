@@ -10,56 +10,29 @@
 
 `ubuntu，go1.6，git`
 
-```bash
-#安装go
-sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
-sudo apt-get update
-sudo apt-get install golang
-#安装git
-sudo apt-get install git
-#安装bee
-sudo vi /etc/profile
-export GOPATH=/xxx/xxxx #设置你指定的目录
-#保存，重启客户端
-cd $GOPATH
-go get github.com/beego/bee
-cd bin
-sudo  cp bee /usr/bin/
-```
-
-#####下载
-
-在机器上找个目录，执行以下命令
+`由于网络的问题，安装某些依赖包会出现hash sum mismatch问题，这时候需要代理 `，见[***shadowsocks文档***](doc/shadowsocks.md)
 
 ```bash
-mkdir pkg
-mkdir bin
-mkdir src
-cd src
-git clone https://github.com/rog2/appinhouse.git
+sudo ./install_appinhouse.sh password #创建一个名字为appinhouse的用户，需要输入密码用来登录
 ```
-#####打包
-```bash
-cd appinhouse/inhouse_service/bin
-chmod +x *
-./pack.sh
-```
-#####运行
-
-```bash
-cd /home/当前用户/appinhouse_server/bin
-./inhouse.sh start
-```
-
 ####第二步，部署nginx
 
-见[***nginx配置文档***](doc/nginx.md) 。
+
+```bash
+sudo ./install_nginx.sh #依赖第一步
+```
 
 ####第三步，部署ftp
 
 
-见[***ftp配置文档***](doc/ftp.md) 。
+```bash
+#ftp_root_dir是ftp的根目录，
+#passwd_postfix是密码后缀，密码：ftp用户名+passwd_postfix
+#ftp用户名从inhouse_service/conf/app.conf文件的app_names属性中读取
 
+sudo ./install_ftp.sh ftp_root_dir passwd_postfix #依赖第一步
+
+```
 
 ####第四步，归档
 
@@ -80,8 +53,10 @@ cd /home/当前用户/appinhouse_server/bin
 * [api文档](doc/api.md)
 * [客户端（ipa/apk)的归档](doc/archive.md)
 * [应用配置文档](doc/conf.md)
+* [appinhouse配置文档](doc/appinhouse.md)  
 * [ftp配置文档](doc/ftp.md)  
-* [nginx配置文档](doc/ftp.md)  
+* [nginx配置文档](doc/ftp.md) 
+* [shadowsocks文档](doc/shadowsocks.md)   
 
 
 

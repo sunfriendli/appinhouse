@@ -663,7 +663,8 @@ func getAll(platform Platform, environment Environment, app string) (*FileRepos,
 func getPlistStaticPath(environment Environment, app string) string {
 	var buffer bytes.Buffer
 	buffer.WriteString(Slash)
-	buffer.WriteString(Static_Path_Plist)
+	buffer.WriteString(Plist_Static_Path)
+	buffer.WriteString(Slash)
 	buffer.WriteString(app)
 	buffer.WriteString(Slash)
 	if environment == Dev {
@@ -718,7 +719,8 @@ func getArchiveFilePath(platform Platform, environment Environment, app, version
 	buffer.WriteString(Http_Str)
 	buffer.WriteString(Archive_File_Domain)
 	buffer.WriteString(Slash)
-	buffer.WriteString(Static_Path)
+	buffer.WriteString(Archive_File_Static_Path)
+	buffer.WriteString(Slash)
 	buffer.WriteString(app)
 	buffer.WriteString(Slash)
 	envStr := ""

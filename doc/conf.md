@@ -24,6 +24,18 @@
 
 应用存储归档文件的根目录。
 
+#####archive_file_domain
+
+归档文件访问的域名
+
+#####archive_file_root_dir_alias
+
+归档文件根目录的别名，nginx里配置。具体目录，见[***ftp_root_dir***](ftp.md#ftp_root_dir)。
+
+#####plist_root_dir_alias
+
+plist文件所在的根目录对应的别名，nginx里配置。具体目录，见[root_dir](#root_dir)。
+
 #####log_dir
 
 日志输出文件的根目录。

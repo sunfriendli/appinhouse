@@ -65,12 +65,14 @@ var (
 		Release_Str: Release,
 		Dev_Str:     Dev,
 	}
-	apps            = map[string]string{}
-	Full_Size_Image = ""
-	Display_Image   = ""
-	Min_Residue     = 0
-	Page_Size       = 0
-	Max_Page        = 0
+	apps                     = map[string]string{}
+	Full_Size_Image          = ""
+	Display_Image            = ""
+	Min_Residue              = 0
+	Page_Size                = 0
+	Max_Page                 = 0
+	Archive_File_Static_Path = ""
+	Plist_Static_Path        = ""
 )
 
 func AddApps(appdirs []string) {
@@ -155,10 +157,8 @@ const (
 	Android_Path = "android/"
 	Ios_Path     = "ios/"
 
-	List_Path         = "list/"
-	Data_Path         = "data/"
-	Static_Path       = "download/"
-	Static_Path_Plist = "plist/"
+	List_Path = "list/"
+	Data_Path = "data/"
 )
 const (
 	Ios     = Platform(1)
