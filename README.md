@@ -55,7 +55,7 @@ sudo ./install_ftp.sh ftp_root_dir passwd_postfix #依赖第一步
 * [应用配置文档](doc/conf.md)
 * [appinhouse配置文档](doc/appinhouse.md)  
 * [ftp配置文档](doc/ftp.md)  
-* [nginx配置文档](doc/ftp.md) 
+* [nginx配置文档](doc/nginx.md) 
 * [shadowsocks文档](doc/shadowsocks.md)   
 
 
