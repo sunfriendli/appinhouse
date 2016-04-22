@@ -4,14 +4,20 @@
 # Install inhouse_sevice on Ubuntu Server, and configure it to be a daemon service.
 #
 
+usage()
+{
+    echo "Usage: ${0##*/} password"
+    exit 1
+}
 
 INHOUSE_PASSWD=$1
+USER=appinhouse
 if [ -z "$INHOUSE_PASSWD" ]; then
-    echo "password is null"
-    exit 1
+    echo "create a user by defaul.username is $USER"
+   usage
 fi
 CUR_USER=$LOGNAME
-USER=appinhouse
+
 INHOUSE_DEFAULT_LOCATION="/home/appinhouse"
 BEE_DIR=bee
 GIT_DIR=appinhouse_git
@@ -79,7 +85,7 @@ echo 'deploy...'
 cd $INHOUSE_DEFAULT_LOCATION
 if [ ! -d $TARGET ];
     then
-        echo "File $TARGET not found."
+        echo "mkdir $TARGET"
         mkdir $TARGET
 fi
 tar -zxvf $APPNAME.tar.gz -C $TARGET
@@ -88,24 +94,6 @@ mkdir $APPINHOUSE_WEB
 cp -R $INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/web/static/* $APPINHOUSE_WEB/
 
 #make appinhouse to a service
-FTP_ROOT_DIR=$(echo "$(grep 'ftp_root_dir' $APPINHOUSE_HOME/conf/app.conf)" |sed 's/ //g'|cut -c 14-)
-APPS=$(echo "$(grep 'app_names' $APPINHOUSE_HOME/conf/app.conf)" |sed 's/ //g'|cut -c 11-)
-ANDROID_DEV_PATH=dev/android/data
-IOS_DEV_PATH=dev/ios/data
-ANDROID_RELEASE_PATH=release/android/data
-IOS_RELEASE_PATH=release/ios/data
-arr=(${APPS//;/ })
-
-for i in ${arr[@]}
-do
-    if [ ! -d $FTP_ROOT_DIR$i ]; then
-        sudo mkdir -p $FTP_ROOT_DIR$i/$ANDROID_DEV_PATH
-        sudo mkdir -p $FTP_ROOT_DIR$i/$IOS_DEV_PATH
-        sudo mkdir -p $FTP_ROOT_DIR$i/$ANDROID_RELEASE_PATH
-        sudo mkdir -p $FTP_ROOT_DIR$i/$IOS_RELEASE_PATH
-    fi
-done
-
 sudo cp $APPINHOUSE_HOME/bin/appinhouse.sh /etc/init.d/appinhouse
 sudo chmod +x /etc/init.d/appinhouse
 echo "ARTIFACT=$INHOUSE_DEFAULT_LOCATION/$TARGET/inhouse_service"       | sudo tee -a /etc/default/appinhouse
