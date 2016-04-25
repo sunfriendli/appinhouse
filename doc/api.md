@@ -1,12 +1,12 @@
 ## 企业内部appinhouse服务API接口文档
 
-##接口通用信息
+## 接口通用信息
 1. 接口基于HTTP RESTFul思想架构设计。
 2. 接口地址（URL）统一采用：http://域名/api/请求资源?过滤参数的格式。
 	例如：`http://域名/api/rog2/list?page=1`。
 3. 响应内容默认JSON格式返回。
 
-##接口索引
+## 接口索引
 - [移动端获得最新打包版本](#移动端获得最新打包版本)
 - [移动端获取历史列表](#移动端获取历史列表)
 - [获得最新打包版本](#获得最新打包版本)
@@ -16,42 +16,42 @@
 - [生成描述文件](#生成描述文件)
 
 
-##接口详情
-###接口公共信息
-###app
+## 接口详情
+### 接口公共信息
+### app
 应用程序的名字，由inhouse生成，配置后，告知接入方。
-###platform
+### platform
 移动端手机设备的操作系统名字，`枚举值`。
 
 | value     |     ios |   android |
 | :-------- | --------:| :------: |
 | 含义    |   苹果设备|  安卓设备  |
 
-###environment
+### environment
 打包的应用程序所对应的运行环境，`枚举值`
 
 | value     |     dev|   release|
 | :-------- | --------:| :------:|
 | 含义       |   开发环境|  发布环境|
-###page_size
+### page_size
 一页显示多少记录，`配置值page_size` ，详见详见[***应用配置文档***](conf.md#page_size)。
-###max_page
+### max_page
 最大页数，`配置值max_page`，详见详见[***应用配置文档***](conf.md#max_page)。
 ### min_residue
 最小文件保留值，`配置值min_residue`，详见详见[***应用配置文档***](conf.md#min_residue)。
 ### ios_channel
 苹果官方渠道值，`ios_channel`，详见详见[***应用配置文档***](conf.md#ios_channel)。
 ### 移动端获得最新打包版本
-#####接口说明
+##### 接口说明
 移动设备会根据`userAgent`自动显示出该手机平台所需要的最新安装包。
 
-#####URL
+##### URL
 /api/[**[app]**](#app)/mobile/last
-#####请求方式
+##### 请求方式
 GET
-#####请求参数
+##### 请求参数
 无
-#####返回结果
+##### 返回结果
 ```json
 {
   "code": 0,
@@ -95,18 +95,18 @@ GET
 |channel|item| 渠道|  string|     是|
 
 ### 移动端获取历史列表
-#####接口说明
+##### 接口说明
 移动设备会根据`userAgent`自动显示出该手机平台所需要的历史列表。限制[**max_page**](#max_page),[**page_size**](#page_size)
 
-#####URL
+##### URL
 /api/[**[app]**](#app)/mobile/list/[**[environment]**](#environment)?page=1
-#####请求方式
+##### 请求方式
 GET
-#####请求参数
+##### 请求参数
 | 参数名     |     含义|   参数类型| 是否必须| 默认值|
 | :-------- | --------:| :------:|:------:|:------:|
 | page       |   页数|  int| 是| 1|
-#####返回结果
+##### 返回结果
 ```json
 {
   "code": 0,
@@ -153,16 +153,16 @@ GET
 |down|item| 下载地址|  string|     是|
 |channel|item| 渠道|  string|     是|
 ### 获得最新打包版本
-#####接口说明
+##### 接口说明
 pc端获得所有平台的最新安装包。*`ios`的`dev，release`版本，`android`的`dev，release`版本*
 
-#####URL
+##### URL
 /api/[**[app]**](#app)/last
 #####请求方式
 GET
-#####请求参数
+##### 请求参数
 无
-#####返回结果
+##### 返回结果
 ```json
 {
   "code": 0,
@@ -225,17 +225,17 @@ GET
 |down|item| 下载地址|  string|     是|
 |channel|item| 渠道|  string|     是| 
 ### 获取历史列表
-#####接口说明
+##### 接口说明
 pc端获得不同平台，不同环境的历史版本。限制[**max_page**](#max_page),[**page_size**](#page_size)。
-#####URL
+##### URL
 /api/[**[app]**](#app)/list/[**[platform]**](#platform)/[**[environment]**](#environment)?page=1
-#####请求方式
+##### 请求方式
 GET
-#####请求参数
+##### 请求参数
 | 参数名     |     含义|   参数类型| 是否必须| 默认值|
 | :-------- | --------:| :------:|:------:|:------:|
 | page       |   页数|  int| 是| 1|
-#####返回结果
+##### 返回结果
 ```json
 {
   "code": 0,
@@ -282,19 +282,19 @@ GET
 |down|item| 下载地址|  string|     是|
 |channel|item| 渠道|  string|     是|
 ### 生成plist
-#####接口说明
+##### 接口说明
 生成plist文件。生成前需先先上传必要文件。详见[*客户端（ipa/apk)的归档*](archive.md)
 #####URL
 /api/[**[app]**](#app)/plist/[**[environment]**](#environment)
-#####请求方式
+##### 请求方式
 POST
-#####请求参数
+##### 请求参数
 | 参数名     |     含义|   参数类型| 是否必须| 默认值|
 | :-------- | --------:| :------:|:------:|:------:|
 | version|   打包版本(与描述文件一致) | string| 是| 否|
 | id|  metadata中的bundle-identifier|  string| 是| 否|
 | title|  metadata中的标题|  string| 是| 否|
-#####返回结果
+##### 返回结果
 ```json
 {
   "code": 0,
@@ -307,17 +307,17 @@ POST
 | [code](#返回码) |     无| 返回码    |  int|        是|
 |msg             | 无    | 提示信息|  string|        否|
 ### 整理历史版本
-#####接口说明
+##### 接口说明
 删除过久的历史版本`(不包含ftp文件)`，只保留最新的一些版本。residue的限制[**min_residue**](#min_residue)
-#####URL
+##### URL
 /api/[**[app]**](#app)/delete/[**[platform]**](#platform)/[**[environment]**](#environment)?residue=10
 #####请求方式
 DELETE
-#####请求参数
+##### 请求参数
 | 参数名     |     含义|   参数类型| 是否必须| 默认值|
 | :-------- | --------:| :------:|:------:|:------:|
 | residue|   剩余的数量| int| 是| 否|
-#####返回结果
+##### 返回结果
 ```json
 {
   "code": 0,
@@ -330,14 +330,14 @@ DELETE
 | [code](#返回码) |     无| 返回码    |  int|        是|
 |msg             | 无    | 提示信息|  string|        否|
 
-### 生成描述描述文件
-#####接口说明
-生成描述描述文件。生成前需先先上传必要文件。详见[*客户端（ipa/apk)的归档*](archive.md)
-#####URL
-/api/[**[app]**](#app)/desc/[**[environment]**](#environment)
-#####请求方式
+### 生成描述文件
+##### 接口说明
+生成描述文件。生成前需先上传必要文件。详见[*客户端（ipa/apk)的归档*](archive.md#归档步骤)
+##### URL
+/api/[**[app]**](#app)/desc/[**[platform]**](#platform)/[**[environment]**](#environment)
+##### 请求方式
 POST
-#####请求参数
+##### 请求参数
 | 参数名     |     含义|   参数类型| 是否必须| 默认值|
 | :-------- | --------:| :------:|:------:|:------:|
 | version|   打包版本 | string| 是| 否|
@@ -345,7 +345,7 @@ POST
 | [channel](#ios_channel)|  渠道|  string| 是| 否|
 | url|  构建url|  string| 是| 否|
 | description|  版本描述信息|  string| 否| 否|
-#####返回结果
+##### 返回结果
 ```json
 {
   "code": 0,

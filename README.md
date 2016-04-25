@@ -4,9 +4,11 @@
 
 ## 快速启动
 
-####第一步，部署inhouse server
+脚本见`bin`目录。
 
-#####环境
+#### 第一步，部署inhouse server
+
+##### 环境
 
 `ubuntu，go1.6，git`
 
@@ -15,14 +17,16 @@
 ```bash
 sudo ./install_appinhouse.sh password #创建一个名字为appinhouse的用户，需要输入密码用来登录
 ```
-####第二步，部署nginx
+#### 第二步，部署nginx
+
+需要https证书，见[***nginx配置文档***](nginx.md#证书)。
 
 
 ```bash
 sudo ./install_nginx.sh #依赖第一步
 ```
 
-####第三步，部署ftp
+#### 第三步，部署ftp
 
 
 ```bash
@@ -34,13 +38,13 @@ sudo ./install_ftp.sh ftp_root_dir passwd_postfix #依赖第一步
 
 ```
 
-####第四步，归档
+#### 第四步，归档
 
 
 见[***客户端（ipa/apk)的归档***](doc/archive.md) 。
 
 
-##功能特点
+## 功能特点
 
 * RESTful 风格
 * 客户端（ipa/apk）的归档
@@ -48,7 +52,7 @@ sudo ./install_ftp.sh ftp_root_dir passwd_postfix #依赖第一步
 * 查看任一版本的客户端的详细信息，其中包括回溯到Jenkins上的此次构建
 * 提供plist生成
 
-##文档
+## 文档
 
 * [api文档](doc/api.md)
 * [客户端（ipa/apk)的归档](doc/archive.md)

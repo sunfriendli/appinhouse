@@ -2,28 +2,28 @@
 
 appinhouse以service的方式提供服务。
 
-###环境
+### 环境
 
 `ubuntu，go1.6，git`
 
-####创建专属用户
+#### 创建专属用户
 ```bash
  sudo useradd appinhouse -s /bin/bash
  sudo passwd appinhouse
  ```
-####安装go
+#### 安装go
 ```bash
 sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
 sudo apt-get update
 sudo apt-get install golang
 ```
-####安装git
+#### 安装git
 
 ```bash
 sudo apt-get install git
 ```
 
-####安装bee
+#### 安装bee
 
 ```bash
 export GOPATH=~/bee #设置你指定的目录
@@ -33,11 +33,11 @@ cd bin
 sudo  cp bee /usr/bin/
 ```
 
-####安装服务
+#### 安装服务
 
 `用appinhouse用户登录`
 
-#####下载工程
+##### 下载工程
 
 在机器上找个目录，执行以下命令
 
@@ -48,14 +48,14 @@ mkdir src
 cd src
 git clone https://github.com/rog2/appinhouse.git
 ```
-#####打包
+##### 打包
 
 ```bash
 cd appinhouse/inhouse_service/bin
 chmod +x *
 ./pack.sh
 ```
-#####运行
+##### 运行
 
 ```bash
 sudo cp appinhouse.sh /etc/init.d/appinhouse
