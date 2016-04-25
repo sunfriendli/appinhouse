@@ -19,7 +19,7 @@ sudo ./install_appinhouse.sh password #创建一个名字为appinhouse的用户�
 ```
 #### 第二步，部署nginx
 
-需要https证书，见[***nginx配置文档***](nginx.md#证书)。
+需要`https`证书，见[***nginx配置文档***](doc/nginx.md#证书)。
 
 
 ```bash
