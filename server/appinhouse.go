@@ -1,13 +1,16 @@
 package main
 
 import (
-	. "appinhouse/inhouse_service/constants"
+	. "appinhouse/server/constants"
+	"os"
 
-	_ "appinhouse/inhouse_service/routers"
+	_ "appinhouse/server/routers"
 
-	"appinhouse/inhouse_service/controllers"
+	"appinhouse/server/controllers"
 
 	"strings"
+
+	"appinhouse/server/models"
 
 	"github.com/astaxie/beego"
 )
@@ -15,7 +18,7 @@ import (
 func main() {
 	setLog()
 	setParam()
-	controllers.InitDirectory()
+	models.InitValue()
 	beego.Run()
 }
 func setLog() {
@@ -24,14 +27,10 @@ func setLog() {
 	beego.SetLevel(beego.LevelInformational)
 	beego.SetLogFuncCall(true)
 	beego.SetLogger("file", `{"filename":"`+Log_Dir+Log_File+`"}`)
+
 }
 func setParam() {
-	Log_Dir = beego.AppConfig.String("users::log_dir")
-	Root_Dir = beego.AppConfig.String("users::root_dir")
-	beego.Info("app.conf-> Root_Dir:", Root_Dir)
-	if Root_Dir == "" {
-		panic("app.conf not have users::root_dir ")
-	}
+
 	Ios_Channel = beego.AppConfig.String("users::ios_channel")
 	beego.Info("app.conf-> Ios_Channel:", Ios_Channel)
 	if Ios_Channel == "" {
@@ -47,7 +46,6 @@ func setParam() {
 	if apps == "" {
 		panic("app.conf not have users::app_names ")
 	}
-
 	AddApps(strings.Split(apps, ";"))
 	Full_Size_Image = beego.AppConfig.String("users::full_size_image")
 	beego.Info("app.conf-> Full_Size_Image:", Full_Size_Image)
@@ -74,19 +72,29 @@ func setParam() {
 	if Max_Page == 0 {
 		panic("app.conf not have users::max_page or not int")
 	}
-	Archive_File_Domain = beego.AppConfig.String("users::archive_file_domain")
-	beego.Info("app.conf-> archive_file_domain:", Archive_File_Domain)
-	if Archive_File_Domain == "" {
-		panic("app.conf not have users::archive_file_domain")
+
+	addr := beego.AppConfig.String("redis::env_addr_name")
+	beego.Info("app.conf-> env_addr_name:", addr)
+	if addr == "" {
+		panic("app.conf not have users::env_addr_name ")
 	}
-	Archive_File_Static_Path = beego.AppConfig.String("users::archive_file_root_dir_alias")
-	beego.Info("app.conf-> archive_file_root_dir_alias:", Archive_File_Static_Path)
-	if Archive_File_Static_Path == "" {
-		panic("app.conf not have users::archive_file_root_dir_alias")
+	Redis_Addr = os.Getenv(addr)
+	beego.Info("app.conf-> addr:", Redis_Addr)
+	if Redis_Addr == "" {
+		panic("env not have " + addr)
 	}
-	Plist_Static_Path = beego.AppConfig.String("users::plist_root_dir_alias")
-	beego.Info("app.conf-> plist_root_dir_alias:", Plist_Static_Path)
-	if Plist_Static_Path == "" {
-		panic("app.conf not have users::plist_root_dir_alias")
+
+	pwd := beego.AppConfig.String("redis::env_password_name")
+	beego.Info("app.conf-> env_password_name:", pwd)
+	if pwd == "" {
+		panic("app.conf not have users::env_password_name ")
 	}
+	Redis_Password = os.Getenv(pwd)
+	beego.Info("app.conf-> password:", Redis_Password)
+
+	Redis_DB = beego.AppConfig.DefaultInt("redis::db", Redis_DB)
+	beego.Info("app.conf-> db:", Redis_DB)
+
+	Redis_PoolSize = beego.AppConfig.DefaultInt("redis::pool_siz", Redis_PoolSize)
+	beego.Info("app.conf-> pool_siz:", Redis_PoolSize)
 }

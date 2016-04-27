@@ -14,7 +14,7 @@ cd src/appinhouse/$APPNAME
 echo 'get and build'
 go get -v
 
-go build 
+go build -o appinhouse
 
 echo 'package...'
 bee pack -o "$HOME" -exr pack.sh

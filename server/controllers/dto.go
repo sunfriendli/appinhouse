@@ -2,7 +2,7 @@
 package controllers
 
 import (
-	. "appinhouse/inhouse_service/constants"
+	. "appinhouse/server/constants"
 )
 
 type ItemsResponseDto struct {
@@ -32,17 +32,17 @@ type ItemDto struct {
 	Channel     string `json:"channel"`
 }
 type ItemsResponsePageDto struct {
-	Code      ErrCode   `json:"code"`
-	Msg       string    `json:"msg"`
-	Items     *ItemsDto `json:"items"`
-	Page      int       `json:"page"`
-	TotalPage int       `json:"total_page"`
+	Code      ErrCode    `json:"code"`
+	Msg       string     `json:"msg"`
+	Items     []*ItemDto `json:"items"`
+	Page      int        `json:"page"`
+	TotalPage int        `json:"total_page"`
 }
 
 func NewSuccessItemsResponsePageDto() *ItemsResponsePageDto {
 	i := &ItemsResponsePageDto{
 		Code:  ErrOk,
-		Items: new(ItemsDto),
+		Items: []*ItemDto{},
 	}
 	return i
 }

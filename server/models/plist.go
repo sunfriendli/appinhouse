@@ -2,9 +2,12 @@
 package models
 
 import (
-	. "appinhouse/inhouse_service/constants"
+	. "appinhouse/server/constants"
+	"bytes"
 
 	"github.com/DHowett/go-plist"
+
+	"gopkg.in/redis.v3"
 )
 
 const (
@@ -83,7 +86,66 @@ func NewPlist(id, version, title, softvareUrl, fullUrl, displayUrl string) ([]by
 
 	plist, err := plist.MarshalIndent(data, plist.XMLFormat, "\t")
 	if err != nil {
-		return nil, ErrorCreateFileError
+		return nil, ErrorCreatePlistError
 	}
 	return plist, nil
+}
+
+//-------------------------------------------------------------
+
+func newPlistInfoDao() *PlistInfoDao {
+	dao := &PlistInfoDao{
+		client: redisClient,
+	}
+	return dao
+}
+
+type PlistInfoDao struct {
+	client *redis.Client
+	key    string
+}
+
+func (this *PlistInfoDao) Save(env Environment, app string, version string, plist []byte) error {
+
+	_, err := this.client.HSet(this.getKey(env, app), version, string(plist)).Result()
+	if err != nil {
+		return ErrorDB
+	}
+	return nil
+}
+func (this *PlistInfoDao) Get(env Environment, app string, version string) (string, error) {
+	ret, err := this.client.HGet(this.getKey(env, app), version).Result()
+	if err != nil && err != redis.Nil {
+		return "", ErrorDB
+	}
+
+	return ret, nil
+
+}
+func (this *PlistInfoDao) Remove(env Environment, app string, versions []string) error {
+	if versions == nil {
+		return nil
+	}
+	_, err := this.client.HDel(this.getKey(env, app), versions...).Result()
+	if err != nil {
+		return ErrorDB
+	}
+	return nil
+}
+
+func (this *PlistInfoDao) getKey(env Environment, app string) string {
+	var buffer bytes.Buffer
+	buffer.WriteString(key_prefix)
+	buffer.WriteString(Colon)
+	buffer.WriteString(app)
+	buffer.WriteString(Colon)
+	buffer.WriteString(Ios_Str)
+	buffer.WriteString(Colon)
+	if env == Dev {
+		buffer.WriteString(Dev_Str)
+	} else {
+		buffer.WriteString(Release_Str)
+	}
+	buffer.WriteString(Colon)
+	return buffer.String()
 }
