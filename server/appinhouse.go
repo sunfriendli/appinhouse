@@ -2,7 +2,6 @@ package main
 
 import (
 	. "appinhouse/server/constants"
-	"os"
 
 	_ "appinhouse/server/routers"
 
@@ -13,6 +12,8 @@ import (
 	"appinhouse/server/models"
 
 	"github.com/astaxie/beego"
+
+	"github.com/Unknwon/goconfig"
 )
 
 func main() {
@@ -73,15 +74,16 @@ func setParam() {
 		panic("app.conf not have users::max_page or not int")
 	}
 
+	confDir := beego.AppConfig.String("redis::conf_dir")
+	beego.Info("app.conf-> conf_dir:", confDir)
+	if confDir == "" {
+		panic("app.conf not have users::conf_dir ")
+	}
+
 	addr := beego.AppConfig.String("redis::env_addr_name")
 	beego.Info("app.conf-> env_addr_name:", addr)
 	if addr == "" {
 		panic("app.conf not have users::env_addr_name ")
-	}
-	Redis_Addr = os.Getenv(addr)
-	beego.Info("app.conf-> addr:", Redis_Addr)
-	if Redis_Addr == "" {
-		panic("env not have " + addr)
 	}
 
 	pwd := beego.AppConfig.String("redis::env_password_name")
@@ -89,12 +91,26 @@ func setParam() {
 	if pwd == "" {
 		panic("app.conf not have users::env_password_name ")
 	}
-	Redis_Password = os.Getenv(pwd)
-	beego.Info("app.conf-> password:", Redis_Password)
+
+	getRedisConf(confDir, addr, pwd)
 
 	Redis_DB = beego.AppConfig.DefaultInt("redis::db", Redis_DB)
 	beego.Info("app.conf-> db:", Redis_DB)
 
 	Redis_PoolSize = beego.AppConfig.DefaultInt("redis::pool_siz", Redis_PoolSize)
 	beego.Info("app.conf-> pool_siz:", Redis_PoolSize)
+}
+func getRedisConf(confDir, addr, pwd string) {
+	c, err := goconfig.LoadConfigFile(confDir)
+	if err != nil {
+		panic("redis conf path error :" + err.Error())
+	}
+	Redis_Addr, err = c.GetValue("", addr)
+	beego.Info("Redis_Addr:", Redis_Addr)
+	if err != nil {
+		panic("redis conf addr error :" + err.Error())
+	}
+	Redis_Password, err = c.GetValue("", pwd)
+	beego.Info("Redis_Password:", Redis_Password)
+
 }

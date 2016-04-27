@@ -17,7 +17,7 @@ go get -v
 go build -o appinhouse
 
 echo 'package...'
-bee pack -o "$HOME" -exr pack.sh
+bee pack -o "$HOME" -b false -exr pack.sh -exr server
 
 
 echo 'deploy...'
