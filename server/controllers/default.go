@@ -430,8 +430,7 @@ func (c *MainController) getPlistUrl(env Environment, app, version string) strin
 	if env == Dev {
 		envstr = Dev_Str
 	}
-
-	return "/api/" + app + "/plist/" + envstr + "/" + version + Plist
+	return c.URLFor("MainController.PList", ":app", app, ":environment", envstr, ":version", version+Plist)
 }
 func (c *MainController) Delete() {
 	dto := NewSuccessResponseDto()
