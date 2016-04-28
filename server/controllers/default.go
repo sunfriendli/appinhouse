@@ -542,9 +542,15 @@ func converInfoTOItem(info *models.DescInfo, platform Platform, environment Envi
 	switch platform {
 	case Android:
 		item.Platform = Android_Str
+		item.Down = info.SoftwareUrl
 		break
 	case Ios:
 		item.Platform = Ios_Str
+		if info.Channel == Ios_Channel {
+			item.Down = Http + Domain + info.SoftwareUrl
+		} else {
+			item.Down = info.SoftwareUrl
+		}
 		break
 	}
 	switch environment {
@@ -557,7 +563,6 @@ func converInfoTOItem(info *models.DescInfo, platform Platform, environment Envi
 	}
 	item.Channel = info.Channel
 	item.Description = info.Description
-	item.Down = info.SoftwareUrl
 	item.Time = info.Time
 	item.Url = info.Url
 	item.Version = info.Version

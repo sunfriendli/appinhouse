@@ -252,6 +252,7 @@ func newClient(addr, password string, poolSize int, db int64) *redis.Client {
 	})
 	err := client.Ping().Err()
 	if err != nil {
+		beego.Info("redis not connect. addr:", addr, ". password:", password)
 		panic("redis not connect. addr:" + addr + ". password:" + password)
 	}
 	return client

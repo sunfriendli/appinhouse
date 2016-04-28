@@ -174,6 +174,7 @@ const (
 	Vertical   = "|"
 	Log_File   = "appinhouse.log"
 	F_Datetime = "2006-01-02 15:04:02"
+	Http       = "http://"
 )
 const (
 	APK           = ArchiveFileType(0)

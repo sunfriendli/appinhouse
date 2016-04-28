@@ -6,7 +6,7 @@ cd ../../../..
 CURDIR=`pwd`
 HOME=env | grep ^HOME= | cut -c 6-
 TARGET=appinhouse_server
-APPNAME=inhouse_service
+APPNAME=server
 export GOPATH="$CURDIR"
 
 cd src/appinhouse/$APPNAME
