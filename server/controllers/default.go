@@ -4,9 +4,10 @@ import (
 	. "appinhouse/server/constants"
 	"appinhouse/server/models"
 	"appinhouse/server/util"
-	"bytes"
+	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -236,7 +237,8 @@ func (c *MainController) List4Mobile() {
 }
 func (c *MainController) PList() {
 	dto := NewSuccessResponseDto()
-	version := c.GetString("version")
+	version := c.Ctx.Input.Param(":version")
+	version = strings.Replace(version, Plist, "", -1)
 	if version == "" {
 		beego.Info("GetPList Params fail .version:", version)
 		dto.Code = ErrParams
@@ -353,7 +355,7 @@ func (c *MainController) Desc() {
 		return
 	}
 	if platform == Ios && channel == Ios_Channel {
-		plistUrl, err := savePlist(env, app, channel, version, id, title, softwareUrl, fullUrl, displayUrl)
+		plistUrl, err := c.savePlist(env, app, channel, version, id, title, softwareUrl, fullUrl, displayUrl)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			dto.Msg = GetMsg(dto.Code)
@@ -389,7 +391,7 @@ func (c *MainController) Desc() {
 	c.Data["json"] = dto
 	c.ServeJSON()
 }
-func savePlist(env Environment, app, channel, version, id, title, softwareUrl, fullUrl, displayUrl string) (string, error) {
+func (c *MainController) savePlist(env Environment, app, channel, version, id, title, softwareUrl, fullUrl, displayUrl string) (string, error) {
 
 	if id == "" || title == "" {
 		beego.Info("PList Params fail .id:", id, "title:", title)
@@ -422,24 +424,15 @@ func savePlist(env Environment, app, channel, version, id, title, softwareUrl, f
 		beego.Info("PList CreatPlist fail :", err.Error())
 		return "", err
 	}
-	return getPlistUrl(env, app, version), nil
+	return c.getPlistUrl(env, app, version), nil
 }
-func getPlistUrl(env Environment, app, version string) string {
-	var buffer bytes.Buffer
-	buffer.WriteString(Url_Start)
-	buffer.WriteString(Slash)
-	buffer.WriteString(app)
-	buffer.WriteString(Slash)
-	buffer.WriteString(Plist_Url_Uniform)
-	buffer.WriteString(Slash)
+func (c *MainController) getPlistUrl(env Environment, app, version string) string {
+	envstr := Dev_Str
 	if env == Dev {
-		buffer.WriteString(Dev_Str)
-	} else {
-		buffer.WriteString(Release_Str)
+		envstr = Dev_Str
 	}
-	buffer.WriteString("?version=")
-	buffer.WriteString(version)
-	return buffer.String()
+
+	return "/api/" + app + "/" + envstr + "/" + version + Plist
 }
 func (c *MainController) Delete() {
 	dto := NewSuccessResponseDto()

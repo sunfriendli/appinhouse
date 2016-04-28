@@ -139,6 +139,8 @@ func (this *PlistInfoDao) getKey(env Environment, app string) string {
 	buffer.WriteString(Colon)
 	buffer.WriteString(app)
 	buffer.WriteString(Colon)
+	buffer.WriteString(key_plist)
+	buffer.WriteString(Colon)
 	buffer.WriteString(Ios_Str)
 	buffer.WriteString(Colon)
 	if env == Dev {
@@ -146,6 +148,6 @@ func (this *PlistInfoDao) getKey(env Environment, app string) string {
 	} else {
 		buffer.WriteString(Release_Str)
 	}
-	buffer.WriteString(Colon)
+
 	return buffer.String()
 }

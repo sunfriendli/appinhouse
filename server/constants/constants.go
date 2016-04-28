@@ -160,12 +160,12 @@ const (
 	Release = Environment(2)
 )
 const (
-	Ios_Str           = "ios"
-	Android_Str       = "android"
-	Release_Str       = "release"
-	Dev_Str           = "dev"
-	Url_Start         = "/api"
-	Plist_Url_Uniform = "plist"
+	Ios_Str     = "ios"
+	Android_Str = "android"
+	Release_Str = "release"
+	Dev_Str     = "dev"
+	Url_Start   = "/api"
+	Plist       = ".plist"
 )
 const (
 	Slash      = "/"

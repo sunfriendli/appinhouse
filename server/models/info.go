@@ -31,11 +31,10 @@ const (
 	channel_def = "none"
 )
 const (
-	key_prefix         = "aih"
-	desc_list          = "dlist"
-	desc               = "desc"
-	download_key_plist = "plist"
-	download_key_apk   = "apk"
+	key_prefix = "aih"
+	desc_list  = "dlist"
+	desc       = "desc"
+	key_plist  = "plist"
 )
 
 func InitValue() {
