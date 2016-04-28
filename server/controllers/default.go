@@ -547,7 +547,7 @@ func converInfoTOItem(info *models.DescInfo, platform Platform, environment Envi
 	case Ios:
 		item.Platform = Ios_Str
 		if info.Channel == Ios_Channel {
-			item.Down = Http + Domain + info.SoftwareUrl
+			item.Down = Https + Domain + info.SoftwareUrl
 		} else {
 			item.Down = info.SoftwareUrl
 		}
