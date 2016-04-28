@@ -4,7 +4,7 @@ usage()
 {
     echo "Usage: ${0##*/} ftp_root_dir passwd_postfix"
 	echo "example :${0} /var/vsftpd pwpostfix"
-	echo "usernames see appinhouse/inhouse_service/conf/app.conf app_names"
+	echo "usernames see appinhouse/server/conf/app.conf app_names"
 	echo "create ftp user and passwd:"
 	echo "name1:name1pwpostfix"
 	echo "name2:name2pwpostfix"
@@ -28,7 +28,7 @@ sudo apt-get -y install vsftpd
 echo "create user..."
 INHOUSE_DEFAULT_LOCATION="/home/appinhouse"
 GIT_DIR=appinhouse_git
-APPINHOUSE_HOME=$INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/inhouse_service
+APPINHOUSE_HOME=$INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/server
 APPS=$(echo "$(grep 'app_names' $APPINHOUSE_HOME/conf/app.conf)" |sed 's/ //g'|cut -c 11-)
 ANDROID_DEV_PATH=dev/android/data
 IOS_DEV_PATH=dev/ios/data
@@ -50,7 +50,7 @@ do
 done
 #vsftpd conf
 echo "copy conf..."
-FTP_CONF=$INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/ftp
+FTP_CONF=$INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/conf/ftp
 sudo mkdir -p /etc/vsftpd
 sudo cp  -R $FTP_CONF/vsftpd_user_conf /etc/vsftpd/
 sudo cp   $FTP_CONF/vsftpd.conf /etc

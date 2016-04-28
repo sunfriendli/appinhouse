@@ -33,6 +33,6 @@ apt-get -y install nginx
 echo 'copy conf'
 INHOUSE_DEFAULT_LOCATION="/home/appinhouse"
 GIT_DIR=appinhouse_git
-CONF=$INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/web/nginx/appinhouse_ssl.conf
+CONF=$INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/conf/nginx/appinhouse_ssl.conf
 sudo cp $CONF /etc/nginx/conf.d/
 sudo service nginx reload

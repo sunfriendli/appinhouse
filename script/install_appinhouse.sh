@@ -29,19 +29,14 @@ INHOUSE_DEFAULT_LOCATION="/home/appinhouse"
 BEE_DIR=bee
 GIT_DIR=appinhouse_git
 TARGET=appinhouse_server
-APPNAME=inhouse_service
+APPNAME=server
 APPINHOUSE_WEB=appinhouse_web
 
-
-#create inhouse home if not exists 
-if [ ! -d $INHOUSE_DEFAULT_LOCATION ]; then
-  sudo mkdir $INHOUSE_DEFAULT_LOCATION
-fi
 id $USER >& /dev/null
 if [ $? -ne 0 ]
 then
    echo 'add user $USER...'
-   sudo useradd $USER -s /bin/bash
+   sudo useradd $USER -m -s /bin/bash
    echo "sudopsw" | sudo -S echo $USER:$INHOUSE_PASSWD | sudo chpasswd
    sudo chown -R $CUR_USER:$CUR_USER  $INHOUSE_DEFAULT_LOCATION
 fi
@@ -55,14 +50,6 @@ sudo apt-get -y install golang
 #install git
 echo 'install git...'
 sudo apt-get -y install git
-
-#install redis
-echo 'install redis...'
-sudo apt-get -y install redis-server
-if [ -z "$REDIS_PASSWORD" ]; then
-   echo "requirepass $REDIS_PASSWORD" |sudo tee -a /etc/redis/redis.conf
-fi
-sudo service redis-server restart
 
 #install bee
 echo 'install bee...'
@@ -84,6 +71,8 @@ mkdir src
 cd src
 git clone https://github.com/rog2/appinhouse.git
 
+
+
 # pack appinhouse
 export GOPATH=$INHOUSE_DEFAULT_LOCATION/$GIT_DIR
 APPINHOUSE_HOME=$INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/server
@@ -94,7 +83,7 @@ go get -v
 go build -o appinhouse
 
 echo 'package...'
-bee pack -o "$INHOUSE_DEFAULT_LOCATION" -exr pack.sh
+bee pack -o "$INHOUSE_DEFAULT_LOCATION" -exr pack.sh -exr server
 
 echo 'deploy...'
 cd $INHOUSE_DEFAULT_LOCATION
@@ -106,17 +95,23 @@ fi
 tar -zxvf $APPNAME.tar.gz -C $TARGET
 echo "deploy file in $INHOUSE_DEFAULT_LOCATION/$TARGET" 
 mkdir $APPINHOUSE_WEB
-cp -R $INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/web/static/* $APPINHOUSE_WEB/
+cp -R $INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/web/static/* $APPINHOUSE_WEB
 
+echo 'set env...'
+REDIS_CONF=$(echo "$(grep 'conf_dir' $APPINHOUSE_HOME/conf/app.conf)" |sed 's/ //g'|cut -c 10-)
 REDIS_ADDR_NAME=$(echo "$(grep 'env_addr_name' $APPINHOUSE_HOME/conf/app.conf)" |sed 's/ //g'|cut -c 15-)
 REDIS_PASSWORD_NAME=$(echo "$(grep 'env_password_name' $APPINHOUSE_HOME/conf/app.conf)" |sed 's/ //g'|cut -c 19-)
-echo 'set env...'
-echo "export $REDIS_ADDR_NAME=$REDIS_ADDR" |sudo tee -a /etc/profile
-
-if [ -z "$REDIS_PASSWORD" ]; then
-   echo "export $REDIS_PASSWORD_NAME=$REDIS_PASSWORD" |sudo tee -a /etc/profile
+REDIS_DIR=$(dirname $REDIS_CONF)
+if [ ! -d $REDIS_DIR ];
+    then
+        echo "mkdir $REDIS_DIR"
+        sudo mkdir -p $REDIS_DIR
 fi
-source /etc/profile
+sudo echo ""  | sudo tee $REDIS_CONF
+echo "$REDIS_ADDR_NAME=$REDIS_ADDR"       | sudo tee -a $REDIS_CONF
+if [ -n "$REDIS_PASSWORD" ]; then
+  echo "$REDIS_PASSWORD_NAME=$REDIS_PASSWORD"    | sudo tee -a $REDIS_CONF
+fi
 
 #make appinhouse to a service
 sudo cp $APPINHOUSE_HOME/bin/appinhouse.sh /etc/init.d/appinhouse
