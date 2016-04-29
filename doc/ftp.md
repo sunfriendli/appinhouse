@@ -2,7 +2,7 @@
 
 #### 目录
 
-`vsftpd`配置文件目录`ftp`下。
+`vsftpd`配置文件目录`conf/ftp`下。
 
 #### 环境
 
@@ -46,6 +46,7 @@ sudo chown user1:user1  ftp_root_dir/test1 #必须执行
 ```
 
 ##### 配置PAM文件
+
 见`vsftpd`文件
 ```bash
 sudo vi /etc/pam.d/vsftpd

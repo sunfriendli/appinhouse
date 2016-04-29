@@ -52,10 +52,32 @@ git clone https://github.com/rog2/appinhouse.git
 
 ```bash
 cd appinhouse/inhouse_service/bin
-chmod +x *
+chmod +x *.sh
 ./pack.sh
 ```
+##### 设置redis数据库配置文件
+
+##### 目录及文件名
+
+取值于`app.conf`下`[redis]`的`conf_dir`，见[***应用配置文档***](conf.md#conf_dir)。
+
+##### 文档内容
+
+###### 地址
+
+`key`取值于`app.conf`下`[redis]`的`env_addr_name`，见[***应用配置文档***](conf.md#env_addr_name)。
+
+`value` redis的地址
+
+###### 密码（可选）
+
+`key`取值于`app.conf`下`[redis]`的`env_password_name`，见[***应用配置文档***](conf.md#env_password_name)。
+
+`value` redis的密码
+
 ##### 运行
+
+`用sudo用户登录`
 
 ```bash
 sudo cp appinhouse.sh /etc/init.d/appinhouse
