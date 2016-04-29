@@ -20,6 +20,8 @@ var (
 	DescListDao *DescInfoListDao
 	PlistDao    *PlistInfoDao
 	DescDao     *DescInfoDao
+	//	AppsDao     *AppDao
+	AppDao *AppListDao
 )
 
 const (
@@ -31,10 +33,12 @@ const (
 	channel_def = "none"
 )
 const (
-	key_prefix = "aih"
-	desc_list  = "dlist"
-	desc       = "desc"
-	key_plist  = "plist"
+	key_prefix   = "aih"
+	desc_list    = "dlist"
+	desc         = "desc"
+	key_plist    = "plist"
+	key_app      = "app"
+	key_app_list = "alist"
 )
 
 func InitValue() {
@@ -42,6 +46,8 @@ func InitValue() {
 	DescListDao = newDescInfoListDao()
 	PlistDao = newPlistInfoDao()
 	DescDao = newDescInfoDao()
+	//	AppsDao = newAppDao()
+	AppDao = newAppListDao()
 }
 
 type DescInfo struct {
@@ -52,9 +58,7 @@ type DescInfo struct {
 	Channel     string `json:"Channel"`
 	SoftwareUrl string `json:"SoftUrl"`
 }
-type DescInfoListDao struct {
-	client *redis.Client
-}
+
 type DescInfoDao struct {
 	client *redis.Client
 }
@@ -143,6 +147,10 @@ func (this *DescInfoDao) getKey(platform Platform, env Environment, app string) 
 }
 
 //-------------------------------------------------------------
+
+type DescInfoListDao struct {
+	client *redis.Client
+}
 
 func newDescInfoListDao() *DescInfoListDao {
 	dao := &DescInfoListDao{

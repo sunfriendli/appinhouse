@@ -24,6 +24,7 @@ var (
 	ErrorDeleteFileError  = errors.New("appinhouse: delete File fail")
 	ErrorTimeFormat       = errors.New("appinhouse: time format is error ")
 	ErrorDB               = errors.New("appinhouse: db is error")
+	ErrorAppNotExistError = errors.New("appinhouse: app not exist")
 
 	errCodeToError = map[string]ErrCode{
 		ErrorUnknown.Error():          ErrUnknown,
@@ -34,6 +35,7 @@ var (
 		ErrorDeleteFileError.Error():  ErrDeleteFileError,
 		ErrorTimeFormat.Error():       ErrTimeFormat,
 		ErrorDB.Error():               ErrDB,
+		ErrorAppNotExistError.Error(): ErrAppNotExistError,
 	}
 	errCodeToMsg = map[ErrCode]string{
 		ErrOk:               "成功",
@@ -46,6 +48,7 @@ var (
 		ErrDeleteFileError:  "删除文件错误",
 		ErrTimeFormat:       "时间格式不正确",
 		ErrDB:               "数据库错误",
+		ErrAppNotExistError: "应用不存在",
 	}
 	Log_Dir     = ""
 	Ios_Channel = ""
@@ -58,53 +61,17 @@ var (
 		Release_Str: Release,
 		Dev_Str:     Dev,
 	}
-	apps            = map[string]string{}
 	Full_Size_Image = ""
 	Display_Image   = ""
 	Min_Residue     = 0
 	Page_Size       = 0
 	Max_Page        = 0
-
-	Redis_Addr     = ""
-	Redis_DB       = 0
-	Redis_Password = ""
-	Redis_PoolSize = 10
+	App_Name_Len    = 0
+	Redis_Addr      = ""
+	Redis_DB        = 0
+	Redis_Password  = ""
+	Redis_PoolSize  = 10
 )
-
-func SetRedisConf(appdirs []string) {
-	for _, app := range appdirs {
-		if app != "" {
-			apps[app] = app
-		}
-	}
-}
-func AddApps(appdirs []string) {
-	for _, app := range appdirs {
-		if app != "" {
-			apps[app] = app
-		}
-	}
-}
-func GetApps() []string {
-	size := len(apps)
-	if size == 0 {
-		panic("app is null in app.conf ")
-	}
-	ret := make([]string, 0, size)
-	for _, value := range apps {
-		ret = append(ret, value)
-	}
-	return ret
-}
-func GetApp(app string) (string, error) {
-	if app == "" {
-		return "", ErrorParam
-	}
-	if ret, ok := apps[app]; ok {
-		return ret, nil
-	}
-	return "", ErrorParam
-}
 
 func GetEnvironment(environment string) (Environment, error) {
 	if environment == "" {
@@ -151,6 +118,7 @@ const (
 	ErrDeleteFileError  = ErrCode(1005)
 	ErrTimeFormat       = ErrCode(1006)
 	ErrDB               = ErrCode(1007)
+	ErrAppNotExistError = ErrCode(1008)
 )
 
 const (

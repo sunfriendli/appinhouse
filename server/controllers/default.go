@@ -20,18 +20,103 @@ type MainController struct {
 	beego.Controller
 }
 
+func (c *MainController) Apps() {
+
+	dto := NewSuccessAppsResponseDto()
+	page, err := c.GetInt("page", 1)
+	if err != nil || page <= 0 || page > Max_Page {
+		beego.Info("GetApps param page  error !page:", page)
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	count, err := models.AppDao.Count()
+	if err != nil {
+		beego.Error("GetApps count  error :" + err.Error())
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+
+	if count == 0 {
+		c.Data["json"] = dto
+		c.ServeJSON()
+		return
+	}
+	start := util.GetStartForPage(page, Page_Size)
+	end := util.GetEndForPage(page, Page_Size)
+	if start > count {
+		c.setError4Dto(ErrorPageOut, dto)
+		return
+	}
+	if end > count {
+		end = count - 1
+	}
+	ret, err := models.AppDao.GetList(start, end)
+	if err != nil {
+		c.setError4Dto(ErrorPageOut, dto)
+		return
+	}
+	dto.Items = ret
+	dto.Page = page
+	dto.TotalPage = util.GetTotalPage(count, Page_Size)
+
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
+func (c *MainController) AddApp() {
+	dto := NewSuccessResponseDto()
+	app := c.GetString("name")
+	if app == "" || len(app) > App_Name_Len {
+		beego.Info("AddApp param name  error !name:", app)
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	has, err := models.AppDao.Exist(app)
+	if err != nil {
+		beego.Info("AddApp Exist app  error !name:", app, "error:", err.Error())
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	if !has {
+		err = models.AppDao.Save(app)
+		if err != nil {
+			beego.Info("AddApp save app  error !name:", app, "error:", err.Error())
+			c.setError4Dto(ErrorParam, dto)
+			return
+		}
+	}
+
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
+
+func (c *MainController) DelApp() {
+	dto := NewSuccessResponseDto()
+	app := c.GetString("name")
+	if app == "" || len(app) > App_Name_Len {
+		beego.Info("DelApp param name  error !name:", app)
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+
+	err := models.AppDao.Remove(app)
+	if err != nil {
+		beego.Info("DelApp  remove app error !name:", app, "error:", err.Error())
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
 func (c *MainController) Last() {
 	dto := NewSuccessItemsResponseDto()
 	userAgent := c.Ctx.Request.UserAgent()
 	appParam := c.Ctx.Input.Param(":app")
 
-	app, err := GetApp(appParam)
+	app, err := appExist(appParam)
 	if err != nil {
 		beego.Info("Last param app  error !app:", appParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	osType := util.CheckAgent(userAgent)
@@ -117,44 +202,31 @@ func (c *MainController) Last() {
 }
 func (c *MainController) List() {
 	dto := NewSuccessItemsResponsePageDto()
-	page, _ := c.GetInt("page", 1)
-	if page <= 0 || page > Max_Page {
+	page, err := c.GetInt("page", 1)
+	if err != nil || page <= 0 || page > Max_Page {
 		beego.Info("List param page  error !page:", page)
-		dto.Code = ErrParams
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(ErrorParam, dto)
 		return
 	}
-	var err error
 	appParam := c.Ctx.Input.Param(":app")
-	app, err := GetApp(appParam)
+	app, err := appExist(appParam)
 	if err != nil {
 		beego.Info("List param app  error !app:", appParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	platformParam := c.Ctx.Input.Param(":platform")
 	platform, err := GetPlaform(platformParam)
 	if err != nil {
 		beego.Info("List param platform  error !platform:", platformParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	envParam := c.Ctx.Input.Param(":environment")
 	env, err := GetEnvironment(envParam)
 	if err != nil {
 		beego.Info("List param environment  error !environment:", envParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	start := util.GetStartForPage(page, Page_Size)
@@ -175,34 +247,24 @@ func (c *MainController) List() {
 }
 func (c *MainController) List4Mobile() {
 	dto := NewSuccessItemsResponsePageDto()
-	page, _ := c.GetInt("page", 1)
-	if page <= 0 || page > Max_Page {
+	page, err := c.GetInt("page", 1)
+	if err != nil || page <= 0 || page > Max_Page {
 		beego.Info("List4Mobile param page  error !page:", page)
-		dto.Code = ErrParams
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(ErrorParam, dto)
 		return
 	}
-	var err error
 	appParam := c.Ctx.Input.Param(":app")
-	app, err := GetApp(appParam)
+	app, err := appExist(appParam)
 	if err != nil {
 		beego.Info("List4Mobile param app  error !app:", appParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	envParam := c.Ctx.Input.Param(":environment")
 	env, err := GetEnvironment(envParam)
 	if err != nil {
 		beego.Info("List4Mobile param environment  error !environment:", envParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	start := util.GetStartForPage(page, Page_Size)
@@ -240,21 +302,15 @@ func (c *MainController) PList() {
 	version = strings.Replace(version, Plist, "", -1)
 	if version == "" {
 		beego.Info("GetPList Params fail .version:", version)
-		dto.Code = ErrParams
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(ErrorParam, dto)
 		return
 	}
 	var err error
 	appParam := c.Ctx.Input.Param(":app")
-	app, err := GetApp(appParam)
+	app, err := appExist(appParam)
 	if err != nil {
 		beego.Info("GetPList param app  error !app:", appParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 
@@ -262,19 +318,13 @@ func (c *MainController) PList() {
 	env, err := GetEnvironment(envParam)
 	if err != nil {
 		beego.Info("GetPList param environment  error !environment:", envParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	plist, err := models.PlistDao.Get(env, app, version)
 	if err != nil {
 		beego.Info("GetPList from redis fail :", err.Error())
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	c.Ctx.Output.Header("Content-Type", "application/x-plist")
@@ -295,34 +345,25 @@ func (c *MainController) Desc() {
 	fullUrl := c.GetString("fullUrl")
 	displayUrl := c.GetString("displayUrl")
 
-	if ctime == "" || version == "" || url == "" || channel == "" || softwareUrl == "" {
+	if ctime == "" || version == "" || channel == "" || softwareUrl == "" {
 		beego.Info("Desc Params fail version:", version, "time:", ctime, "description:", description,
-			"url:", url, "softwareUrl", softwareUrl, "channel:", channel)
-		dto.Code = ErrParams
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+			"softwareUrl", softwareUrl, "channel:", channel)
+		c.setError4Dto(ErrorParam, dto)
 		return
 	}
 	var err error
 	appParam := c.Ctx.Input.Param(":app")
-	app, err := GetApp(appParam)
+	app, err := appExist(appParam)
 	if err != nil {
 		beego.Info("Desc param app  error !app:", appParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	platformParam := c.Ctx.Input.Param(":platform")
 	platform, err := GetPlaform(platformParam)
 	if err != nil {
 		beego.Info("Desc param platform  error !platform:", platformParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 
@@ -330,36 +371,25 @@ func (c *MainController) Desc() {
 	env, err := GetEnvironment(envParam)
 	if err != nil {
 		beego.Info("Desc param environment  error !environment:", envParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 
 	if !existHttpPath(softwareUrl) {
-		beego.Info("PList error archive file not exsit,url:", softwareUrl)
-		dto.Code = ErrIPANotExistError
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		beego.Info("Desc error archive file not exsit,url:", softwareUrl)
+		c.setError4Dto(err, dto)
 		return
 	}
 	score, err := time.Parse(F_Datetime, ctime)
 	if err != nil {
-		dto.Code = GetErrCode(ErrorTimeFormat)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		beego.Info("Desc error ,time:", ctime)
+		c.setError4Dto(ErrorTimeFormat, dto)
 		return
 	}
 	if platform == Ios && channel == Ios_Channel {
 		plistUrl, err := c.savePlist(env, app, channel, version, id, title, softwareUrl, fullUrl, displayUrl)
 		if err != nil {
-			dto.Code = GetErrCode(err)
-			dto.Msg = GetMsg(dto.Code)
-			c.Data["json"] = dto
-			c.ServeJSON()
+			c.setError4Dto(err, dto)
 			return
 		}
 		softwareUrl = plistUrl
@@ -373,18 +403,12 @@ func (c *MainController) Desc() {
 	info.SoftwareUrl = softwareUrl
 	err = models.DescDao.Save(platform, env, app, info)
 	if err != nil {
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	err = models.DescListDao.Save(platform, env, app, info.Version, score)
 	if err != nil {
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	c.Data["json"] = dto
@@ -427,70 +451,51 @@ func (c *MainController) savePlist(env Environment, app, channel, version, id, t
 }
 func (c *MainController) getPlistUrl(env Environment, app, version string) string {
 	envstr := Dev_Str
-	if env == Dev {
-		envstr = Dev_Str
+	if env == Release {
+		envstr = Release_Str
 	}
 	return c.URLFor("MainController.PList", ":app", app, ":environment", envstr, ":version", version+Plist)
 }
 func (c *MainController) Delete() {
 	dto := NewSuccessResponseDto()
-	residue, _ := c.GetInt("residue", -1)
-	if residue < Min_Residue {
+	residue, err := c.GetInt("residue", -1)
+	if err != nil || residue < Min_Residue {
 		beego.Info("Delete param residue  error !residue:", residue)
-		dto.Code = ErrParams
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(ErrorParam, dto)
 		return
 	}
-	var err error
 	appParam := c.Ctx.Input.Param(":app")
-	app, err := GetApp(appParam)
+	app, err := appExist(appParam)
 	if err != nil {
 		beego.Info("Delete param app  error !app:", appParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	platformParam := c.Ctx.Input.Param(":platform")
 	platform, err := GetPlaform(platformParam)
 	if err != nil {
 		beego.Info("Delete param platform  error !platform:", platformParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	envParam := c.Ctx.Input.Param(":environment")
 	env, err := GetEnvironment(envParam)
 	if err != nil {
 		beego.Info("Delete param environment  error !environment:", envParam)
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 	count, err := models.DescListDao.Count(platform, env, app)
 	if err != nil {
 		beego.Error("Delete count  error :" + err.Error())
-		dto.Code = GetErrCode(err)
-		dto.Msg = GetMsg(dto.Code)
-		c.Data["json"] = dto
-		c.ServeJSON()
+		c.setError4Dto(err, dto)
 		return
 	}
 
 	if residue < count {
 		versions, err := models.DescListDao.Remove(platform, env, app, residue)
 		if err != nil {
-			dto.Code = GetErrCode(err)
-			dto.Msg = GetMsg(dto.Code)
-			c.Data["json"] = dto
-			c.ServeJSON()
+			c.setError4Dto(err, dto)
 			return
 		}
 		if versions != nil && len(versions) > 0 {
@@ -498,10 +503,7 @@ func (c *MainController) Delete() {
 			if platform == Ios {
 				err := models.PlistDao.Remove(env, app, versions)
 				if err != nil {
-					dto.Code = GetErrCode(err)
-					dto.Msg = GetMsg(dto.Code)
-					c.Data["json"] = dto
-					c.ServeJSON()
+					c.setError4Dto(err, dto)
 					return
 				}
 			}
@@ -510,7 +512,13 @@ func (c *MainController) Delete() {
 	c.Data["json"] = dto
 	c.ServeJSON()
 }
-
+func (c *MainController) setError4Dto(err error, dto ResponseDto) {
+	code := GetErrCode(err)
+	dto.SetCode(code)
+	dto.SetMsg(GetMsg(code))
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
 func getLastOne(platform Platform, environment Environment, app string) (*ItemDto, error) {
 	version, err := models.DescListDao.GetLast(platform, environment, app)
 	if err != nil {
@@ -596,6 +604,19 @@ func getList(platform Platform, environment Environment, start, end int, app str
 	}
 
 	return items, count, nil
+}
+func appExist(app string) (string, error) {
+	if app == "" {
+		return "", ErrorParam
+	}
+	has, err := models.AppDao.Exist(app)
+	if err != nil {
+		return app, err
+	}
+	if !has {
+		return app, ErrorAppNotExistError
+	}
+	return app, nil
 }
 func createFile(dir string) (string, error) {
 	src := dir
