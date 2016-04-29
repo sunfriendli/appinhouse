@@ -27,10 +27,10 @@ CUR_USER=$LOGNAME
 
 INHOUSE_DEFAULT_LOCATION="/home/appinhouse"
 BEE_DIR=bee
-GIT_DIR=appinhouse_git
-TARGET=appinhouse_server
+GIT_DIR=git
+TARGET=server
 APPNAME=server
-APPINHOUSE_WEB=appinhouse_web
+APPINHOUSE_WEB=web
 
 id $USER >& /dev/null
 if [ $? -ne 0 ]
@@ -83,7 +83,7 @@ go get -v
 go build -o appinhouse
 
 echo 'package...'
-bee pack -o "$INHOUSE_DEFAULT_LOCATION" -exr pack.sh -exr server
+bee pack -o "$INHOUSE_DEFAULT_LOCATION"  -exr pack.sh -exr server -exr test.conf 
 
 echo 'deploy...'
 cd $INHOUSE_DEFAULT_LOCATION
@@ -94,8 +94,8 @@ if [ ! -d $TARGET ];
 fi
 tar -zxvf $APPNAME.tar.gz -C $TARGET
 echo "deploy file in $INHOUSE_DEFAULT_LOCATION/$TARGET" 
-mkdir $APPINHOUSE_WEB
-cp -R $INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/web/static/* $APPINHOUSE_WEB
+
+sudo ln -s $INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/web/static $INHOUSE_DEFAULT_LOCATION/$APPINHOUSE_WEB
 
 echo 'set env...'
 REDIS_CONF=$(echo "$(grep 'conf_dir' $APPINHOUSE_HOME/conf/app.conf)" |sed 's/ //g'|cut -c 10-)

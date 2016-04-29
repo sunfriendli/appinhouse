@@ -2,19 +2,19 @@
 
 usage()
 {
-    echo "Usage: ${0##*/} ftp_root_dir passwd_postfix"
-	echo "example :${0} /var/vsftpd pwpostfix"
+    echo "Usage: ${0##*/} ftp_root_dir password"
+	echo "example :${0} /var/vsftpd password"
 	echo "usernames see appinhouse/server/conf/app.conf app_names"
-	echo "create ftp user and passwd:"
-	echo "name1:name1pwpostfix"
-	echo "name2:name2pwpostfix"
+	echo "create ftp user and password"
+	echo "name1:password"
+	echo "name2:password"
     exit 1
 }
 FTP_ROOT_DIR=$1
-PASSWD_POSTDIX=$2
+PASSWD=$2
 
-if [ -z "$PASSWD_POSTDIX" ]; then
-    echo "password  postfix is null"
+if [ -z "$PASSWD" ]; then
+    echo "password  is null"
     usage
 fi
 if [ -z "$FTP_ROOT_DIR" ]; then
@@ -44,7 +44,7 @@ do
         sudo mkdir -p $FTP_ROOT_DIR/$i/$ANDROID_RELEASE_PATH
         sudo mkdir -p $FTP_ROOT_DIR/$i/$IOS_RELEASE_PATH
         sudo useradd $i -d $FTP_ROOT_DIR/$i -s /bin/false
-        echo "sudopsw" | sudo -S echo $i:$i$PASSWD_POSTDIX | sudo chpasswd
+        echo "sudopsw" | sudo -S echo $i:$PASSWD | sudo chpasswd
         sudo chown -R $i:$i  $FTP_ROOT_DIR/$i
     fi
 done
