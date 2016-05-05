@@ -83,6 +83,9 @@ func (c *MainController) AddApp() {
 			c.setError4Dto(ErrorParam, dto)
 			return
 		}
+	} else {
+		c.setError4Dto(ErrorAppExistError, dto)
+		return
 	}
 
 	c.Data["json"] = dto

@@ -25,6 +25,7 @@ var (
 	ErrorTimeFormat       = errors.New("appinhouse: time format is error ")
 	ErrorDB               = errors.New("appinhouse: db is error")
 	ErrorAppNotExistError = errors.New("appinhouse: app not exist")
+	ErrorAppExistError    = errors.New("appinhouse: app  exist")
 
 	errCodeToError = map[string]ErrCode{
 		ErrorUnknown.Error():          ErrUnknown,
@@ -36,6 +37,7 @@ var (
 		ErrorTimeFormat.Error():       ErrTimeFormat,
 		ErrorDB.Error():               ErrDB,
 		ErrorAppNotExistError.Error(): ErrAppNotExistError,
+		ErrorAppExistError.Error():    ErrAppExistError,
 	}
 	errCodeToMsg = map[ErrCode]string{
 		ErrOk:               "成功",
@@ -49,6 +51,7 @@ var (
 		ErrTimeFormat:       "时间格式不正确",
 		ErrDB:               "数据库错误",
 		ErrAppNotExistError: "应用不存在",
+		ErrAppExistError:    "应用已存在",
 	}
 	Log_Dir     = ""
 	Ios_Channel = ""
@@ -119,6 +122,7 @@ const (
 	ErrTimeFormat       = ErrCode(1006)
 	ErrDB               = ErrCode(1007)
 	ErrAppNotExistError = ErrCode(1008)
+	ErrAppExistError    = ErrCode(1009)
 )
 
 const (
