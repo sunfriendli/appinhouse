@@ -27,7 +27,7 @@ sudo apt-get -y install vsftpd
 #create user
 echo "create user..."
 INHOUSE_DEFAULT_LOCATION="/home/appinhouse"
-GIT_DIR=appinhouse_git
+GIT_DIR=git
 APPINHOUSE_HOME=$INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/server
 APPS=$(echo "$(grep 'app_names' $APPINHOUSE_HOME/conf/app.conf)" |sed 's/ //g'|cut -c 11-)
 ANDROID_DEV_PATH=dev/android/data

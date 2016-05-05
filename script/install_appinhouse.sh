@@ -6,7 +6,7 @@
 
 usage()
 {
-    echo "Usage: ${0##*/} password redis_address redis_password(optional)"
+    echo "Usage: ${0##*/} password redis_address(optional) redis_password(optional)"
     exit 1
 }
 
@@ -17,9 +17,6 @@ USER=appinhouse
 
 if [ -z "$INHOUSE_PASSWD" ]; then
     echo "create a user by defaul.username is $USER"
-   usage
-fi
-if [ -z "$REDIS_ADDR" ]; then
    usage
 fi
 
@@ -97,20 +94,18 @@ echo "deploy file in $INHOUSE_DEFAULT_LOCATION/$TARGET"
 
 sudo ln -s $INHOUSE_DEFAULT_LOCATION/$GIT_DIR/src/appinhouse/web/static $INHOUSE_DEFAULT_LOCATION/$APPINHOUSE_WEB
 
-echo 'set env...'
-REDIS_CONF=$(echo "$(grep 'conf_dir' $APPINHOUSE_HOME/conf/app.conf)" |sed 's/ //g'|cut -c 10-)
-REDIS_ADDR_NAME=$(echo "$(grep 'env_addr_name' $APPINHOUSE_HOME/conf/app.conf)" |sed 's/ //g'|cut -c 15-)
-REDIS_PASSWORD_NAME=$(echo "$(grep 'env_password_name' $APPINHOUSE_HOME/conf/app.conf)" |sed 's/ //g'|cut -c 19-)
-REDIS_DIR=$(dirname $REDIS_CONF)
-if [ ! -d $REDIS_DIR ];
-    then
-        echo "mkdir $REDIS_DIR"
-        sudo mkdir -p $REDIS_DIR
+
+echo 'set redis...'
+INHOUSE_CONF=$INHOUSE_DEFAULT_LOCATION/$TARGET/conf/app.conf
+REDIS_ADDR_OLD=$(grep addr $INHOUSE_CONF)
+REDIS_PASSWORD_OLD=$(grep password $INHOUSE_CONF)
+
+if [ -n "$REDIS_ADDR" ]; then
+	sed -i "s/$REDIS_ADDR_OLD/addr = $REDIS_ADDR/" $INHOUSE_CONF
 fi
-sudo echo ""  | sudo tee $REDIS_CONF
-echo "$REDIS_ADDR_NAME=$REDIS_ADDR"       | sudo tee -a $REDIS_CONF
+
 if [ -n "$REDIS_PASSWORD" ]; then
-  echo "$REDIS_PASSWORD_NAME=$REDIS_PASSWORD"    | sudo tee -a $REDIS_CONF
+	sed -i "s/$REDIS_PASSWORD_OLD/password = $REDIS_PASSWORD/" $INHOUSE_CONF
 fi
 
 #make appinhouse to a service

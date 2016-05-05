@@ -20,7 +20,7 @@ echo 'start'
 cd ../../../..
 CURDIR=`pwd`
 HOME=env | grep ^HOME= | cut -c 6-
-TARGET=appinhouse_server
+TARGET=server
 APPNAME=server
 
 export GOPATH="$CURDIR"

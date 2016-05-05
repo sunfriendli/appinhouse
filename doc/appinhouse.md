@@ -63,7 +63,7 @@ chmod +x *.sh
 ```bash
 sudo cp appinhouse.sh /etc/init.d/appinhouse
 sudo chmod +x /etc/init.d/appinhouse
-echo "ARTIFACT=/home/appinhouse/appinhouse_server/inhouse_service"       | sudo tee -a /etc/default/appinhouse
+echo "ARTIFACT=/home/appinhouse/server/appinhouse"       | sudo tee -a /etc/default/appinhouse
 echo "APPINHOUSE_USER=appinhouse"      | sudo tee -a /etc/default/appinhouse
 sudo update-rc.d appinhouse defaults
 sudo service appinhouse start
