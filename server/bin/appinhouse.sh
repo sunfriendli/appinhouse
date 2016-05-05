@@ -73,7 +73,7 @@ case "$ACTION" in
         running "$PID_FILE"
         case "$?" in
             0) echo "$NAME running";;
-            *) echo $NAME not runuing;; 
+            *) echo $NAME not running;; 
         esac
         ;;
     start)

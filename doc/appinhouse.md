@@ -51,20 +51,10 @@ git clone https://github.com/rog2/appinhouse.git
 ##### 打包
 
 ```bash
-cd appinhouse/inhouse_service/bin
+cd appinhouse/server/bin
 chmod +x *.sh
-./pack.sh
+./pack.sh install 
 ```
-##### 设置redis数据库配置文件
-
-###### 地址
-
-取值于`app.conf`下`[redis]`的`addr`，见[***应用配置文档***](conf.md#addr)。
-
-###### 密码
-
-取值于`app.conf`下`[redis]`的`password`，见[***应用配置文档***](conf.md#password)。
-
 
 ##### 运行
 

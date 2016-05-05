@@ -34,10 +34,6 @@
 
 网站的域名。
 
-##### app_mames
-
-接入方应用的名字。例：`test1;test2`。
-
 ##### min_residue 
 
 版本最小保留数。
@@ -54,17 +50,13 @@
 
 `[redis]`  
 
-#### conf_dir
+#### addr
 
-存储redis地址和密码的文件
+redis的地址
 
-#### env_addr_name
+#### password
 
-redis地址的key
-
-#### env_password_name
-
-redis密码的key
+redis密码
 
 #### pool_siz
 
