@@ -64,7 +64,7 @@ func (c *MainController) Apps() {
 }
 func (c *MainController) AddApp() {
 	dto := NewSuccessResponseDto()
-	app := c.GetString("name")
+	app := c.Ctx.Input.Param(":app")
 	if app == "" || len(app) > App_Name_Len {
 		beego.Info("AddApp param name  error !name:", app)
 		c.setError4Dto(ErrorParam, dto)
@@ -94,7 +94,7 @@ func (c *MainController) AddApp() {
 
 func (c *MainController) DelApp() {
 	dto := NewSuccessResponseDto()
-	app := c.GetString("name")
+	app := c.Ctx.Input.Param(":app")
 	if app == "" || len(app) > App_Name_Len {
 		beego.Info("DelApp param name  error !name:", app)
 		c.setError4Dto(ErrorParam, dto)
