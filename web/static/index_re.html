@@ -8,7 +8,7 @@
             var bIsIphone = sUserAgent.match(/iphone/i) == "iphone";
             var bIsIpod = sUserAgent.match(/ipod/i) == "ipod";
             if (bIsIpad || bIsIphone || bIsIpod ) {
-                window.location.href = "index_mobile.html";
+                window.location.href = "index_mobile.html?app="+app;
         
                 return
             }
