@@ -35,7 +35,7 @@
 
 - [创建应用](#创建应用)
 - [删除应用](#删除应用)
-- [生成描述文件](#删除应用)
+- [生成描述文件](#生成描述文件)
 - [整理历史版本](#整理历史版本)
 
 
@@ -84,7 +84,7 @@
 
 ### 时间格式
 
-`2006-01-02 15:04:02`
+`2016-05-10T02:11:50Z`
 
 ### 创建应用
 
@@ -644,11 +644,11 @@ Host: 域名
 | [time](#时间格式)|  打包时间|  string| 是| 否|
 | [channel](#ios_channel)|  渠道|  string| 是| 否|
 | url|  构建url|  string| 是| 否|
-| softwareUrl|  版本描述信息|  string| 是| 否|
+| software_url|  版本描述信息|  string| 是| 否|
 | id|  plist中bundle-identifier|  string| platform==ios&&channel==appstore?是:否| 否|
 | title| plist中title|  string| platform==ios&&channel==appstore?是:否| 否|
-| fullUrl| plist中full-size-image|  string| 否| 否|
-| fuldisplayUrllUrl|  plist中display-image|  string| 否| 否|
+| full_url| plist中full-size-image|  string| 否| 否|
+| display_url|  plist中display-image|  string| 否| 否|
 
 
 ##### 请求实例
@@ -661,9 +661,9 @@ Host: 域名
 Content-Type: application/x-www-form-urlencoded
 
 version=1.0.2&url=http://www.xxxx.xxx
-&channel=appstore&time=2016-04-12 00:00:00
+&channel=appstore&time=2016-05-10T02:11:50Z
 &description=这个版本修改了bug
-&softwareUrl=https://appinhouse.rog2.org/download/rog2/dev/ios/data/1.0.0/ROG2NewD_1.0.0.ipa
+&software_url=https://appinhouse.rog2.org/download/rog2/dev/ios/data/1.0.0/ROG2NewD_1.0.0.ipa
 &id=aaa&title=aaaa
 
 ```

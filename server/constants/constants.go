@@ -145,7 +145,7 @@ const (
 	Underline  = "_"
 	Vertical   = "|"
 	Log_File   = "appinhouse.log"
-	F_Datetime = "2006-01-02 15:04:02"
+	F_Datetime = "2016-05-10T02:11:50Z"
 	Https      = "https://"
 )
 const (

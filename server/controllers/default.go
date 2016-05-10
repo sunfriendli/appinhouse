@@ -341,16 +341,16 @@ func (c *MainController) Desc() {
 	description := c.GetString("description")
 	url := c.GetString("url")
 	channel := c.GetString("channel")
-	softwareUrl := c.GetString("softwareUrl")
+	softwareUrl := c.GetString("software_url")
 	//当生成ios描述文件时，生成plist需要
 	id := c.GetString("id")
 	title := c.GetString("title")
-	fullUrl := c.GetString("fullUrl")
-	displayUrl := c.GetString("displayUrl")
+	fullUrl := c.GetString("full_url")
+	displayUrl := c.GetString("display_url")
 
 	if ctime == "" || version == "" || channel == "" || softwareUrl == "" {
 		beego.Info("Desc Params fail version:", version, "time:", ctime, "description:", description,
-			"softwareUrl", softwareUrl, "channel:", channel)
+			"software_url", softwareUrl, "channel:", channel)
 		c.setError4Dto(ErrorParam, dto)
 		return
 	}
@@ -380,11 +380,11 @@ func (c *MainController) Desc() {
 
 	if !existHttpPath(softwareUrl) {
 		beego.Info("Desc error archive file not exsit,url:", softwareUrl)
-		c.setError4Dto(err, dto)
+		c.setError4Dto(ErrorIPANotExistError, dto)
 		return
 	}
-	score, err := time.Parse(F_Datetime, ctime)
-	if err != nil {
+	score, err := time.Parse(time.RFC3339, ctime)
+	if len(ctime) != len(F_Datetime) || err != nil {
 		beego.Info("Desc error ,time:", ctime)
 		c.setError4Dto(ErrorTimeFormat, dto)
 		return
@@ -565,7 +565,12 @@ func converInfoTOItem(info *models.DescInfo, platform Platform, environment Envi
 	}
 	item.Channel = info.Channel
 	item.Description = info.Description
-	item.Time = info.Time
+
+	t, _ := time.Parse(time.RFC3339, info.Time)
+
+	rs := []rune(t.Local().String())
+	item.Time = string(rs[0 : len(F_Datetime)-1])
+
 	item.Url = info.Url
 	item.Version = info.Version
 

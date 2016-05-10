@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/site.min.css">
 
     <script type="text/javascript" src="js/site.min.js"></script>
+    <script type="text/javascript" src="js/inhouse.js"></script>
   </head>
   <body>
     <!--nav-->
@@ -29,6 +30,8 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="menu1">
                                 <ul class="nav navbar-nav  navbar-right">
+                                   <li class="active"><a href="index.html"id="zuixin">首页</a></li>
+                                   <li class="divider"></li>
                                    <li class="active"><a href="javascript:;" id="zuixin">最新</a></li>
                                    <li class="divider"></li>
                                    <li class="active"><a href="javascript:;" id="fabu">发布</a></li>
@@ -44,7 +47,7 @@
     <!--header-->
     <div class="container-fluid">
     <!--documents-->
-        <div class="row row-offcanvas ">
+        <div class="row row-offcanvas row-offcanvas-left">
        
           <div class="col-xs-12 col-sm-9 content">
             <div class="panel panel-default">
@@ -54,6 +57,7 @@
               <div class="panel-body " >
               <!-- 最新 的页面 start -->
                 <div class="content-row" id="zuixin_content" >
+                
                   <div class="col-md-6" >
                       <div class="panel">
                         <ul id="myTab1" class="nav nav-tabs nav-justified">
@@ -76,6 +80,9 @@
                                   <p id="release_version"></p>
                                   <h3>时间</h3>
                                   <p id="release_time"></p>
+                                  <h3>构建url</h3>
+                                  <p> <a id="release_url" href="#">传送门</a> 
+                                  </p>
                                   <h3>描述</h3>
                                   <p id="release_desc"></p>
                                   <p ><a id="release_down" href="#" class="btn btn-warning" role="button">下载</a>  </p>
@@ -97,6 +104,9 @@
                                   <p id="dev_version"></p>
                                   <h3>时间</h3>
                                   <p id="dev_time"></p>
+                                  <h3>构建url</h3>
+                                  <p> <a id="dev_url" href="#">传送门</a> 
+                                  </p>
                                   <h3>描述</h3>
                                   <p id="dev_desc"></p>
                                   <p ><a id="dev_down" href="#"  class="btn btn-success" role="button">下载</a> </p>
@@ -168,8 +178,7 @@
 
  
 <script type="text/javascript">
-   var domain="https://apps.intranet.rog2.org/"
-    //var domain="http://localhost/"
+    var app=getQueryString("app")
     kaifa();
     initpage();
     zuixin();
@@ -180,11 +189,12 @@
     fabuPervious();
 
    function initpage() {
+     $("#panel_title").text(">>"+app+">>最新构建")
     reqZuixin();
    }
    function zuixin() {
       $("#zuixin").click(function(){
-        $("#panel_title").text("<<最新构建")
+        $("#panel_title").text(">>"+app+">>最新构建")
          reqZuixin();
         $('#menu1').removeClass('in');
         });
@@ -195,7 +205,7 @@
      $('#fabu_content').hide();
     $.ajax({
         type: 'GET',
-        url: domain+'api/rog2/last',
+        url: 'api/'+app+'/last',
         success: function (data) {
             var code=data.code;
             if(code!=0){
@@ -218,7 +228,15 @@
                     $('#dev_time').text(item.time);
                     $('#dev_version').text(item.version);
                     $('#dev_desc').text(item.description);
-                   
+
+                    if(item.url==""){
+                      $('#dev_url').unbind('click')
+                      $('#dev_url').text('无')
+                    }else{
+                      $('#dev_url').attr('href', item.url);
+                    }
+
+
                     if (item.down=="") {
                       $('#dev_down').unbind('click')
                        $('#dev_down').text('失效')
@@ -246,6 +264,14 @@
                     $('#release_version').text(item.version);
                     $('#release_time').text(item.time);
                     $('#release_desc').text(item.description);
+
+                    if(item.url==""){
+                      $('#release_url').unbind('click')
+                      $('#release_url').text('无')
+                    }else{
+                      $('#release_url').attr('href', item.url);
+                    }
+
                     if (item.down=="") {
                       $('#release_down').unbind('click')
                        $('#release_down').text('失效')
@@ -280,7 +306,7 @@
  
   function kaifa() {
        $("#kaifa").click(function(){
-        $("#panel_title").text("<<开发版历史记录")
+        $("#panel_title").text(">>"+app+">>开发版历史记录")
            $('#kaifa_page').val(0);
           $('#kaifa_total_page').val(0);
           reqKaifa("first");
@@ -317,7 +343,7 @@
              }
               $.ajax({
               type: 'GET',
-              url: domain+'api/rog2/mobile/list/dev?page='+opage,
+              url: 'api/'+app+'/mobile/list/dev?page='+opage,
               success: function (data) {
                  var code=data.code;
                   if(code!=0){
@@ -345,6 +371,13 @@
                       }
                       down_str="下载"
                     }
+                    var item_url="#"
+                    var url_str="无"
+                    if(item.url!=""){
+                      item_url=item.url
+                      url_str="传送门"
+                    }
+
                     var collapse="collapse";
                     if(index==0){
                         collapse="collapse in"
@@ -357,10 +390,25 @@
                             '</h4>'+
                           '</div>'+
 
-                          '<div id="kaifa_panel'+index+'" class="panel-collapse '+collapse+'">'+
+                          '<div id="fabu_panel'+index+'" class="panel-collapse '+collapse+'">'+
                             '<div class="panel-body">'+
-                              '<p><span>'+item.version+'</span> <a href="'+down+'" class="btn btn-link"><span class="badge badge-primary">'+down_str+'</span></a></p>'+
-                             item.description+
+                              
+                           '<div class="thumbnail" >'+
+                            
+                                '<div class="caption text-center">'+
+                              
+                                 
+                                  '<h3>版本</h3>'+
+                                  '<p >'+item.version+'</p>'+
+                                 
+                                  '<h3>构建url</h3>'+
+                                  '<p> <a " href="'+item_url+'">'+url_str+'</a></p>' +
+                                  
+                                  '<h3>描述</h3>'+
+                                  '<p >'+ item.description+'</p>'+
+                                  '<p ><a id="release_down" href="'+down+'" class="btn btn-warning" role="button">'+down_str+'</a>  </p>'+
+                                '</div>'+
+                              '</div>'+
                             '</div>'+
                           '</div>'+
                         '</div>')
@@ -390,7 +438,7 @@
     }
    function fabu() {
        $("#fabu").click(function(){
-           $("#panel_title").text("<<发布版历史记录")
+           $("#panel_title").text(">>"+app+">>发布版历史记录")
           $('#fabu_page').val(0);
           $('#fabu_total_page').val(0);
           reqFabu("fiirt");
@@ -427,7 +475,7 @@
              }
               $.ajax({
               type: 'GET',
-              url: domain+'api/rog2/mobile/list/release?page='+opage,
+              url: 'api/'+app+'/mobile/list/release?page='+opage,
               success: function (data) {
                  var code=data.code;
                   if(code!=0){
@@ -458,7 +506,12 @@
                     if(index==0){
                         collapse="collapse in"
                     }
-                   
+                   var item_url="#"
+                    var url_str="无"
+                    if(item.url!=""){
+                      item_url=item.url
+                      url_str="传送门"
+                    }
                     $('#fabu_panel_list').append('<div class="panel">'+
                           '<div class="panel-heading" >'+
                             '<h4 class="panel-title">'+
@@ -466,10 +519,27 @@
                             '</h4>'+
                           '</div>'+
 
+
+                           
                           '<div id="fabu_panel'+index+'" class="panel-collapse '+collapse+'">'+
                             '<div class="panel-body">'+
-                              '<p><span>'+item.version+'</span> <a href="'+down+'" class="btn btn-link"><span class="badge badge-primary">'+down_str+'</span></a></p>'+
-                             item.description+
+                              
+                           '<div class="thumbnail" >'+
+                            
+                                '<div class="caption text-center">'+
+                              
+                                 
+                                  '<h3>版本</h3>'+
+                                  '<p >'+item.version+'</p>'+
+                                 
+                                  '<h3>构建url</h3>'+
+                                  '<p> <a " href="'+item_url+'">'+url_str+'</a></p>' +
+                                  
+                                  '<h3>描述</h3>'+
+                                  '<p >'+ item.description+'</p>'+
+                                  '<p ><a id="release_down" href="'+down+'" class="btn btn-warning" role="button">'+down_str+'</a>  </p>'+
+                                '</div>'+
+                              '</div>'+
                             '</div>'+
                           '</div>'+
                         '</div>')
