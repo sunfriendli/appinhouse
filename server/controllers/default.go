@@ -23,13 +23,13 @@ type MainController struct {
 func (c *MainController) Apps() {
 
 	dto := NewSuccessAppsResponseDto()
-	page, err := c.GetInt("page", 1)
+	page, err := c.GetInt("page")
 	if err != nil || page <= 0 || page > Max_Page {
 		beego.Info("GetApps param page  error !page:", page)
 		c.setError4Dto(ErrorParam, dto)
 		return
 	}
-	count, err := models.AppDao.Count()
+	count, err := models.AppListDao.Count()
 	if err != nil {
 		beego.Error("GetApps count  error :" + err.Error())
 		c.setError4Dto(ErrorParam, dto)
@@ -50,14 +50,56 @@ func (c *MainController) Apps() {
 	if end > count {
 		end = count - 1
 	}
-	ret, err := models.AppDao.GetList(start, end)
+	apps, err := models.AppListDao.GetList(start, end)
 	if err != nil {
-		c.setError4Dto(ErrorPageOut, dto)
+		c.setError4Dto(err, dto)
 		return
 	}
-	dto.Items = ret
-	dto.Page = page
-	dto.TotalPage = util.GetTotalPage(count, Page_Size)
+	if apps != nil {
+		ret, err := models.AppDao.MGet(apps)
+		if err != nil {
+			c.setError4Dto(err, dto)
+			return
+		}
+		items := make([]*AppDto, 0, len(ret))
+		for _, info := range ret {
+			items = append(items, converAppTOItem(info))
+		}
+		dto.Items = items
+		dto.Page = page
+		dto.TotalPage = util.GetTotalPage(count, Page_Size)
+	}
+
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
+func (c *MainController) App() {
+	dto := NewSuccessAppResponseDto()
+	app := c.Ctx.Input.Param(":app")
+
+	if app == "" || len(app) > App_Name_Len {
+		beego.Info("App param name  error !name:", app)
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	has, err := models.AppDao.Exist(app)
+	if err != nil {
+		beego.Info("App Exist app  error !name:", app, "error:", err.Error())
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	if has {
+		app, err := models.AppDao.Get(app)
+		if err != nil {
+			beego.Info("App get app  error !name:", app, "error:", err.Error())
+			c.setError4Dto(ErrorParam, dto)
+			return
+		}
+		dto.Item = converAppTOItem(app)
+	} else {
+		c.setError4Dto(ErrorAppNotExistError, dto)
+		return
+	}
 
 	c.Data["json"] = dto
 	c.ServeJSON()
@@ -65,8 +107,10 @@ func (c *MainController) Apps() {
 func (c *MainController) AddApp() {
 	dto := NewSuccessResponseDto()
 	app := c.Ctx.Input.Param(":app")
-	if app == "" || len(app) > App_Name_Len {
-		beego.Info("AddApp param name  error !name:", app)
+	desc := c.GetString("description")
+
+	if app == "" || len(app) > App_Name_Len || desc == "" {
+		beego.Info("AddApp param name  error !name:", app, "desc:", desc)
 		c.setError4Dto(ErrorParam, dto)
 		return
 	}
@@ -77,14 +121,59 @@ func (c *MainController) AddApp() {
 		return
 	}
 	if !has {
-		err = models.AppDao.Save(app)
+		appinfo := new(models.AppInfo)
+		appinfo.App = app
+		appinfo.Description = desc
+		err = models.AppDao.Save(appinfo)
+		if err != nil {
+			beego.Info("AddApp save app  error !name:", app, "error:", err.Error())
+			c.setError4Dto(ErrorParam, dto)
+			return
+		}
+
+		err = models.AppListDao.Save(app)
+		if err != nil {
+			beego.Info("AddApp save applist  error !name:", app, "error:", err.Error())
+			c.setError4Dto(ErrorParam, dto)
+			return
+		}
+
+	} else {
+		c.setError4Dto(ErrorAppExistError, dto)
+		return
+	}
+
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
+func (c *MainController) ModifyApp() {
+	dto := NewSuccessResponseDto()
+	app := c.Ctx.Input.Param(":app")
+	desc := c.GetString("description")
+
+	if app == "" || len(app) > App_Name_Len || desc == "" {
+		beego.Info("ModifyApp param name  error !name:", app, "desc:", desc)
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	has, err := models.AppDao.Exist(app)
+	if err != nil {
+		beego.Info("ModifyApp Exist app  error !name:", app, "error:", err.Error())
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	if has {
+		appinfo := new(models.AppInfo)
+		appinfo.App = app
+		appinfo.Description = desc
+		err = models.AppDao.Save(appinfo)
 		if err != nil {
 			beego.Info("AddApp save app  error !name:", app, "error:", err.Error())
 			c.setError4Dto(ErrorParam, dto)
 			return
 		}
 	} else {
-		c.setError4Dto(ErrorAppExistError, dto)
+		c.setError4Dto(ErrorAppNotExistError, dto)
 		return
 	}
 
@@ -100,11 +189,16 @@ func (c *MainController) DelApp() {
 		c.setError4Dto(ErrorParam, dto)
 		return
 	}
-
-	err := models.AppDao.Remove(app)
+	err := models.AppListDao.Remove(app)
+	if err != nil {
+		beego.Info("DelApp  remove applist error !name:", app, "error:", err.Error())
+		c.setError4Dto(err, dto)
+		return
+	}
+	err = models.AppDao.Remove(app)
 	if err != nil {
 		beego.Info("DelApp  remove app error !name:", app, "error:", err.Error())
-		c.setError4Dto(ErrorParam, dto)
+		c.setError4Dto(err, dto)
 		return
 	}
 
@@ -122,16 +216,29 @@ func (c *MainController) Last() {
 		c.setError4Dto(err, dto)
 		return
 	}
+	toffset := 0
+	toffsetStr := c.GetString("time_offset")
+	if toffsetStr == "" {
+		toffset = Not_Offset
+	} else {
+		toffset, err := c.GetInt("time_offset")
+		if err != nil {
+			beego.Info("Last param toffset  error !time_offset:", toffset, "error:", err.Error())
+			c.setError4Dto(ErrorParam, dto)
+			return
+		}
+	}
+
 	osType := util.CheckAgent(userAgent)
 	ret := make([]*ItemDto, 0, 4)
 	switch osType {
 	case util.OS_ANDROID:
-		androiddev, err := getLastOne(Android, Dev, app)
+		androiddev, err := getLastOne(Android, Dev, app, toffset)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
 		}
-		androidre, err := getLastOne(Android, Release, app)
+		androidre, err := getLastOne(Android, Release, app, toffset)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
@@ -144,12 +251,12 @@ func (c *MainController) Last() {
 		}
 		break
 	case util.OS_IOS:
-		iosdev, err := getLastOne(Ios, Dev, app)
+		iosdev, err := getLastOne(Ios, Dev, app, toffset)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
 		}
-		iosre, err := getLastOne(Ios, Release, app)
+		iosre, err := getLastOne(Ios, Release, app, toffset)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
@@ -162,22 +269,22 @@ func (c *MainController) Last() {
 		}
 		break
 	default:
-		iosdev, err := getLastOne(Ios, Dev, app)
+		iosdev, err := getLastOne(Ios, Dev, app, toffset)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
 		}
-		iosre, err := getLastOne(Ios, Release, app)
+		iosre, err := getLastOne(Ios, Release, app, toffset)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
 		}
-		androiddev, err := getLastOne(Android, Dev, app)
+		androiddev, err := getLastOne(Android, Dev, app, toffset)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
 		}
-		androidre, err := getLastOne(Android, Release, app)
+		androidre, err := getLastOne(Android, Release, app, toffset)
 		if err != nil {
 			dto.Code = GetErrCode(err)
 			break
@@ -205,7 +312,7 @@ func (c *MainController) Last() {
 }
 func (c *MainController) List() {
 	dto := NewSuccessItemsResponsePageDto()
-	page, err := c.GetInt("page", 1)
+	page, err := c.GetInt("page")
 	if err != nil || page <= 0 || page > Max_Page {
 		beego.Info("List param page  error !page:", page)
 		c.setError4Dto(ErrorParam, dto)
@@ -232,10 +339,22 @@ func (c *MainController) List() {
 		c.setError4Dto(err, dto)
 		return
 	}
+	toffset := 0
+	toffsetStr := c.GetString("time_offset")
+	if toffsetStr == "" {
+		toffset = Not_Offset
+	} else {
+		toffset, err := c.GetInt("time_offset")
+		if err != nil {
+			beego.Info("List param toffset  error !time_offset:", toffset, "error:", err.Error())
+			c.setError4Dto(ErrorParam, dto)
+			return
+		}
+	}
 	start := util.GetStartForPage(page, Page_Size)
 	end := util.GetEndForPage(page, Page_Size)
 
-	ret, total, err := getList(platform, env, start, end, app)
+	ret, total, err := getList(platform, env, start, end, app, toffset)
 
 	if err != nil {
 		dto.Code = GetErrCode(err)
@@ -250,7 +369,7 @@ func (c *MainController) List() {
 }
 func (c *MainController) List4Mobile() {
 	dto := NewSuccessItemsResponsePageDto()
-	page, err := c.GetInt("page", 1)
+	page, err := c.GetInt("page")
 	if err != nil || page <= 0 || page > Max_Page {
 		beego.Info("List4Mobile param page  error !page:", page)
 		c.setError4Dto(ErrorParam, dto)
@@ -270,6 +389,18 @@ func (c *MainController) List4Mobile() {
 		c.setError4Dto(err, dto)
 		return
 	}
+	toffset := 0
+	toffsetStr := c.GetString("time_offset")
+	if toffsetStr == "" {
+		toffset = Not_Offset
+	} else {
+		toffset, err := c.GetInt("time_offset")
+		if err != nil {
+			beego.Info("List4Mobile param toffset  error !time_offset:", toffset, "error:", err.Error())
+			c.setError4Dto(ErrorParam, dto)
+			return
+		}
+	}
 	start := util.GetStartForPage(page, Page_Size)
 	end := util.GetEndForPage(page, Page_Size)
 	userAgent := c.Ctx.Request.UserAgent()
@@ -278,13 +409,13 @@ func (c *MainController) List4Mobile() {
 	total := 0
 	switch osType {
 	case util.OS_ANDROID:
-		ret, total, err = getList(Android, env, start, end, app)
+		ret, total, err = getList(Android, env, start, end, app, toffset)
 		break
 	case util.OS_IOS:
-		ret, total, err = getList(Ios, env, start, end, app)
+		ret, total, err = getList(Ios, env, start, end, app, toffset)
 		break
 	default:
-		ret, total, err = getList(Android, env, start, end, app)
+		ret, total, err = getList(Android, env, start, end, app, toffset)
 		break
 	}
 
@@ -383,8 +514,8 @@ func (c *MainController) Desc() {
 		c.setError4Dto(ErrorIPANotExistError, dto)
 		return
 	}
-	score, err := time.Parse(time.RFC3339, ctime)
-	if len(ctime) != len(F_Datetime) || err != nil {
+	score, err := time.Parse(ISO_Datetime, ctime)
+	if err != nil {
 		beego.Info("Desc error ,time:", ctime)
 		c.setError4Dto(ErrorTimeFormat, dto)
 		return
@@ -522,7 +653,7 @@ func (c *MainController) setError4Dto(err error, dto ResponseDto) {
 	c.Data["json"] = dto
 	c.ServeJSON()
 }
-func getLastOne(platform Platform, environment Environment, app string) (*ItemDto, error) {
+func getLastOne(platform Platform, environment Environment, app string, toffset int) (*ItemDto, error) {
 	version, err := models.DescListDao.GetLast(platform, environment, app)
 	if err != nil {
 		beego.Error("getLastOne  GetLast error:" + err.Error())
@@ -536,9 +667,9 @@ func getLastOne(platform Platform, environment Environment, app string) (*ItemDt
 		beego.Error("getLastOne  Get error:" + err.Error())
 		return nil, err
 	}
-	return converInfoTOItem(info, platform, environment, app), nil
+	return converInfoTOItem(info, platform, environment, app, toffset), nil
 }
-func converInfoTOItem(info *models.DescInfo, platform Platform, environment Environment, app string) *ItemDto {
+func converInfoTOItem(info *models.DescInfo, platform Platform, environment Environment, app string, toffset int) *ItemDto {
 
 	item := new(ItemDto)
 	switch platform {
@@ -566,18 +697,47 @@ func converInfoTOItem(info *models.DescInfo, platform Platform, environment Envi
 	item.Channel = info.Channel
 	item.Description = info.Description
 
-	t, _ := time.Parse(time.RFC3339, info.Time)
-
-	rs := []rune(t.Local().String())
-	item.Time = string(rs[0 : len(F_Datetime)-1])
+	item.Time = converToClientTime(info.Time, toffset)
 
 	item.Url = info.Url
 	item.Version = info.Version
 
 	return item
 }
+func converToClientTime(ctime string, toffset int) string {
+	l := len(ctime)
+	if toffset == Not_Offset {
+		if len(ISO_Datetime) == l {
+			t, _ := time.Parse(ISO_Datetime, ctime)
+			rs := []rune(t.Local().String())
+			return string(rs[0 : len(ISO_Datetime)-5])
+		} else if len(UTC_Datetime) == l {
+			t, _ := time.Parse(time.RFC3339, ctime)
+			rs := []rune(t.Local().String())
+			return string(rs[0 : len(UTC_Datetime)-1])
+		} else {
+			return ctime
+		}
 
-func getList(platform Platform, environment Environment, start, end int, app string) ([]*ItemDto, int, error) {
+	} else {
+		if len(ISO_Datetime) == l {
+			return util.FixUTCTimeToOffsetSpecifiedZoneTime(toffset*60, ctime, ISO_Datetime, View_Datetime)
+		} else if len(UTC_Datetime) == l {
+			return util.FixUTCTimeToOffsetSpecifiedZoneTime(toffset*60, ctime, UTC_Datetime, View_Datetime)
+		} else {
+			return ctime
+		}
+	}
+
+}
+func converAppTOItem(info *models.AppInfo) *AppDto {
+
+	item := new(AppDto)
+	item.App = info.App
+	item.Desc = info.Description
+	return item
+}
+func getList(platform Platform, environment Environment, start, end int, app string, toffset int) ([]*ItemDto, int, error) {
 
 	count, err := models.DescListDao.Count(platform, environment, app)
 	if err != nil {
@@ -608,7 +768,7 @@ func getList(platform Platform, environment Environment, start, end int, app str
 	items := make([]*ItemDto, 0, size)
 	infos, err := models.DescDao.MGet(platform, environment, app, versions)
 	for _, info := range infos {
-		items = append(items, converInfoTOItem(info, platform, environment, app))
+		items = append(items, converInfoTOItem(info, platform, environment, app, toffset))
 	}
 
 	return items, count, nil

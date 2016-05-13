@@ -140,13 +140,16 @@ const (
 	Plist       = ".plist"
 )
 const (
-	Slash      = "/"
-	Colon      = ":"
-	Underline  = "_"
-	Vertical   = "|"
-	Log_File   = "appinhouse.log"
-	F_Datetime = "2016-05-10T02:11:50Z"
-	Https      = "https://"
+	Slash         = "/"
+	Colon         = ":"
+	Underline     = "_"
+	Vertical      = "|"
+	Log_File      = "appinhouse.log"
+	ISO_Datetime  = "2006-01-02T15:04:05-0700"
+	UTC_Datetime  = "2006-01-02T15:04:05Z"
+	View_Datetime = "2006-01-02 15:04:05"
+	Https         = "https://"
+	Not_Offset    = 999999999
 )
 const (
 	APK           = ArchiveFileType(0)

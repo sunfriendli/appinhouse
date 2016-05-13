@@ -10,6 +10,7 @@
 
     <script type="text/javascript" src="js/site.min.js"></script>
     <script type="text/javascript" src="js/inhouse.js"></script>
+    <script type="text/javascript" src="js/timezone.js"></script>
   </head>
   <body>
     <!--nav-->
@@ -30,7 +31,7 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="menu2">
                                 <ul class="nav navbar-nav">
-                                  <li class="active"><a href="index.html"id="zuixin">首页</a></li>
+                                  <li class="active"><a href="index.html">首页</a></li>
                                   <li class="active"><a href="#"id="zuixin">最新</a></li>
                                   <li class="dropdown">
                                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">ios <b class="caret"></b></a>
@@ -235,11 +236,6 @@
                    </div>
                  
                 </div>
-           
-
-                
-
-             
               </div><!-- panel body -->
             </div>
         </div><!-- content -->
@@ -251,6 +247,8 @@
   </body>
 </html>
 <script type="text/javascript">
+   var toffset=getTimeOffset()
+
    var app=getQueryString("app")
    initpage();
    zuixin();
@@ -337,7 +335,7 @@
     $("#panel_title1").text(">>"+app+">>最新构建");
     $.ajax({
         type: 'GET',
-        url: 'api/'+app+'/last',
+        url: 'api/'+app+'/last?time_offset='+toffset,
         success: function (data) {
             var code=data.code;
             if(code!=0){
@@ -505,22 +503,22 @@
               if(status=="pervious"){
 
                   opage=opage-1;
-              }else{
+              }else{""
                  opage=opage+1;
               }
              
              }
-             var url="api/"+app+"/list/ios/release?page="+opage;
+             var url="api/"+app+"/list/ios/release?page="+opage+"&time_offset="+toffset;
 
              if(platform=="ios"){
                 if(env!="release"){
-                  url="api/"+app+"/list/ios/dev?page="+opage;
+                  url="api/"+app+"/list/ios/dev?page="+opage+"&time_offset="+toffset;
                 }
              }else{
                 if(env!="release"){
-                  url="api/"+app+"/list/android/dev?page="+opage;
+                  url="api/"+app+"/list/android/dev?page="+opage+"&time_offset="+toffset;
                 }else{
-                  url="api/"+app+"/list/android/release?page="+opage;
+                  url="api/"+app+"/list/android/release?page="+opage+"&time_offset="+toffset;
                 }
              }
            

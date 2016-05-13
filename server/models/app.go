@@ -3,76 +3,111 @@ package models
 
 import (
 	. "appinhouse/server/constants"
+	"bytes"
+	"encoding/json"
 	"time"
 
+	"github.com/astaxie/beego"
 	"gopkg.in/redis.v3"
-
-	"bytes"
 )
 
-//type AppDao struct {
-//	client *redis.Client
-//}
+type AppInfo struct {
+	App         string `json:"App"`
+	Description string `json:"Desc"`
+}
 
-//func newAppDao() *AppDao {
-//	dao := &AppDao{
-//		client: redisClient,
-//	}
-//	return dao
-//}
-//func (this *AppDao) Save(app string) (bool, error) {
-//	key := this.getKey()
-//	ret, err := this.client.HSetNX(key, app, app).Result()
-//	if err != nil {
-//		return false, ErrorDB
-//	}
-//	return ret, nil
-//}
-//func (this *AppDao) Exist(app string) (bool, error) {
-//	ret, err := this.client.HExists(this.getKey(), app).Result()
-//	if err != nil && err != redis.Nil {
-//		return false, ErrorDB
-//	}
-//	return ret, nil
-//}
-//func (this *AppDao) GetAll() ([]string, error) {
-//	ret, err := this.client.HKeys(this.getKey()).Result()
-//	if err != nil {
-//		return nil, ErrorDB
-//	}
-//	return ret, nil
-//}
-//func (this *AppDao) Remove(app string) error {
-
-//	err := this.client.HDel(this.getKey(), app).Err()
-//	if err != nil {
-//		return ErrorDB
-//	}
-
-//	return nil
-//}
-//func (this *AppDao) getKey() string {
-//	var buffer bytes.Buffer
-//	buffer.WriteString(key_prefix)
-//	buffer.WriteString(Colon)
-//	buffer.WriteString(key_app)
-//	return buffer.String()
-//}
-
-//-------------------------------------------------------------
-
-type AppListDao struct {
+type AppInfoDao struct {
 	client *redis.Client
 }
 
-func newAppListDao() *AppListDao {
-	dao := &AppListDao{
+func newAppInfoDao() *AppInfoDao {
+	dao := &AppInfoDao{
+		client: redisClient,
+	}
+	return dao
+}
+func (this *AppInfoDao) Save(app *AppInfo) error {
+	key := this.getKey()
+	body, _ := json.Marshal(app)
+	err := this.client.HSet(key, app.App, string(body)).Err()
+	if err != nil {
+		return ErrorDB
+	}
+	return nil
+}
+func (this *AppInfoDao) Exist(app string) (bool, error) {
+	ret, err := this.client.HExists(this.getKey(), app).Result()
+	if err != nil && err != redis.Nil {
+		return false, ErrorDB
+	}
+	return ret, nil
+}
+
+func (this *AppInfoDao) MGet(apps []string) ([]*AppInfo, error) {
+	key := this.getKey()
+	ret, err := this.client.HMGet(key, apps...).Result()
+	if err != nil {
+		return nil, ErrorDB
+	}
+	size := len(ret)
+	infos := make([]*AppInfo, 0, size)
+	for _, v := range ret {
+		var a *AppInfo
+		b := v.(string)
+		if v == nil {
+			beego.Info("ret has nil .key:", key, " versions:", apps)
+			continue
+		}
+		json.Unmarshal([]byte(b), &a)
+		infos = append(infos, a)
+	}
+	return infos, nil
+}
+func (this *AppInfoDao) Get(app string) (*AppInfo, error) {
+	key := this.getKey()
+	ret, err := this.client.HGet(key, app).Result()
+	if err != nil && err != redis.Nil {
+		return nil, ErrorDB
+	}
+
+	if ret == "" {
+		return nil, nil
+	}
+	var info *AppInfo
+	json.Unmarshal([]byte(ret), &info)
+	return info, nil
+}
+func (this *AppInfoDao) Remove(app string) error {
+
+	err := this.client.HDel(this.getKey(), app).Err()
+	if err != nil {
+		return ErrorDB
+	}
+
+	return nil
+}
+func (this *AppInfoDao) getKey() string {
+	var buffer bytes.Buffer
+	buffer.WriteString(key_prefix)
+	buffer.WriteString(Colon)
+	buffer.WriteString(key_app)
+	return buffer.String()
+}
+
+//-------------------------------------------------------------
+
+type AppInfoListDao struct {
+	client *redis.Client
+}
+
+func newAppListDao() *AppInfoListDao {
+	dao := &AppInfoListDao{
 		client: redisClient,
 	}
 	return dao
 }
 
-func (this *AppListDao) Save(app string) error {
+func (this *AppInfoListDao) Save(app string) error {
 
 	z := redis.Z{
 		Score:  float64(time.Now().Unix()),
@@ -84,7 +119,7 @@ func (this *AppListDao) Save(app string) error {
 	}
 	return nil
 }
-func (this *AppListDao) GetList(start, end int) ([]string, error) {
+func (this *AppInfoListDao) GetList(start, end int) ([]string, error) {
 
 	ret, err := this.client.ZRange(this.getKey(), int64(start), int64(end)).Result()
 	if err != nil {
@@ -102,7 +137,7 @@ func (this *AppListDao) GetList(start, end int) ([]string, error) {
 
 	return versions, nil
 }
-func (this *AppListDao) Exist(app string) (bool, error) {
+func (this *AppInfoListDao) Exist(app string) (bool, error) {
 
 	_, err := this.client.ZRank(this.getKey(), app).Result()
 	if err != nil {
@@ -114,7 +149,7 @@ func (this *AppListDao) Exist(app string) (bool, error) {
 	}
 	return true, nil
 }
-func (this *AppListDao) Count() (int, error) {
+func (this *AppInfoListDao) Count() (int, error) {
 
 	ret, err := this.client.ZCard(this.getKey()).Result()
 	if err != nil {
@@ -123,7 +158,7 @@ func (this *AppListDao) Count() (int, error) {
 
 	return int(ret), nil
 }
-func (this *AppListDao) Remove(app string) error {
+func (this *AppInfoListDao) Remove(app string) error {
 
 	err := this.client.ZRem(this.getKey(), app).Err()
 	if err != nil {
@@ -131,7 +166,7 @@ func (this *AppListDao) Remove(app string) error {
 	}
 	return nil
 }
-func (this *AppListDao) getKey() string {
+func (this *AppInfoListDao) getKey() string {
 	var buffer bytes.Buffer
 	buffer.WriteString(key_prefix)
 	buffer.WriteString(Colon)

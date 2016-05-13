@@ -20,8 +20,8 @@ var (
 	DescListDao *DescInfoListDao
 	PlistDao    *PlistInfoDao
 	DescDao     *DescInfoDao
-	//	AppsDao     *AppDao
-	AppDao *AppListDao
+	AppDao      *AppInfoDao
+	AppListDao  *AppInfoListDao
 )
 
 const (
@@ -46,8 +46,8 @@ func InitValue() {
 	DescListDao = newDescInfoListDao()
 	PlistDao = newPlistInfoDao()
 	DescDao = newDescInfoDao()
-	//	AppsDao = newAppDao()
-	AppDao = newAppListDao()
+	AppDao = newAppInfoDao()
+	AppListDao = newAppListDao()
 }
 
 type DescInfo struct {

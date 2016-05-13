@@ -18,6 +18,8 @@ func init() {
 	beego.Router("/api/:app/delete/:platform/:environment", &controllers.MainController{}, "delete:Delete")
 	beego.Router("/api/:app/desc/:platform/:environment", &controllers.MainController{}, "post:Desc")
 	beego.Router("/api/:app/create", &controllers.MainController{}, "post:AddApp")
+	beego.Router("/api/:app/update", &controllers.MainController{}, "post:ModifyApp")
 	beego.Router("/api/:app/delete", &controllers.MainController{}, "delete:DelApp")
+	beego.Router("/api/:app/get", &controllers.MainController{}, "get:App")
 	beego.Router("/api/apps", &controllers.MainController{}, "get:Apps")
 }

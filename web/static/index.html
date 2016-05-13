@@ -14,7 +14,7 @@
   </head>
   <body>
     <!--nav-->
-    <nav role="navigation" class="navbar navbar-custom">
+    <nav role="navigation" class="navbar navbar-custom" id="history_info">
         <div class="container-fluid">
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header">
@@ -100,10 +100,16 @@
   </body>
 </html>
 <script type="text/javascript">
-  reqList("first")
+  var page =$('#page').val();
+  if (page==0){
+      ipage=1;
+      reqList("first")
+  }else{
+      ipage=parseInt(page);  
+      reqList("page")      
+  }
   page_pervious()
   page_next()
-  a()
   function deleteApp(id,app){
       $.confirm({
       'title'   : '警告',
@@ -123,6 +129,7 @@
       }
     });
   }
+
   function removeApp(id,app){
     var url="api/"+app+"/delete";
      $.ajax({
@@ -150,15 +157,24 @@
         });
    }
   function reqList(status) {
-          var opage =$('#page').val();
-
-            if (!opage){
+         
+           var opage =$('#page').val();
+          
+            if (opage==0){
                 opage=1;
+            
              }else{
-                opage=parseInt(opage);
+              opage=parseInt(opage);
               if(status=="pervious"){
+                
                   opage=opage-1;
-              }else{
+              }else if(status=="first"){
+              
+                 opage=1;
+              }else if(status=="page"){
+                
+                 opage=ipage
+              }else {
                  opage=opage+1;
               }
              
@@ -200,8 +216,10 @@
                     var item_id="item"+index 
                     $('#list_body').append(' <tr id ="'+item_id+'" class="'+trclass+'">'+
                       
-                            '<td align="center"><a href="index_re.html?app='+item+'" >'+item+'</a></td>'+
-                            '<td  align="center"><a class="delete" href="javascript:void(0)" onclick="javascript:deleteApp(\''+item_id+'\',\''+item+'\')">删除</a></td>'+
+                            '<td align="center"><a href="index_re.html?app='+item.app+'" >'+item.app+'</a></td>'+
+                            '<td align="center">'+item.description+'</td>'+
+                            '<td  align="center"><a class="delete" href="update.html?app='+item.app+'">修改</a></td>'+
+                            '<td  align="center"><a class="delete" href="javascript:void(0)" onclick="javascript:deleteApp(\''+item_id+'\',\''+item.app+'\')">删除</a></td>'+
                           '</tr>')
                          
                   });

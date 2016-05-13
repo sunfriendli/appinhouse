@@ -91,12 +91,16 @@ func NewSuccessResponseDto() *NormalResponseDto {
 }
 
 //--------------------------------------------------------------------
+type AppDto struct {
+	App  string `json:"app"`
+	Desc string `json:"description"`
+}
 type AppsResponseDto struct {
-	Code      ErrCode  `json:"code"`
-	Msg       string   `json:"msg"`
-	Items     []string `json:"items"`
-	Page      int      `json:"page"`
-	TotalPage int      `json:"total_page"`
+	Code      ErrCode   `json:"code"`
+	Msg       string    `json:"msg"`
+	Items     []*AppDto `json:"items"`
+	Page      int       `json:"page"`
+	TotalPage int       `json:"total_page"`
 }
 
 func (this *AppsResponseDto) SetCode(code ErrCode) {
@@ -109,7 +113,30 @@ func (this *AppsResponseDto) SetMsg(msg string) {
 func NewSuccessAppsResponseDto() *AppsResponseDto {
 	i := &AppsResponseDto{
 		Code:  ErrOk,
-		Items: []string{},
+		Items: []*AppDto{},
+	}
+	return i
+}
+
+//--------------------------------------------------------------------
+
+type AppResponseDto struct {
+	Code ErrCode `json:"code"`
+	Msg  string  `json:"msg"`
+	Item *AppDto `json:"item"`
+}
+
+func (this *AppResponseDto) SetCode(code ErrCode) {
+	this.Code = code
+}
+
+func (this *AppResponseDto) SetMsg(msg string) {
+	this.Msg = msg
+}
+func NewSuccessAppResponseDto() *AppResponseDto {
+	i := &AppResponseDto{
+		Code: ErrOk,
+		Item: &AppDto{},
 	}
 	return i
 }

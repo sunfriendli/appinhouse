@@ -34,6 +34,7 @@
 ### 归档类
 
 - [创建应用](#创建应用)
+- [修改应用](#修改应用)
 - [删除应用](#删除应用)
 - [生成描述文件](#生成描述文件)
 - [整理历史版本](#整理历史版本)
@@ -84,7 +85,14 @@
 
 ### 时间格式
 
-`2016-05-10T02:11:50Z`
+`2016-05-10T02:11:50+0800`
+
+### time_offset
+
+```js
+    var d = new Date()
+    var offset=-1*d.getTimezoneOffset()
+```
 
 ### 创建应用
 
@@ -102,7 +110,10 @@
 
 ##### 请求参数
 
-无
+
+| 参数名     |     含义|   参数类型| 是否必须| 默认值| 描述|
+| :-------- | --------:| :------:|:------:|:------:|:------:|
+|description  |   描述|  string| 是| 无||
 
 ##### 请求实例
 
@@ -110,6 +121,59 @@
 POST /api/rog2/create
 
 Host: 域名
+
+Content-Type: application/x-www-form-urlencoded
+
+description=xxxxxx
+```
+
+
+##### 返回结果
+
+```json
+{
+  "code": 0,
+  "msg": ""
+}
+```
+
+| 返回参数    |     父属性 |     含义 |   参数类型 |是否必须|
+| :-------- |  --------:| --------:| :------: |:------: |
+| [code](#返回码) |     无| 返回码    |  int|        是|
+|msg             | 无    | 提示信息|  string|        否|
+
+
+### 修改应用
+
+##### 接口说明
+
+接入方修改自己的应用
+
+##### URL
+
+/api/[**[app]**](#app)/update
+
+##### 请求方式
+
+**POST**
+
+##### 请求参数
+
+
+| 参数名     |     含义|   参数类型| 是否必须| 默认值| 描述|
+| :-------- | --------:| :------:|:------:|:------:|:------:|
+|description  |   描述|  string| 是| 无||
+
+##### 请求实例
+
+```
+POST /api/rog2/update
+
+Host: 域名
+
+Content-Type: application/x-www-form-urlencoded
+
+description=xxxxxx
 
 ```
 
@@ -229,7 +293,7 @@ Host: 域名
 
 ##### URL
 
-/api/[**[app]**](#app)/mobile/last
+/api/[**[app]**](#app)/mobile/last?time_offset=480
 
 ##### 请求方式
 
@@ -237,12 +301,14 @@ Host: 域名
 
 ##### 请求参数
 
-无
+| 参数名     |     含义|   参数类型| 是否必须| 默认值| 描述|
+| :-------- | --------:| :------:|:------:|:------:|:------:|
+|[time_offset](#time_offset)  |   时间差|  int| 否| 无|不传只显示生成时的时间|
 
 ##### 请求实例
 
 ```
-GET /api/rog2/mobile/last
+GET /api/rog2/mobile/last?time_offset=480
 
 Host: 域名
 
@@ -300,23 +366,23 @@ Host: 域名
 
 ##### URL
 
-/api/[**[app]**](#app)/mobile/list/[**[environment]**](#environment)?page=1
+/api/[**[app]**](#app)/mobile/list/[**[environment]**](#environment)?page=1&time_offset=480
 ##### 请求方式
 
 **GET**
 
 ##### 请求参数
 
-| 参数名     |     含义|   参数类型| 是否必须| 默认值|
-| :-------- | --------:| :------:|:------:|:------:|
-| page       |   页数|  int| 是| 1|
-
+| 参数名     |     含义|   参数类型| 是否必须| 默认值| 描述|
+| :-------- | --------:| :------:|:------:|:------:|:------:|
+| page       |   页数|  int| 是| 无||
+|[time_offset](#time_offset)  |   时间差|  int| 否| 无|不传只显示生成时的时间|
 
 
 ##### 请求实例
 
 ```
-GET /api/rog2/mobile/list/dev?page=1
+GET /api/rog2/mobile/list/dev?page=1&time_offset=480
 
 Host: 域名
 
@@ -378,7 +444,7 @@ pc端获得所有平台的最新安装包。*`ios`的`dev，release`版本，`an
 
 ##### URL
 
-/api/[**[app]**](#app)/last
+/api/[**[app]**](#app)/last?time_offset=480
 
 #####请求方式
 
@@ -386,12 +452,14 @@ pc端获得所有平台的最新安装包。*`ios`的`dev，release`版本，`an
 
 ##### 请求参数
 
-无
+| 参数名     |     含义|   参数类型| 是否必须| 默认值| 描述|
+| :-------- | --------:| :------:|:------:|:------:|:------:|
+|[time_offset](#time_offset)  |   时间差|  int| 否| 无|不传只显示生成时的时间|
 
 ##### 请求实例
 
 ```
-GET /api/rog2/last
+GET /api/rog2/last?time_offset=480
 
 Host: 域名
 
@@ -468,7 +536,7 @@ pc端获得不同平台，不同环境的历史版本。限制[**max_page**](#ma
 
 ##### URL
 
-/api/[**[app]**](#app)/list/[**[platform]**](#platform)/[**[environment]**](#environment)?page=1
+/api/[**[app]**](#app)/list/[**[platform]**](#platform)/[**[environment]**](#environment)?page=1&time_offset=480
 
 ##### 请求方式
 
@@ -476,15 +544,15 @@ pc端获得不同平台，不同环境的历史版本。限制[**max_page**](#ma
 
 ##### 请求参数
 
-| 参数名     |     含义|   参数类型| 是否必须| 默认值|
-| :-------- | --------:| :------:|:------:|:------:|
-| page       |   页数|  int| 是| 1|
-
+| 参数名     |     含义|   参数类型| 是否必须| 默认值| 描述|
+| :-------- | --------:| :------:|:------:|:------:|:------:|
+| page       |   页数|  int| 是| 无||
+|[time_offset](#time_offset)  |   时间差|  int| 否| 无|不传只显示生成时的时间|
 
 ##### 请求实例
 
 ```
-GET /api/rog2/list/android/dev?page=1
+GET /api/rog2/list/android/dev?page=1&time_offset=480
 
 Host: 域名
 
@@ -560,7 +628,7 @@ Host: 域名
 ##### 请求实例
 
 ```
-GET /api/rog2/plist/dev?page=1
+GET /api/rog2/plist/dev/1.1.1.plist
 
 Host: 域名
 

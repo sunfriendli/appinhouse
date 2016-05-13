@@ -44,7 +44,7 @@
           <div class="col-xs-12 col-sm-9 content">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h3 class="panel-title"id="panel_title1">>>创建应用</h3>
+                <h3 class="panel-title"id="panel_title1">>>更新应用</h3>
               </div>
               <div class="panel-body " >
 
@@ -55,14 +55,13 @@
                     <form role="form" >
                         <div class="form-group">
                           <label for="app_name"><h4>应用名字</h3></label>
-                          <input type="text" required="1" class="form-control" id="app_name" placeholder="应用名">
+                          <input type="text" required="1" class="form-control" id="app_name" readonly="true">
                         </div>
-                         <div class="form-group">
-                          <label for="desc_name"><h4>描述</h3></label>
-                          <input type="text" required="1" class="form-control" id="desc_name" placeholder="描述">
+                        <div class="form-group">
+                          <label for="app_desc"><h4>描述</h3></label>
+                          <input type="text" required="1" class="form-control" id="app_desc" placeholder="描述">
                         </div>
-                        
-                        <button id="create_app" type="button" class="btn btn-success">创建</button>
+                        <button id="update_app" type="button" class="btn btn-success">修改</button>
                       </form>
                      
                    </div>
@@ -80,26 +79,20 @@
   </body>
 </html>
 <script type="text/javascript">
-
+ var app=getQueryString("app")
   mysubmit()
-  
+  getApp(app)
   function mysubmit() {
-      $("#create_app").click(function(){
-         createApp()
+      $("#update_app").click(function(){
+         modifyApp()
         });
    }
-  function createApp() {
-
-           
-            var app =$('#app_name').val();
-            if (!app) {
-                error_msg("请输入应用名！",3000)
-            }
-            var desc =$('#desc_name').val();
-             if (!desc) {
+  function modifyApp() {
+            var desc =$('#app_desc').val();
+            if (!desc) {
                 error_msg("请输入描述！",3000)
             }
-             var url="api/"+app+"/create";
+             var url="api/"+app+"/update";
               $.ajax({
               type: 'POST',
               url: url,
@@ -109,11 +102,27 @@
                   if(code!=0){
                     return
                   }
-                  $('#app_name').val("");
-                  $('#desc_name').val("");
-                  succ_msg("创建成功!",3000)
+                  succ_msg("更新成功!",3000)
               }
              
           });
     }
+
+  function getApp(app){
+    var url="api/"+app+"/get";
+     $.ajax({
+              type: 'GET',
+              url: url,
+              success: function (data) {
+          
+                var code=data.code;
+                  if(code!=0){
+
+                    return
+                  }
+                  $('#app_name').val(data.item.app)
+                  $('#app_desc').val(data.item.description)
+              }
+      })
+  }
 </script>

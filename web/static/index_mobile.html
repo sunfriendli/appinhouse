@@ -10,6 +10,7 @@
 
     <script type="text/javascript" src="js/site.min.js"></script>
     <script type="text/javascript" src="js/inhouse.js"></script>
+    <script type="text/javascript" src="js/timezone.js"></script>
   </head>
   <body>
     <!--nav-->
@@ -30,7 +31,7 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="menu1">
                                 <ul class="nav navbar-nav  navbar-right">
-                                   <li class="active"><a href="index.html"id="zuixin">首页</a></li>
+                                   <li class="active"><a href="index.html">首页</a></li>
                                    <li class="divider"></li>
                                    <li class="active"><a href="javascript:;" id="zuixin">最新</a></li>
                                    <li class="divider"></li>
@@ -57,7 +58,7 @@
               <div class="panel-body " >
               <!-- 最新 的页面 start -->
                 <div class="content-row" id="zuixin_content" >
-                
+
                   <div class="col-md-6" >
                       <div class="panel">
                         <ul id="myTab1" class="nav nav-tabs nav-justified">
@@ -178,6 +179,7 @@
 
  
 <script type="text/javascript">
+    var toffset=getTimeOffset()
     var app=getQueryString("app")
     kaifa();
     initpage();
@@ -189,8 +191,8 @@
     fabuPervious();
 
    function initpage() {
-     $("#panel_title").text(">>"+app+">>最新构建")
-    reqZuixin();
+      $("#panel_title").text(">>"+app+">>最新构建")
+      reqZuixin();
    }
    function zuixin() {
       $("#zuixin").click(function(){
@@ -201,11 +203,11 @@
    }
   function reqZuixin() {
      $('#kaifa_content').hide();
-      $('#zuixin_content').show();
+     $('#zuixin_content').show();
      $('#fabu_content').hide();
     $.ajax({
         type: 'GET',
-        url: 'api/'+app+'/last',
+        url: 'api/'+app+'/last?time_offset='+toffset,
         success: function (data) {
             var code=data.code;
             if(code!=0){
@@ -343,7 +345,7 @@
              }
               $.ajax({
               type: 'GET',
-              url: 'api/'+app+'/mobile/list/dev?page='+opage,
+              url: 'api/'+app+'/mobile/list/dev?page='+opage+'&time_offset='+toffset,
               success: function (data) {
                  var code=data.code;
                   if(code!=0){
