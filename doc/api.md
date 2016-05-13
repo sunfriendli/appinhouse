@@ -89,6 +89,9 @@
 
 ### time_offset
 
+传参:根据偏移量计算时间。
+不传：显示生成时所传的时间。
+
 ```js
     var d = new Date()
     var offset=-1*d.getTimezoneOffset()
