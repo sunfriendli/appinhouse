@@ -22,4 +22,5 @@ func init() {
 	beego.Router("/api/:app/delete", &controllers.MainController{}, "delete:DelApp")
 	beego.Router("/api/:app/get", &controllers.MainController{}, "get:App")
 	beego.Router("/api/apps", &controllers.MainController{}, "get:Apps")
+	beego.Router("/api/modify/app", &controllers.ModifyDataController{}, "get:ModifyAppData")
 }
