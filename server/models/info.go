@@ -257,10 +257,16 @@ func newClient(addr, password string, poolSize int, db int64) *redis.Client {
 		Password: password,
 		DB:       db,
 	})
-	err := client.Ping().Err()
-	if err != nil {
-		beego.Info("redis not connect. addr:", addr, ". password:", password)
-		panic("redis not connect. addr:" + addr + ". password:" + password)
-	}
+	go autoCheck(client, addr)
 	return client
+}
+func autoCheck(client *redis.Client, addr string) {
+	ticker := time.NewTicker(10 * time.Second)
+	defer ticker.Stop()
+	for _ = range ticker.C {
+		err := client.Ping().Err()
+		if err != nil {
+			beego.Info("redis not connect. addr:", addr)
+		}
+	}
 }

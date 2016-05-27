@@ -32,7 +32,7 @@ func (c *MainController) Apps() {
 	count, err := models.AppListDao.Count()
 	if err != nil {
 		beego.Error("GetApps count  error :" + err.Error())
-		c.setError4Dto(ErrorParam, dto)
+		c.setError4Dto(err, dto)
 		return
 	}
 
@@ -127,14 +127,14 @@ func (c *MainController) AddApp() {
 		err = models.AppDao.Save(appinfo)
 		if err != nil {
 			beego.Info("AddApp save app  error !name:", app, "error:", err.Error())
-			c.setError4Dto(ErrorParam, dto)
+			c.setError4Dto(err, dto)
 			return
 		}
 
 		err = models.AppListDao.Save(app)
 		if err != nil {
 			beego.Info("AddApp save applist  error !name:", app, "error:", err.Error())
-			c.setError4Dto(ErrorParam, dto)
+			c.setError4Dto(err, dto)
 			return
 		}
 
@@ -169,7 +169,7 @@ func (c *MainController) ModifyApp() {
 		err = models.AppDao.Save(appinfo)
 		if err != nil {
 			beego.Info("AddApp save app  error !name:", app, "error:", err.Error())
-			c.setError4Dto(ErrorParam, dto)
+			c.setError4Dto(err, dto)
 			return
 		}
 	} else {
