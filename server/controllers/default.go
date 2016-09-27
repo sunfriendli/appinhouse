@@ -221,14 +221,13 @@ func (c *MainController) Last() {
 	if toffsetStr == "" {
 		toffset = Not_Offset
 	} else {
-		toffset, err := c.GetInt("time_offset")
+		toffset, err = c.GetInt("time_offset")
 		if err != nil {
 			beego.Info("Last param toffset  error !time_offset:", toffset, "error:", err.Error())
 			c.setError4Dto(ErrorParam, dto)
 			return
 		}
 	}
-
 	osType := util.CheckAgent(userAgent)
 	ret := make([]*ItemDto, 0, 4)
 	switch osType {
@@ -344,7 +343,7 @@ func (c *MainController) List() {
 	if toffsetStr == "" {
 		toffset = Not_Offset
 	} else {
-		toffset, err := c.GetInt("time_offset")
+		toffset, err = c.GetInt("time_offset")
 		if err != nil {
 			beego.Info("List param toffset  error !time_offset:", toffset, "error:", err.Error())
 			c.setError4Dto(ErrorParam, dto)
@@ -394,7 +393,7 @@ func (c *MainController) List4Mobile() {
 	if toffsetStr == "" {
 		toffset = Not_Offset
 	} else {
-		toffset, err := c.GetInt("time_offset")
+		toffset, err = c.GetInt("time_offset")
 		if err != nil {
 			beego.Info("List4Mobile param toffset  error !time_offset:", toffset, "error:", err.Error())
 			c.setError4Dto(ErrorParam, dto)
