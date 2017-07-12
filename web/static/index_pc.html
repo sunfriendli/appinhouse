@@ -11,6 +11,7 @@
     <script type="text/javascript" src="js/site.min.js"></script>
     <script type="text/javascript" src="js/inhouse.js"></script>
     <script type="text/javascript" src="js/timezone.js"></script>
+      <script type="text/javascript" src="js/alert.js"></script>
   </head>
   <body>
     <!--nav-->
@@ -72,7 +73,7 @@
               <div class="panel-body " >
 
                 <div class="content-row">
-              
+                  <div id="alert_msg"></div>
                   <div class="row" id="zuixin_row">
                  
                     <div class="col-sm-6 col-md-3">
@@ -87,6 +88,10 @@
                           <p id="ios_release_channel"></p>
                           <h3>版本</h3>
                           <p id="ios_release_version"></p>
+                          <h3>固定链接</h3>
+                          <p>
+                            <a id="ios_release_permalink" href="#">查看</a> 
+                          </p>
                           <h3>时间</h3>
                           <p id="ios_release_time"></p>
                           <h3>构建url</h3>
@@ -96,6 +101,8 @@
                           <p id="ios_release_desc"></p>
                           <p><a id="ios_release_down" href="#" class="btn btn-primary" role="button">下载</a>  
                           </p>
+                          <h3>更多下载地址</h3>
+                          <p id="ios_release_extend_downs"></p>
                         </div>
                          <div class="caption text-center"  id="thumbnail_ios_release_none" style="display: none;">
                           <h3>平台</h3>
@@ -118,6 +125,10 @@
                           <p id="ios_dev_channel"></p>
                           <h3>版本</h3>
                           <p id="ios_dev_version"></p>
+                          <h3>固定链接</h3>
+                          <p>
+                             <a id="ios_dev_permalink" href="#">查看</a> 
+                          </p>
                           <h3>时间</h3>
                           <p id="ios_dev_time"></p>
                           <h3>构建url</h3>
@@ -127,6 +138,8 @@
                           <p id="ios_dev_desc"></p>
                           <p><a id="ios_dev_down" href="#" class="btn btn-success" role="button">下载</a>  
                           </p>
+                          <h3>更多下载地址</h3>
+                          <p id="ios_dev_extend_downs"></p>
                         </div>
                          <div class="caption text-center"  id="thumbnail_ios_dev_none" style="display: none;">
                           <h3>平台</h3>
@@ -150,6 +163,10 @@
                           <p id="android_release_channel"></p>
                           <h3>版本</h3>
                           <p id="android_release_version"></p>
+                          <h3>固定链接</h3>
+                          <p>
+                             <a id="android_release_permalink" href="#">查看</a> 
+                          </p>
                           <h3>时间</h3>
                           <p id="android_release_time"></p>
                            <h3>构建url</h3>
@@ -159,6 +176,8 @@
                           <p id="android_release_desc"></p>
                           <p><a id="android_release_down" href="#" class="btn btn-info" role="button">下载</a>  
                           </p>
+                          <h3>更多下载地址</h3>
+                          <p id="android_release_extend_downs"></p>
                         </div>
                          <div class="caption text-center"  id="thumbnail_android_release_none" style="display: none;">
                           <h3>平台</h3>
@@ -182,6 +201,10 @@
                           <p id="android_dev_channel"></p>
                           <h3>版本</h3>
                           <p id="android_dev_version"></p>
+                          <h3>固定链接</h3>
+                          <p>
+                             <a id="android_dev_permalink" href="#">查看</a> 
+                          </p>
                           <h3>时间</h3>
                           <p id="android_dev_time"></p>
                           <h3>构建url</h3>
@@ -191,6 +214,8 @@
                           <p id="android_dev_desc"></p>
                           <p><a id="android_dev_down" href="#" class="btn btn-warning" role="button">下载</a>  
                           </p>
+                          <h3>更多下载地址</h3>
+                          <p id="android_dev_extend_downs"></p>
                         </div>
                          <div class="caption text-center"  id="thumbnail_android_dev_none" style="display: none;">
                           <h3>平台</h3>
@@ -215,8 +240,10 @@
                             <th>渠道</th>
                             <th>版本</th>
                             <th>描述</th>
+                            <th>固定链接</th>
                             <th>构建url</th>
                             <th>下载</th>
+                            <th>&nbsp;&nbsp;&nbsp;更多下载地址</th>
                           </tr>
                         </thead>
                         <tbody id="list_body">
@@ -339,7 +366,7 @@
         success: function (data) {
             var code=data.code;
             if(code!=0){
-
+               error_msg(data.msg,3000)
               return
             }
             var hasIosRe=false;
@@ -367,7 +394,9 @@
                         }else{
                           $('#ios_dev_url').attr('href', item.url);
                         }
-
+                        
+                        var permalink = "info.html?app="+app+"&platform="+platform+"&environment="+env+"&version="+item.version
+                        $('#ios_dev_permalink').attr('href', permalink);
                         if (item.down=="") {
                           $('#ios_dev_down').unbind('click')
                           $('#ios_dev_down').text('失效')
@@ -379,8 +408,11 @@
                           }else{
                             $('#ios_dev_down').attr('href', item.down);
                           }
-                          
+                         
                         }
+                         var downs = getExtendDownsString(item) 
+                            $('#ios_dev_extend_downs').empty()
+                          $('#ios_dev_extend_downs').append(downs)
                     }else{
                         hasAndroidDev=true
                         $('#thumbnail_android_dev').show();
@@ -398,13 +430,17 @@
                         }else{
                           $('#android_dev_url').attr('href', item.url);
                         }
-
+                        var permalink = "info.html?app="+app+"&platform="+platform+"&environment="+env+"&version="+item.version
+                        $('#android_dev_permalink').attr('href', permalink);
                         if (item.down=="") {
                           $('#android_dev_down').unbind('click')
                           $('#android_dev_down').text('失效')
                         }else{
                           $('#android_dev_down').attr('href', item.down);
                         }
+                        var downs = getExtendDownsString(item) 
+                         $('#android_dev_extend_downs').empty()
+                        $('#android_dev_extend_downs').append(downs)
                     }
                 } else if (env=="release") {
                   if(platform=="ios"){
@@ -424,7 +460,8 @@
                         }else{
                           $('#ios_release_url').attr('href', item.url);
                         }
-
+                        var permalink = "info.html?app="+app+"&platform="+platform+"&environment="+env+"&version="+item.version
+                        $('#ios_release_permalink').attr('href', permalink);
                         if (item.down=="") {
                           $('#ios_release_down').unbind('click')
                           $('#ios_release_down').text('失效')
@@ -437,6 +474,9 @@
                             $('#ios_release_down').attr('href', item.down);
                           }
                         }
+                        var downs = getExtendDownsString(item) 
+                           $('#ios_release_extend_downs').empty()
+                          $('#ios_release_extend_downs').append(downs)
                     }else{
                         hasAndroidRe=true
                         $('#thumbnail_android_release').show();
@@ -454,13 +494,17 @@
                         }else{
                           $('#android_release_url').attr('href', item.url);
                         }
-
+                        var permalink = "info.html?app="+app+"&platform="+platform+"&environment="+env+"&version="+item.version
+                        $('#android_release_permalink').attr('href', permalink);
                         if (item.down=="") {
                           $('#android_release_down').unbind('click')
                           $('#android_release_down').text('失效')
                         }else{
                           $('#android_release_down').attr('href', item.down);
                         }
+                        var downs = getExtendDownsString(item) 
+                         $('#android_release_extend_downs').empty()
+                        $('#android_release_extend_downs').append(downs)
                     }
                     
                 }
@@ -529,7 +573,7 @@
               //  alert(JSON.stringify(data));
                  var code=data.code;
                   if(code!=0){
-
+                    error_msg(data.msg,3000)
                     return
                   }
                   var page=data.page;
@@ -543,7 +587,6 @@
                       if(item.platform=="ios"){
                         if(item.channel=="appstore"){
                             down="itms-services://?action=download-manifest&url="+item.down 
-                            
                           }else{
                              down=item.down;
                           }
@@ -575,6 +618,10 @@
                       item_url=item.url
                       url_str="传送门"
                     }
+                    extendDownUrls = item.extendUrls
+                    var downs_str ="更多下载地址"
+                    var downs = getExtendDownUrlsString(item)
+                    var permalink = "info.html?app="+app+"&platform="+item.platform+"&environment="+item.environment+"&version="+item.version
                     $('#list_body').append(' <tr class="'+trclass+'">'+
                             '<td>'+item.time+'</td>'+
                             '<td>'+item.platform+'</td>'+
@@ -582,10 +629,13 @@
                             '<td>'+item.channel+'</td>'+
                             '<td>'+item.version+'</td>'+
                             '<td>'+item.description+'</td>'+
+                            '<td><a href="'+permalink+'"> 查看</a></td>'+
                             '<td><a href="'+item_url+'" >'+url_str+'</a></td>'+
                             '<td><a href="'+down+'" >'+down_str+'</a></td>'+
+                            '<td>' +
+                              downs+
+                            '</td>'+
                           '</tr>')
-                         
                   });
 
                   if (totalPage>=1){
@@ -608,5 +658,66 @@
               }
              
           });
+    }
+    function getExtendDownUrlsString(item) {
+   
+      extendDownUrls = item.extendUrls
+      var downs_str ="查看"
+      var downs = ""
+
+      for(var key in extendDownUrls) {
+        if(item.platform=="ios"){
+          if(item.channel=="appstore"){
+            downs = downs + '<a href="itms-services://?action=download-manifest&url='+extendDownUrls[key]+'">'+key+'</a><p/>'
+          }else{
+             downs = downs + '<a href="'+extendDownUrls[key]+'">'+key+'</a><p/>'
+          }
+        }else{
+           downs = downs + '<a href="'+extendDownUrls[key]+'">'+key+'</a><p/>'
+        }
+      } 
+      var version_str =item.version
+      version_str = version_str.split('.').join('_')
+      if (downs ==""){
+        downs_str = "无"
+      }
+      var ret = 
+                                '<div class="panel-group panel-group-lists" id="accordion'+version_str+'">' +
+                                  '<div class="panel">' +
+                                    '<div class="panel-heading">' +
+                                      '<h4 class="panel-title">' +
+                                        '<a data-toggle="collapse" data-parent="#accordion'+version_str+'" href="#collapse'+version_str + '">'+downs_str+'</a>' +
+                                      '</h4>' +
+                                    '</div>' +
+                                    '<div id="collapse'+ version_str +'" class="panel-collapse collapse">' +
+                                      '<div class="panel-body">' +
+                                        downs +
+                                      '</div>' +
+                                    '</div>' +
+                                  '</div>' +
+                                '</div>' 
+        return ret
+     }
+
+
+    function getExtendDownsString(item) {
+   
+      extendDownUrls = item.extendUrls
+      var downs = ""
+      for(var key in extendDownUrls) {
+        if(item.platform=="ios"){
+          if(item.channel=="appstore"){
+            downs = downs + '<a href="itms-services://?action=download-manifest&url='+extendDownUrls[key]+'">'+key+'</a><p/>'
+          }else{
+             downs = downs + '<a href="'+extendDownUrls[key]+'">'+key+'</a><p/>'
+          }
+        }else{
+           downs = downs + '<a href="'+extendDownUrls[key]+'">'+key+'</a><p/>'
+        }
+      } 
+      if(downs == ""){
+        downs ="无"
+      }
+      return downs
     }
 </script>

@@ -11,6 +11,7 @@
     <script type="text/javascript" src="js/site.min.js"></script>
     <script type="text/javascript" src="js/inhouse.js"></script>
     <script src="jquery.confirm/jquery.confirm.js"></script>
+      <script type="text/javascript" src="js/alert.js"></script>
   </head>
   <body>
     <!--nav-->
@@ -64,12 +65,20 @@
               <div class="panel-body " >
 
                 <div class="content-row">
-
+                  <div id="alert_msg"></div>
                    <div class="row" id="list_row" >
                     <div class="hidden"><input type="text" id="platform"value="ios"><input type="text" id="env" value="release"></div>
                      <div class="bs-example">
                       <table class="table">
-                        
+                        <thead>
+                          <tr>
+                            <th>名称</th>
+                            <th>描述</th>
+                            <th>ID</th>
+                            <th>修改</th>
+                            <th>删除</th>
+                          </tr>
+                        </thead>
                         <tbody id="list_body">
                          
                         </tbody>
@@ -189,6 +198,7 @@
               //  alert(JSON.stringify(data));
                  var code=data.code;
                   if(code!=0){
+                    error_msg(data.msg,3000)
                     return
                   }
                   var page=data.page;
@@ -214,12 +224,18 @@
                       trclass=""
                     }
                     var item_id="item"+index 
+                    var  appname = item.app
+                    if (item.alias){
+                      appname = item.alias
+                    }
+
                     $('#list_body').append(' <tr id ="'+item_id+'" class="'+trclass+'">'+
                       
-                            '<td align="center"><a href="index_re.html?app='+item.app+'" >'+item.app+'</a></td>'+
-                            '<td align="center">'+item.description+'</td>'+
-                            '<td  align="center"><a class="delete" href="update.html?app='+item.app+'">修改</a></td>'+
-                            '<td  align="center"><a class="delete" href="javascript:void(0)" onclick="javascript:deleteApp(\''+item_id+'\',\''+item.app+'\')">删除</a></td>'+
+                            '<td ><a href="index_re.html?app='+item.app+'" >'+appname+'</a></td>'+
+                            '<td>'+item.description+'</td>'+
+                            '<td>'+item.app+'</td>'+
+                            '<td><a class="delete" href="update.html?app='+item.app+'">修改</a></td>'+
+                            '<td><a class="delete"  href="delete.html?app='+item.app+'">删除</a></td>'+
                           '</tr>')
                          
                   });

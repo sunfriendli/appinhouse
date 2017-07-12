@@ -11,6 +11,7 @@
     <script type="text/javascript" src="js/site.min.js"></script>
     <script type="text/javascript" src="js/inhouse.js"></script>
     <script type="text/javascript" src="js/timezone.js"></script>
+      <script type="text/javascript" src="js/alert.js"></script>
   </head>
   <body>
     <!--nav-->
@@ -58,7 +59,7 @@
               <div class="panel-body " >
               <!-- 最新 的页面 start -->
                 <div class="content-row" id="zuixin_content" >
-
+                  <div id="alert_msg"></div>
                   <div class="col-md-6" >
                       <div class="panel">
                         <ul id="myTab1" class="nav nav-tabs nav-justified">
@@ -79,6 +80,10 @@
                                   <p id="release_pl_env"></p>
                                   <h3>版本</h3>
                                   <p id="release_version"></p>
+                                  <h3>固定链接</h3>
+                                  <p>
+                                    <a id="release_permalink" href="#">查看</a> 
+                                  </p>
                                   <h3>时间</h3>
                                   <p id="release_time"></p>
                                   <h3>构建url</h3>
@@ -87,6 +92,8 @@
                                   <h3>描述</h3>
                                   <p id="release_desc"></p>
                                   <p ><a id="release_down" href="#" class="btn btn-warning" role="button">下载</a>  </p>
+                                  <h3>更多下载地址</h3>
+                                  <p id="release_downs"></p>
                                 </div>
                               </div>
                             </div>
@@ -103,6 +110,10 @@
                                   <p id="dev_pl_env"></p>
                                   <h3>版本</h3>
                                   <p id="dev_version"></p>
+                                  <h3>固定链接</h3>
+                                  <p>
+                                    <a id="dev_permalink" href="#">查看</a> 
+                                  </p>
                                   <h3>时间</h3>
                                   <p id="dev_time"></p>
                                   <h3>构建url</h3>
@@ -111,6 +122,8 @@
                                   <h3>描述</h3>
                                   <p id="dev_desc"></p>
                                   <p ><a id="dev_down" href="#"  class="btn btn-success" role="button">下载</a> </p>
+                                  <h3>更多下载地址</h3>
+                                  <p id="dev_downs"></p>
                                 </div>
                               </div>
                             </div>
@@ -211,7 +224,7 @@
         success: function (data) {
             var code=data.code;
             if(code!=0){
-
+              error_msg(data.msg,3000)
               return
             }
             var hasRe=false;
@@ -238,7 +251,8 @@
                       $('#dev_url').attr('href', item.url);
                     }
 
-
+                    var permalink = "info.html?app="+app+"&platform="+platform+"&environment="+env+"&version="+item.version
+                    $('#dev_permalink').attr('href', permalink);
                     if (item.down=="") {
                       $('#dev_down').unbind('click')
                        $('#dev_down').text('失效')
@@ -256,6 +270,9 @@
                       }
                      
                     }
+                    var downs = getExtendDownsString(item)
+                    $('#dev_downs').empty()
+                    $('#dev_downs').append(downs)
                 } else if (env=="release") {
                   hasRe=true;
                    
@@ -273,7 +290,8 @@
                     }else{
                       $('#release_url').attr('href', item.url);
                     }
-
+                    var permalink = "info.html?app="+app+"&platform="+platform+"&environment="+env+"&version="+item.version
+                    $('#release_permalink').attr('href', permalink);
                     if (item.down=="") {
                       $('#release_down').unbind('click')
                        $('#release_down').text('失效')
@@ -291,7 +309,9 @@
                       }
                      
                     }
-                    
+                    var downs = getExtendDownsString(item)
+                     $('#release_downs').empty()
+                    $('#release_downs').append(downs)
                 }
             });
        
@@ -349,7 +369,7 @@
               success: function (data) {
                  var code=data.code;
                   if(code!=0){
-
+                    error_msg(data.msg,3000)
                     return
                   }
                   var page=data.page;
@@ -384,7 +404,8 @@
                     if(index==0){
                         collapse="collapse in"
                     }
-                   
+                    var permalink = "info.html?app="+app+"&platform="+item.platform+"&environment="+item.environment+"&version="+item.version
+                    var downs = getExtendDownsString(item)
                     $('#kaifa_panel_list').append('<div class="panel">'+
                           '<div class="panel-heading" >'+
                             '<h4 class="panel-title">'+
@@ -402,13 +423,16 @@
                                  
                                   '<h3>版本</h3>'+
                                   '<p >'+item.version+'</p>'+
-                                 
+                                  '<h3>固定链接</h3>'+
+                                  '<p> <a " href="'+permalink+'">查看</a></p>' +
                                   '<h3>构建url</h3>'+
                                   '<p> <a " href="'+item_url+'">'+url_str+'</a></p>' +
                                   
                                   '<h3>描述</h3>'+
                                   '<p >'+ item.description+'</p>'+
                                   '<p ><a id="release_down" href="'+down+'" class="btn btn-warning" role="button">'+down_str+'</a>  </p>'+
+                                  '<h3>更多下载地址</h3>'+
+                                  '<p >'+ downs+'</p>'+
                                 '</div>'+
                               '</div>'+
                             '</div>'+
@@ -481,7 +505,7 @@
               success: function (data) {
                  var code=data.code;
                   if(code!=0){
-
+                     error_msg(data.msg,3000) 
                     return
                   }
                   var page=data.page;
@@ -514,6 +538,8 @@
                       item_url=item.url
                       url_str="传送门"
                     }
+                    var permalink = "info.html?app="+app+"&platform="+item.platform+"&environment="+item.environment+"&version="+item.version
+                    var downs = getExtendDownsString(item)
                     $('#fabu_panel_list').append('<div class="panel">'+
                           '<div class="panel-heading" >'+
                             '<h4 class="panel-title">'+
@@ -533,13 +559,16 @@
                                  
                                   '<h3>版本</h3>'+
                                   '<p >'+item.version+'</p>'+
-                                 
+                                  '<h3>固定链接</h3>'+
+                                  '<p> <a " href="'+permalink+'">查看</a></p>' +
                                   '<h3>构建url</h3>'+
                                   '<p> <a " href="'+item_url+'">'+url_str+'</a></p>' +
                                   
                                   '<h3>描述</h3>'+
                                   '<p >'+ item.description+'</p>'+
                                   '<p ><a id="release_down" href="'+down+'" class="btn btn-warning" role="button">'+down_str+'</a>  </p>'+
+                                  '<h3>更多下载地址</h3>'+
+                                  '<p >'+ downs+'</p>'+
                                 '</div>'+
                               '</div>'+
                             '</div>'+
@@ -569,5 +598,20 @@
              
           });
     }
-
+    function getExtendDownsString(item) {
+      extendDownUrls = item.extendUrls
+      var downs = ""
+      for(var key in extendDownUrls) {
+        if(item.platform=="ios"){
+          if(item.channel=="appstore"){
+            downs = downs + '<a href="itms-services://?action=download-manifest&url='+extendDownUrls[key]+'">'+key+'</a><p/>'
+          }else{
+             downs = downs + '<a href="'+extendDownUrls[key]+'">'+key+'</a><p/>'
+          }
+        }else{
+           downs = downs + '<a href="'+extendDownUrls[key]+'">'+key+'</a><p/>'
+        }
+      } 
+      return downs
+    }
 </script>

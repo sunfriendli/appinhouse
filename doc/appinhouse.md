@@ -44,8 +44,8 @@ sudo  cp bee /usr/bin/
 ```bash
 mkdir pkg
 mkdir bin
-mkdir src
-cd src
+mkdir src/appinhouse
+cd  src/appinhouse
 git clone https://github.com/rog2/appinhouse.git
 ```
 ##### 打包

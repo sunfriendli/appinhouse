@@ -715,11 +715,12 @@ Host: 域名
 | [time](#时间格式)|  打包时间|  string| 是| 否|
 | [channel](#ios_channel)|  渠道|  string| 是| 否|
 | url|  构建url|  string| 是| 否|
-| software_url|  版本描述信息|  string| 是| 否|
+| software_url| ipa下载地址|  string| 是| 否|
 | id|  plist中bundle-identifier|  string| platform==ios&&channel==appstore?是:否| 否|
 | title| plist中title|  string| platform==ios&&channel==appstore?是:否| 否|
 | full_url| plist中full-size-image|  string| 否| 否|
 | display_url|  plist中display-image|  string| 否| 否|
+| software_url_extend_name|  ipa扩展下载地址的名字，不为空时software_url为扩展下载地址|  string| 否| 否|
 
 
 ##### 请求实例
@@ -735,7 +736,7 @@ version=1.0.2&url=http://www.xxxx.xxx
 &channel=appstore&time=2016-05-10T02:11:50Z
 &description=这个版本修改了bug
 &software_url=https://appinhouse.rog2.org/download/rog2/dev/ios/data/1.0.0/ROG2NewD_1.0.0.ipa
-&id=aaa&title=aaaa
+&id=aaa&title=aaaa&software_url_name=ShangHai
 
 ```
 ##### 返回结果
