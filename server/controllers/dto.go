@@ -33,18 +33,42 @@ func NewSuccessItemsResponseDto() *ItemsResponseDto {
 	return i
 }
 
+//-------------------------------------------------------------------
+type ItemResponseDto struct {
+	Code ErrCode  `json:"code"`
+	Msg  string   `json:"msg"`
+	Item *ItemDto `json:"item"`
+}
+
+func (this *ItemResponseDto) SetCode(code ErrCode) {
+	this.Code = code
+}
+
+func (this *ItemResponseDto) SetMsg(msg string) {
+	this.Msg = msg
+}
+
+func NewSuccessItemResponseDto() *ItemResponseDto {
+	i := &ItemResponseDto{
+		Code: ErrOk,
+		Item: &ItemDto{},
+	}
+	return i
+}
+
 //--------------------------------------------------------------------
 type ItemsDto []*ItemDto
 
 type ItemDto struct {
-	Platform    string `json:"platform"`
-	Env         string `json:"environment"`
-	Version     string `json:"version"`
-	Time        string `json:"time"`
-	Description string `json:"description"`
-	Url         string `json:"url"`
-	Down        string `json:"down"`
-	Channel     string `json:"channel"`
+	Platform    string            `json:"platform"`
+	Env         string            `json:"environment"`
+	Version     string            `json:"version"`
+	Time        string            `json:"time"`
+	Description string            `json:"description"`
+	Url         string            `json:"url"`
+	Down        string            `json:"down"`
+	Channel     string            `json:"channel"`
+	ExtendUrls  map[string]string `json:"extendUrls"`
 }
 type ItemsResponsePageDto struct {
 	Code      ErrCode    `json:"code"`
@@ -92,8 +116,9 @@ func NewSuccessResponseDto() *NormalResponseDto {
 
 //--------------------------------------------------------------------
 type AppDto struct {
-	App  string `json:"app"`
-	Desc string `json:"description"`
+	App   string `json:"app"`
+	Desc  string `json:"description"`
+	Alias string `json:"alias"`
 }
 type AppsResponseDto struct {
 	Code      ErrCode   `json:"code"`

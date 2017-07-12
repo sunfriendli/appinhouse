@@ -25,7 +25,7 @@ APPNAME=server
 
 export GOPATH="$CURDIR"
 
-cd src/appinhouse/$APPNAME
+cd src/server/$APPNAME
 
 echo 'get and build'
 go get -v
@@ -47,16 +47,4 @@ case "$ACTION" in
         ;;
 esac
 
-
-
-echo 'deploy...'
-cd ~
-if [ ! -d $TARGET ];
-    then
-        echo "File $TARGET not found."
-		mkdir $TARGET
-fi
-
-tar -zxvf $APPNAME.tar.gz -C $TARGET
-echo "deploy file in $HOME/$TARGET" 
 echo 'finished'

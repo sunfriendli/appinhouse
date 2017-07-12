@@ -51,12 +51,13 @@ func InitValue() {
 }
 
 type DescInfo struct {
-	Version     string `json:"Version"`
-	Time        string `json:"Time"`
-	Description string `json:"Description"`
-	Url         string `json:"Url"`
-	Channel     string `json:"Channel"`
-	SoftwareUrl string `json:"SoftUrl"`
+	Version            string            `json:"Version"`
+	Time               string            `json:"Time"`
+	Description        string            `json:"Description"`
+	Url                string            `json:"Url"`
+	Channel            string            `json:"Channel"`
+	SoftwareUrl        string            `json:"SoftUrl"`
+	ExtendSoftwareUrls map[string]string `json:"ExtendSoftUrls"`
 }
 
 type DescInfoDao struct {
@@ -80,7 +81,6 @@ func (this *DescInfoDao) Save(platform Platform, env Environment, app string, in
 }
 func (this *DescInfoDao) Get(platform Platform, env Environment, app, version string) (*DescInfo, error) {
 	key := this.getKey(platform, env, app)
-
 	ret, err := this.client.HGet(key, version).Result()
 	if err != nil && err != redis.Nil {
 		return nil, ErrorDB

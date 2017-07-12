@@ -14,6 +14,7 @@ import (
 type AppInfo struct {
 	App         string `json:"App"`
 	Description string `json:"Desc"`
+	Alias       string `json:"Alias"`
 }
 
 type AppInfoDao struct {

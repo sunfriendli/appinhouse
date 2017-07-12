@@ -20,6 +20,102 @@ type MainController struct {
 	beego.Controller
 }
 
+func (c *MainController) Get() {
+	dto := NewSuccessItemResponseDto()
+	app := c.Ctx.Input.Param(":app")
+	version := c.GetString(":version")
+	if app == "" || len(app) > App_Name_Len {
+		beego.Info("Get param name  error !name:", app)
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	has, err := models.AppDao.Exist(app)
+	if err != nil {
+		beego.Info("Get Exist app  error !name:", app, "error:", err.Error())
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	platformParam := c.Ctx.Input.Param(":platform")
+	platform, err := GetPlaform(platformParam)
+	if err != nil {
+		beego.Info("Get param platform  error !platform:", platformParam)
+		c.setError4Dto(err, dto)
+		return
+	}
+	envParam := c.Ctx.Input.Param(":environment")
+	env, err := GetEnvironment(envParam)
+	if err != nil {
+		beego.Info("Get param environment  error !environment:", envParam)
+		c.setError4Dto(err, dto)
+		return
+	}
+	if version == "" {
+		beego.Info("Get get version  error !")
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	toffset := 0
+	toffsetStr := c.GetString("time_offset")
+	if toffsetStr == "" {
+		toffset = Not_Offset
+	} else {
+		toffset, err = c.GetInt("time_offset")
+		if err != nil {
+			beego.Info("Get param toffset  error !time_offset:", toffset, "error:", err.Error())
+			c.setError4Dto(ErrorParam, dto)
+			return
+		}
+	}
+	if has {
+		info, err := models.DescDao.Get(platform, env, app, version)
+		if err != nil {
+			beego.Info("Get get app  error !name:", app, "error:", err.Error())
+			c.setError4Dto(ErrorParam, dto)
+			return
+		}
+
+		dto.Item = converInfoTOItem(info, platform, env, app, toffset)
+
+	} else {
+		c.setError4Dto(ErrorAppNotExistError, dto)
+		return
+	}
+
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
+func (c *MainController) App() {
+	dto := NewSuccessAppResponseDto()
+	app := c.Ctx.Input.Param(":app")
+
+	if app == "" || len(app) > App_Name_Len {
+		beego.Info("App param name  error !name:", app)
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	has, err := models.AppDao.Exist(app)
+	if err != nil {
+		beego.Info("App Exist app  error !name:", app, "error:", err.Error())
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	if has {
+		app, err := models.AppDao.Get(app)
+		if err != nil {
+			beego.Info("App get app  error !name:", app, "error:", err.Error())
+			c.setError4Dto(ErrorParam, dto)
+			return
+		}
+		dto.Item = converAppTOItem(app)
+	} else {
+		c.setError4Dto(ErrorAppNotExistError, dto)
+		return
+	}
+
+	c.Data["json"] = dto
+	c.ServeJSON()
+}
+
 func (c *MainController) Apps() {
 
 	dto := NewSuccessAppsResponseDto()
@@ -73,41 +169,12 @@ func (c *MainController) Apps() {
 	c.Data["json"] = dto
 	c.ServeJSON()
 }
-func (c *MainController) App() {
-	dto := NewSuccessAppResponseDto()
-	app := c.Ctx.Input.Param(":app")
 
-	if app == "" || len(app) > App_Name_Len {
-		beego.Info("App param name  error !name:", app)
-		c.setError4Dto(ErrorParam, dto)
-		return
-	}
-	has, err := models.AppDao.Exist(app)
-	if err != nil {
-		beego.Info("App Exist app  error !name:", app, "error:", err.Error())
-		c.setError4Dto(ErrorParam, dto)
-		return
-	}
-	if has {
-		app, err := models.AppDao.Get(app)
-		if err != nil {
-			beego.Info("App get app  error !name:", app, "error:", err.Error())
-			c.setError4Dto(ErrorParam, dto)
-			return
-		}
-		dto.Item = converAppTOItem(app)
-	} else {
-		c.setError4Dto(ErrorAppNotExistError, dto)
-		return
-	}
-
-	c.Data["json"] = dto
-	c.ServeJSON()
-}
 func (c *MainController) AddApp() {
 	dto := NewSuccessResponseDto()
 	app := c.Ctx.Input.Param(":app")
 	desc := c.GetString("description")
+	alias := c.GetString("alias")
 
 	if app == "" || len(app) > App_Name_Len || desc == "" {
 		beego.Info("AddApp param name  error !name:", app, "desc:", desc)
@@ -124,6 +191,7 @@ func (c *MainController) AddApp() {
 		appinfo := new(models.AppInfo)
 		appinfo.App = app
 		appinfo.Description = desc
+		appinfo.Alias = alias
 		err = models.AppDao.Save(appinfo)
 		if err != nil {
 			beego.Info("AddApp save app  error !name:", app, "error:", err.Error())
@@ -150,6 +218,7 @@ func (c *MainController) ModifyApp() {
 	dto := NewSuccessResponseDto()
 	app := c.Ctx.Input.Param(":app")
 	desc := c.GetString("description")
+	alias := c.GetString("alias")
 
 	if app == "" || len(app) > App_Name_Len || desc == "" {
 		beego.Info("ModifyApp param name  error !name:", app, "desc:", desc)
@@ -166,6 +235,7 @@ func (c *MainController) ModifyApp() {
 		appinfo := new(models.AppInfo)
 		appinfo.App = app
 		appinfo.Description = desc
+		appinfo.Alias = alias
 		err = models.AppDao.Save(appinfo)
 		if err != nil {
 			beego.Info("AddApp save app  error !name:", app, "error:", err.Error())
@@ -477,6 +547,7 @@ func (c *MainController) Desc() {
 	title := c.GetString("title")
 	fullUrl := c.GetString("full_url")
 	displayUrl := c.GetString("display_url")
+	extendSoftwareUrlName := c.GetString("software_url_extend_name")
 
 	if ctime == "" || version == "" || channel == "" || softwareUrl == "" {
 		beego.Info("Desc Params fail version:", version, "time:", ctime, "description:", description,
@@ -520,34 +591,56 @@ func (c *MainController) Desc() {
 		return
 	}
 	if platform == Ios && channel == Ios_Channel {
-		plistUrl, err := c.savePlist(env, app, channel, version, id, title, softwareUrl, fullUrl, displayUrl)
+		plistUrl, err := c.savePlist(env, app, channel, version, extendSoftwareUrlName, id, title, softwareUrl, fullUrl, displayUrl)
 		if err != nil {
 			c.setError4Dto(err, dto)
 			return
 		}
 		softwareUrl = plistUrl
 	}
-	info := new(models.DescInfo)
-	info.Channel = channel
-	info.Description = description
-	info.Version = version
-	info.Time = ctime
-	info.Url = url
-	info.SoftwareUrl = softwareUrl
+	info, err := models.DescDao.Get(platform, env, app, version)
+	if err != nil {
+		beego.Info("get Desc error !platform:", platform, "env:", env, "app:", app, "version:", version, "error:", err.Error())
+		c.setError4Dto(ErrorDB, dto)
+		return
+	}
+	newInfo := false
+	if info == nil {
+		newInfo = true
+		info = new(models.DescInfo)
+		info.Channel = channel
+		info.Description = description
+		info.Version = version
+		info.Time = ctime
+		info.Url = url
+	}
+
+	if extendSoftwareUrlName != "" {
+		if info.ExtendSoftwareUrls == nil {
+			info.ExtendSoftwareUrls = make(map[string]string)
+		}
+		info.ExtendSoftwareUrls[extendSoftwareUrlName] = softwareUrl
+	} else {
+		info.SoftwareUrl = softwareUrl
+	}
+
 	err = models.DescDao.Save(platform, env, app, info)
 	if err != nil {
 		c.setError4Dto(err, dto)
 		return
 	}
-	err = models.DescListDao.Save(platform, env, app, info.Version, score)
-	if err != nil {
-		c.setError4Dto(err, dto)
-		return
+	if newInfo {
+		err = models.DescListDao.Save(platform, env, app, info.Version, score)
+		if err != nil {
+			c.setError4Dto(err, dto)
+			return
+		}
 	}
+
 	c.Data["json"] = dto
 	c.ServeJSON()
 }
-func (c *MainController) savePlist(env Environment, app, channel, version, id, title, softwareUrl, fullUrl, displayUrl string) (string, error) {
+func (c *MainController) savePlist(env Environment, app, channel, version, extendSoftwareUrlName, id, title, softwareUrl, fullUrl, displayUrl string) (string, error) {
 
 	if id == "" || title == "" {
 		beego.Info("PList Params fail .id:", id, "title:", title)
@@ -575,19 +668,20 @@ func (c *MainController) savePlist(env Environment, app, channel, version, id, t
 		return "", err
 	}
 
-	err = models.PlistDao.Save(env, app, version, plist)
+	err = models.PlistDao.Save(env, app, version, extendSoftwareUrlName, plist)
 	if err != nil {
 		beego.Info("PList CreatPlist fail :", err.Error())
 		return "", err
 	}
-	return c.getPlistUrl(env, app, version), nil
+	return c.getPlistUrl(env, app, version, extendSoftwareUrlName), nil
 }
-func (c *MainController) getPlistUrl(env Environment, app, version string) string {
+func (c *MainController) getPlistUrl(env Environment, app, version, extendSoftwareUrlName string) string {
 	envstr := Dev_Str
 	if env == Release {
 		envstr = Release_Str
 	}
-	return c.URLFor("MainController.PList", ":app", app, ":environment", envstr, ":version", version+Plist)
+	plist := models.PlistDao.GetField(version, extendSoftwareUrlName) + Plist
+	return c.URLFor("MainController.PList", ":app", app, ":environment", envstr, ":version", plist)
 }
 func (c *MainController) Delete() {
 	dto := NewSuccessResponseDto()
@@ -631,15 +725,28 @@ func (c *MainController) Delete() {
 			c.setError4Dto(err, dto)
 			return
 		}
+
 		if versions != nil && len(versions) > 0 {
-			models.DescDao.Remove(platform, env, app, versions)
+
 			if platform == Ios {
-				err := models.PlistDao.Remove(env, app, versions)
+				extendUrls := make([]string, 10)
+				infos, _ := models.DescDao.MGet(platform, env, app, versions)
+				for _, info := range infos {
+					if info.ExtendSoftwareUrls != nil && len(info.ExtendSoftwareUrls) > 0 {
+
+						for k, _ := range info.ExtendSoftwareUrls {
+							extendUrls = append(extendUrls, models.PlistDao.GetField(info.Version, k))
+						}
+					}
+				}
+				err := models.PlistDao.Remove(env, app, extendUrls)
+				err = models.PlistDao.Remove(env, app, versions)
 				if err != nil {
 					c.setError4Dto(err, dto)
 					return
 				}
 			}
+			models.DescDao.Remove(platform, env, app, versions)
 		}
 	}
 	c.Data["json"] = dto
@@ -669,19 +776,40 @@ func getLastOne(platform Platform, environment Environment, app string, toffset 
 	return converInfoTOItem(info, platform, environment, app, toffset), nil
 }
 func converInfoTOItem(info *models.DescInfo, platform Platform, environment Environment, app string, toffset int) *ItemDto {
-
+	if info == nil {
+		return nil
+	}
 	item := new(ItemDto)
+	item.ExtendUrls = make(map[string]string)
+
 	switch platform {
 	case Android:
 		item.Platform = Android_Str
 		item.Down = info.SoftwareUrl
+		if info.ExtendSoftwareUrls != nil && len(info.ExtendSoftwareUrls) > 0 {
+			for k, v := range info.ExtendSoftwareUrls {
+				item.ExtendUrls[k] = v
+			}
+		}
 		break
 	case Ios:
 		item.Platform = Ios_Str
 		if info.Channel == Ios_Channel {
-			item.Down = Https + Domain + info.SoftwareUrl
+			if info.SoftwareUrl != "" {
+				item.Down = Https + Domain + info.SoftwareUrl
+			}
+			if info.ExtendSoftwareUrls != nil && len(info.ExtendSoftwareUrls) > 0 {
+				for k, v := range info.ExtendSoftwareUrls {
+					item.ExtendUrls[k] = Https + Domain + v
+				}
+			}
 		} else {
 			item.Down = info.SoftwareUrl
+			if info.ExtendSoftwareUrls != nil && len(info.ExtendSoftwareUrls) > 0 {
+				for k, v := range info.ExtendSoftwareUrls {
+					item.ExtendUrls[k] = v
+				}
+			}
 		}
 		break
 	}
@@ -734,6 +862,7 @@ func converAppTOItem(info *models.AppInfo) *AppDto {
 	item := new(AppDto)
 	item.App = info.App
 	item.Desc = info.Description
+	item.Alias = info.Alias
 	return item
 }
 func getList(platform Platform, environment Environment, start, end int, app string, toffset int) ([]*ItemDto, int, error) {

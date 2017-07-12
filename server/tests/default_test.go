@@ -1,7 +1,7 @@
 package test
 
 import (
-	_ "appinhouse/routers"
+	_ "appinhouse/server/routers"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"

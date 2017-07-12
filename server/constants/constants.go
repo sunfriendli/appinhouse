@@ -74,7 +74,16 @@ var (
 	Redis_DB        = 0
 	Redis_Password  = ""
 	Redis_PoolSize  = 10
+
+	Secret_Key = ""
+
+	Security_Group = make(map[string]bool)
 )
+
+func AllowIP(ip string) bool {
+	_, ok := Security_Group[ip]
+	return ok
+}
 
 func GetEnvironment(environment string) (Environment, error) {
 	if environment == "" {

@@ -105,16 +105,16 @@ type PlistInfoDao struct {
 	key    string
 }
 
-func (this *PlistInfoDao) Save(env Environment, app string, version string, plist []byte) error {
+func (this *PlistInfoDao) Save(env Environment, app string, version string, extendSoftwareUrlName string, plist []byte) error {
 
-	_, err := this.client.HSet(this.getKey(env, app), version, string(plist)).Result()
+	_, err := this.client.HSet(this.getKey(env, app), this.GetField(version, extendSoftwareUrlName), string(plist)).Result()
 	if err != nil {
 		return ErrorDB
 	}
 	return nil
 }
-func (this *PlistInfoDao) Get(env Environment, app string, version string) (string, error) {
-	ret, err := this.client.HGet(this.getKey(env, app), version).Result()
+func (this *PlistInfoDao) Get(env Environment, app string, field string) (string, error) {
+	ret, err := this.client.HGet(this.getKey(env, app), field).Result()
 	if err != nil && err != redis.Nil {
 		return "", ErrorDB
 	}
@@ -149,5 +149,16 @@ func (this *PlistInfoDao) getKey(env Environment, app string) string {
 		buffer.WriteString(Release_Str)
 	}
 
+	return buffer.String()
+}
+
+func (this *PlistInfoDao) GetField(version string, extendSoftwareUrlName string) string {
+	if extendSoftwareUrlName == "" {
+		return version
+	}
+	var buffer bytes.Buffer
+	buffer.WriteString(version)
+	buffer.WriteString(Underline)
+	buffer.WriteString(extendSoftwareUrlName)
 	return buffer.String()
 }

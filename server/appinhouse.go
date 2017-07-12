@@ -9,6 +9,8 @@ import (
 
 	"appinhouse/server/models"
 
+	"appinhouse/server/filters"
+
 	"github.com/astaxie/beego"
 )
 
@@ -24,7 +26,16 @@ func setLog() {
 	beego.SetLevel(beego.LevelInformational)
 	beego.SetLogFuncCall(true)
 	beego.SetLogger("file", `{"filename":"`+Log_Dir+Log_File+`"}`)
+	setFilter()
 
+}
+
+func setFilter() {
+	beego.InsertFilter("/api/:app/delete/:platform/:environment", beego.BeforeRouter, filters.SecretKeyFilter)
+	beego.InsertFilter("/api/:app/desc/:platform/:environment", beego.BeforeRouter, filters.SecretKeyFilter)
+	beego.InsertFilter("/api/:app/create", beego.BeforeRouter, filters.SecretKeyFilter)
+	beego.InsertFilter("/api/:app/update", beego.BeforeRouter, filters.SecretKeyFilter)
+	beego.InsertFilter("/api/:app/delete", beego.BeforeRouter, filters.SecretKeyFilter)
 }
 func setParam() {
 
@@ -76,4 +87,20 @@ func setParam() {
 
 	Redis_PoolSize = beego.AppConfig.DefaultInt("redis::pool_siz", Redis_PoolSize)
 	beego.Info("app.conf-> pool_siz:", Redis_PoolSize)
+
+	Secret_Key = beego.AppConfig.String("authentication::secret_key")
+	beego.Info("app.conf-> secret_key:", Secret_Key)
+	if Secret_Key == "" {
+		panic("app.conf not authentication::secret_key")
+	}
+
+	group := beego.AppConfig.Strings("securityGroup::inbound")
+	beego.Info("app.conf-> inbound:", group)
+	if group == nil || len(group) == 0 {
+		panic("app.conf not securityGroup::inbound")
+	}
+	for _, value := range group {
+		Security_Group[value] = true
+	}
+	beego.Info("app.conf-> inbound:", Security_Group)
 }
