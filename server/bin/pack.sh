@@ -25,7 +25,7 @@ APPNAME=server
 
 export GOPATH="$CURDIR"
 
-cd src/server/$APPNAME
+cd src/$APPNAME
 
 echo 'get and build'
 go get -v
