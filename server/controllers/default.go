@@ -579,11 +579,11 @@ func (c *MainController) Desc() {
 		return
 	}
 
-	if !existHttpPath(softwareUrl) {
-		beego.Info("Desc error archive file not exsit,url:", softwareUrl)
-		c.setError4Dto(ErrorIPANotExistError, dto)
-		return
-	}
+	//	if !existHttpPath(softwareUrl) {
+	//		beego.Info("Desc error archive file not exsit,url:", softwareUrl)
+	//		c.setError4Dto(ErrorIPANotExistError, dto)
+	//		return
+	//	}
 	score, err := time.Parse(ISO_Datetime, ctime)
 	if err != nil {
 		beego.Info("Desc error ,time:", ctime)
@@ -647,16 +647,16 @@ func (c *MainController) savePlist(env Environment, app, channel, version, exten
 		return "", ErrorParam
 	}
 	hasFile := true
-	if fullUrl != "" {
-		if !existHttpPath(fullUrl) {
-			hasFile = false
-		}
-	}
-	if displayUrl != "" {
-		if !existHttpPath(displayUrl) {
-			hasFile = false
-		}
-	}
+	//	if fullUrl != "" {
+	//		if !existHttpPath(fullUrl) {
+	//			hasFile = false
+	//		}
+	//	}
+	//	if displayUrl != "" {
+	//		if !existHttpPath(displayUrl) {
+	//			hasFile = false
+	//		}
+	//	}
 	if !hasFile {
 		beego.Info("PList error fullUrl or displayUrl not exsit.fullUrl:", fullUrl, "displayUrl", displayUrl)
 		return "", ErrorParam
