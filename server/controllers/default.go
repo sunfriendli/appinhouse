@@ -548,10 +548,16 @@ func (c *MainController) Desc() {
 	fullUrl := c.GetString("full_url")
 	displayUrl := c.GetString("display_url")
 	extendSoftwareUrlName := c.GetString("software_url_extend_name")
+	extendSoftwareUrlKey := c.GetString("software_url_extend_key")
 
 	if ctime == "" || version == "" || channel == "" || softwareUrl == "" {
 		beego.Info("Desc Params fail version:", version, "time:", ctime, "description:", description,
 			"software_url", softwareUrl, "channel:", channel)
+		c.setError4Dto(ErrorParam, dto)
+		return
+	}
+	if (extendSoftwareUrlKey != "" && extendSoftwareUrlName == "") || (extendSoftwareUrlKey == "" && extendSoftwareUrlName != "") {
+		beego.Info("Desc Params fail extendSoftwareUrlKey:", extendSoftwareUrlKey, "extendSoftwareUrlName:", extendSoftwareUrlName)
 		c.setError4Dto(ErrorParam, dto)
 		return
 	}
@@ -591,7 +597,7 @@ func (c *MainController) Desc() {
 		return
 	}
 	if platform == Ios && channel == Ios_Channel {
-		plistUrl, err := c.savePlist(env, app, channel, version, extendSoftwareUrlName, id, title, softwareUrl, fullUrl, displayUrl)
+		plistUrl, err := c.savePlist(env, app, channel, version, extendSoftwareUrlKey, id, title, softwareUrl, fullUrl, displayUrl)
 		if err != nil {
 			c.setError4Dto(err, dto)
 			return
@@ -619,7 +625,8 @@ func (c *MainController) Desc() {
 		if info.ExtendSoftwareUrls == nil {
 			info.ExtendSoftwareUrls = make(map[string]string)
 		}
-		info.ExtendSoftwareUrls[extendSoftwareUrlName] = softwareUrl
+		ekey := extendSoftwareUrlKey + Colon + extendSoftwareUrlName
+		info.ExtendSoftwareUrls[ekey] = softwareUrl
 	} else {
 		info.SoftwareUrl = softwareUrl
 	}
@@ -640,7 +647,7 @@ func (c *MainController) Desc() {
 	c.Data["json"] = dto
 	c.ServeJSON()
 }
-func (c *MainController) savePlist(env Environment, app, channel, version, extendSoftwareUrlName, id, title, softwareUrl, fullUrl, displayUrl string) (string, error) {
+func (c *MainController) savePlist(env Environment, app, channel, version, extendSoftwareUrlKey, id, title, softwareUrl, fullUrl, displayUrl string) (string, error) {
 
 	if id == "" || title == "" {
 		beego.Info("PList Params fail .id:", id, "title:", title)
@@ -668,19 +675,19 @@ func (c *MainController) savePlist(env Environment, app, channel, version, exten
 		return "", err
 	}
 
-	err = models.PlistDao.Save(env, app, version, extendSoftwareUrlName, plist)
+	err = models.PlistDao.Save(env, app, version, extendSoftwareUrlKey, plist)
 	if err != nil {
 		beego.Info("PList CreatPlist fail :", err.Error())
 		return "", err
 	}
-	return c.getPlistUrl(env, app, version, extendSoftwareUrlName), nil
+	return c.getPlistUrl(env, app, version, extendSoftwareUrlKey), nil
 }
-func (c *MainController) getPlistUrl(env Environment, app, version, extendSoftwareUrlName string) string {
+func (c *MainController) getPlistUrl(env Environment, app, version, extendSoftwareUrlKey string) string {
 	envstr := Dev_Str
 	if env == Release {
 		envstr = Release_Str
 	}
-	plist := models.PlistDao.GetField(version, extendSoftwareUrlName) + Plist
+	plist := models.PlistDao.GetField(version, extendSoftwareUrlKey) + Plist
 	return c.URLFor("MainController.PList", ":app", app, ":environment", envstr, ":version", plist)
 }
 func (c *MainController) Delete() {
@@ -735,7 +742,8 @@ func (c *MainController) Delete() {
 					if info.ExtendSoftwareUrls != nil && len(info.ExtendSoftwareUrls) > 0 {
 
 						for k, _ := range info.ExtendSoftwareUrls {
-							extendUrls = append(extendUrls, models.PlistDao.GetField(info.Version, k))
+							ename := getNameForExtendSoftwareUrl(k)
+							extendUrls = append(extendUrls, models.PlistDao.GetField(info.Version, ename))
 						}
 					}
 				}
@@ -788,7 +796,8 @@ func converInfoTOItem(info *models.DescInfo, platform Platform, environment Envi
 		item.Down = info.SoftwareUrl
 		if info.ExtendSoftwareUrls != nil && len(info.ExtendSoftwareUrls) > 0 {
 			for k, v := range info.ExtendSoftwareUrls {
-				item.ExtendUrls[k] = v
+				ename := getNameForExtendSoftwareUrl(k)
+				item.ExtendUrls[ename] = v
 			}
 		}
 		break
@@ -800,14 +809,16 @@ func converInfoTOItem(info *models.DescInfo, platform Platform, environment Envi
 			}
 			if info.ExtendSoftwareUrls != nil && len(info.ExtendSoftwareUrls) > 0 {
 				for k, v := range info.ExtendSoftwareUrls {
-					item.ExtendUrls[k] = Https + Domain + v
+					ename := getNameForExtendSoftwareUrl(k)
+					item.ExtendUrls[ename] = Https + Domain + v
 				}
 			}
 		} else {
 			item.Down = info.SoftwareUrl
 			if info.ExtendSoftwareUrls != nil && len(info.ExtendSoftwareUrls) > 0 {
 				for k, v := range info.ExtendSoftwareUrls {
-					item.ExtendUrls[k] = v
+					ename := getNameForExtendSoftwareUrl(k)
+					item.ExtendUrls[ename] = v
 				}
 			}
 		}
@@ -830,6 +841,14 @@ func converInfoTOItem(info *models.DescInfo, platform Platform, environment Envi
 	item.Version = info.Version
 
 	return item
+}
+
+func getNameForExtendSoftwareUrl(key string) string {
+	keys := strings.Split(key, Colon)
+	if len(keys) == 2 {
+		return keys[1]
+	}
+	return key
 }
 func converToClientTime(ctime string, toffset int) string {
 	l := len(ctime)
