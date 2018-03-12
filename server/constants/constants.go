@@ -170,3 +170,25 @@ const (
 	List = PathType(0)
 	Data = PathType(1)
 )
+const (
+	Up   = "up"
+	Down = "down"
+	Top  = "top"
+	End  = "end"
+)
+
+func ValidateMoveOperation(operation string) error {
+	switch operation {
+	case Up:
+		break
+	case Down:
+		break
+	case Top:
+		break
+	case End:
+		break
+	default:
+		return ErrorParam
+	}
+	return nil
+}

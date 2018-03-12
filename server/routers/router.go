@@ -21,6 +21,7 @@ func init() {
 	beego.Router("/api/:app/get", &controllers.MainController{}, "get:App")
 	beego.Router("/api/apps", &controllers.MainController{}, "get:Apps")
 	beego.Router("/api/modify/app", &controllers.ModifyDataController{}, "get:ModifyAppData")
+	beego.Router("/api/move/:app/:operation", &controllers.MainController{}, "post:MoveApp")
 
 	beego.Router("/api/:app/:platform/:environment/:version", &controllers.MainController{}, "get:Get")
 }

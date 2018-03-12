@@ -76,6 +76,7 @@
                             <th>ID</th>
                             <th>修改</th>
                             <th>删除</th>
+                            <th>顺序操作</th>
                           </tr>
                         </thead>
                         <tbody id="list_body">
@@ -87,8 +88,8 @@
                          <div class="hidden"><input type="text" id="page"value="0"><input type="text" id="total_page" value="0"></div>
                             <div class="col-md-12">
                               <ul class="pager">
-                                <li class="previous" id="page_pervious" style="display: none;"><a href="#">上一页</a></li>
-                                <li class="next"><a href="#" id="page_next" style="display: none;">下一页</a></li>
+                                <li class="previous" id="page_pervious" style="display: none;"><a href="javascript:void(0);">上一页</a></li>
+                                <li class="next"><a href="javascript:void(0);" id="page_next" style="display: none;">下一页</a></li>
                               </ul>
                             </div>
                           </div>
@@ -108,6 +109,7 @@
   </body>
 </html>
 <script type="text/javascript">
+  
   var page =$('#page').val();
   if (page==0){
       ipage=1;
@@ -165,7 +167,7 @@
         });
    }
   function reqList(status) {
-         
+
            var opage =$('#page').val();
           
             if (opage==0){
@@ -187,6 +189,7 @@
               }
              
              }
+             ipage = opage
              var url="api/apps?page="+opage;
 
            
@@ -202,6 +205,7 @@
                   }
                   var page=data.page;
                   var totalPage=data.total_page
+                  var size = data.items.length
                   $('#list_body').empty();
                   $.each(data.items, function (index, item) {
                    
@@ -227,14 +231,16 @@
                     if (item.alias){
                       appname = item.alias
                     }
-
+                    var operations = getOperations(item,index,page,totalPage,size) 
                     $('#list_body').append(' <tr id ="'+item_id+'" class="'+trclass+'">'+
                       
                             '<td ><a href="index_re.html?app='+item.app+'" >'+appname+'</a></td>'+
                             '<td>'+item.description+'</td>'+
                             '<td>'+item.app+'</td>'+
+                          
                             '<td><a class="delete" href="update.html?app='+item.app+'">修改</a></td>'+
                             '<td><a class="delete"  href="delete.html?app='+item.app+'">删除</a></td>'+
+                            '<td>'+operations+'</td>'+
                           '</tr>')
                          
                   });
@@ -260,4 +266,63 @@
              
           });
     }
+function getOperations(item,index,page,totalPage,size) {
+   var operations_str ="顺序操作"
+   var app_str = item.app
+
+   var ret = 
+                             '<div class="panel-group panel-group-lists" id="accordion'+app_str+'">' +
+                               '<div class="panel">' +
+                                 '<div class="panel-heading">' +
+                                   '<h6 class="panel-title">' +
+                                     '<a data-toggle="collapse" data-parent="#accordion'+app_str+'" href="#collapse'+app_str + '">'+operations_str+'</a>' +
+                                   '</h6>' +
+                                 '</div>' +
+                                 '<div id="collapse'+ app_str +'" class="panel-collapse collapse">' +
+                                  '<div class="panel-body">' 
+                      
+                                var down = "down"
+                                if (page == 1 && index == 0){
+                                  ret = ret +
+                                  '<a class ="down" href="javascript:void(0);" onclick="operation(\'down\',\''+app_str+'\')">下移</a><p/>' +
+                                  '<a class ="end" href="javascript:void(0);" onclick="operation(\'end\',\''+app_str+'\')">置底</a><p/>' 
+                                }else if (page == totalPage && index == (size -1) ){
+                                 
+                                  ret = ret +
+                                  '<a class ="top" href="javascript:void(0);" onclick="operation(\'top\',\''+app_str+'\')">置顶</a><p/>' +
+                                  '<a class ="up" href="javascript:void(0);" onclick="operation(\'up\',\''+app_str+'\')">上移</a><p/>' 
+                                }else{
+                                  ret = ret +
+                                  '<a class ="top" href="javascript:void(0);" onclick="operation(\'top\',\''+app_str+'\')">置顶</a><p/>' +
+                                  '<a class ="up" href="javascript:void(0);" onclick="operation(\'up\',\''+app_str+'\')">上移</a><p/>' +
+                                  '<a class ="down" href="javascript:void(0);" onclick="operation(\'down\',\''+app_str+'\')">下移</a><p/>' +
+                                  '<a class ="end" href="javascript:void(0);" onclick="operation(\'end\',\''+app_str+'\')">置底</a><p/>' 
+                                }
+                                   
+                                ret = ret +    
+                                   '</div>' +
+                                 '</div>' +
+                               '</div>' +
+                             '</div>' 
+     return ret
+  }
+  function doLoad() { 
+   window.location.href='index.html';
+  } 
+
+  function operation(operation, app) { 
+    var url="api/move/"+app+"/"+operation
+    $.ajax({
+    type: 'POST',
+    url: url,
+    success: function (data) {
+      var code=data.code;
+      if(code!=0){
+         error_msg(data.msg,3000)
+        return
+      }
+      reqList("page")
+    }
+   });
+  } 
 </script>

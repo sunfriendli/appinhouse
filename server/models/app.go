@@ -21,6 +21,11 @@ type AppInfoDao struct {
 	client *redis.Client
 }
 
+type AppListInfo struct {
+	Key   string
+	Score float64
+}
+
 func newAppInfoDao() *AppInfoDao {
 	dao := &AppInfoDao{
 		client: redisClient,
@@ -108,10 +113,10 @@ func newAppListDao() *AppInfoListDao {
 	return dao
 }
 
-func (this *AppInfoListDao) Save(app string) error {
+func (this *AppInfoListDao) SaveWithScore(app string, score float64) error {
 
 	z := redis.Z{
-		Score:  float64(time.Now().Unix()),
+		Score:  score,
 		Member: app,
 	}
 	err := this.client.ZAdd(this.getKey(), z).Err()
@@ -120,9 +125,15 @@ func (this *AppInfoListDao) Save(app string) error {
 	}
 	return nil
 }
+
+func (this *AppInfoListDao) Save(app string) error {
+	score := float64(time.Now().Unix())
+	return this.SaveWithScore(app, score)
+}
+
 func (this *AppInfoListDao) GetList(start, end int) ([]string, error) {
 
-	ret, err := this.client.ZRange(this.getKey(), int64(start), int64(end)).Result()
+	ret, err := this.client.ZRevRange(this.getKey(), int64(start), int64(end)).Result()
 	if err != nil {
 		return nil, ErrorDB
 	}
@@ -138,6 +149,40 @@ func (this *AppInfoListDao) GetList(start, end int) ([]string, error) {
 
 	return versions, nil
 }
+
+func (this *AppInfoListDao) GetAppByRank(rank int) (*AppListInfo, error) {
+
+	ret, err := this.GetListWithScore(rank, rank)
+	if err != nil {
+		return nil, err
+	}
+	if len(ret) == 0 {
+		return nil, nil
+	}
+	return ret[0], nil
+}
+
+func (this *AppInfoListDao) GetListWithScore(start, end int) ([]*AppListInfo, error) {
+
+	ret, err := this.client.ZRevRangeWithScores(this.getKey(), int64(start), int64(end)).Result()
+	if err != nil {
+		return nil, ErrorDB
+	}
+	size := len(ret)
+	linfos := make([]*AppListInfo, 0, size)
+	if len(ret) == 0 {
+		return nil, nil
+	}
+	for _, v := range ret {
+		linfo := &AppListInfo{}
+		linfo.Key = v.Member.(string)
+		linfo.Score = v.Score
+		linfos = append(linfos, linfo)
+	}
+
+	return linfos, nil
+}
+
 func (this *AppInfoListDao) Exist(app string) (bool, error) {
 
 	_, err := this.client.ZRank(this.getKey(), app).Result()
@@ -159,6 +204,7 @@ func (this *AppInfoListDao) Count() (int, error) {
 
 	return int(ret), nil
 }
+
 func (this *AppInfoListDao) Remove(app string) error {
 
 	err := this.client.ZRem(this.getKey(), app).Err()
@@ -167,6 +213,17 @@ func (this *AppInfoListDao) Remove(app string) error {
 	}
 	return nil
 }
+
+func (this *AppInfoListDao) GetRank(app string) (int, error) {
+
+	ret, err := this.client.ZRevRank(this.getKey(), app).Result()
+	if err != nil {
+		return 0, ErrorDB
+	}
+
+	return int(ret), nil
+}
+
 func (this *AppInfoListDao) getKey() string {
 	var buffer bytes.Buffer
 	buffer.WriteString(key_prefix)
