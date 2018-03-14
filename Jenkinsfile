@@ -91,7 +91,7 @@ pipeline {
             }
             steps {
                 script {
-                    deployAppinhouse(env.SERVER_TARBALL, 'appinhouse')
+                    deployAppinhouse(env.SERVER_TARBALL, 'appinhouse.server')
                 }
             }
         }
@@ -103,7 +103,7 @@ pipeline {
             }
             steps {
                 script {
-                    deployAppinhouse(env.WEB_TARBALL, 'appinhouseweb')
+                    deployAppinhouse(env.WEB_TARBALL, 'appinhouse.web')
                 }
             }
         }
