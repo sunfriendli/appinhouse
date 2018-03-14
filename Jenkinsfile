@@ -45,7 +45,7 @@ pipeline {
             steps {
                 checkout([$class: 'GitSCM',
                     userRemoteConfigs: [[url: env.GITHUB_URL]],
-                    branches: [[name: env.BRANCH_NAME]],
+                    branches: [[name: env.BRANCH_NAME ?: 'master']],
                     browser: [$class: 'GithubWeb', repoUrl: env.GITHUB_URL],
                     extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'src/appinhouse']]
                 ])
