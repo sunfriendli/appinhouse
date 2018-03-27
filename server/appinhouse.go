@@ -5,13 +5,13 @@ import (
 
 	_ "appinhouse/server/routers"
 
-	"appinhouse/server/controllers"
-
 	"appinhouse/server/models"
 
 	"appinhouse/server/filters"
 
 	"github.com/astaxie/beego"
+
+	"os"
 )
 
 func main() {
@@ -22,12 +22,34 @@ func main() {
 }
 func setLog() {
 	Log_Dir = beego.AppConfig.String("users::log_dir")
-	controllers.InitLogDirectory()
+	initLogDirectory()
 	beego.SetLevel(beego.LevelInformational)
 	beego.SetLogFuncCall(true)
 	beego.SetLogger("file", `{"filename":"`+Log_Dir+Log_File+`"}`)
 	setFilter()
 
+}
+
+func initLogDirectory() (string, error) {
+	src := Log_Dir
+	if isExist(src) {
+		return src, nil
+	}
+
+	if err := os.MkdirAll(src, 0757); err != nil {
+		if os.IsPermission(err) {
+			beego.Info("permission denied path:" + src)
+			panic("permission denied")
+		}
+		return "", err
+	}
+
+	return src, nil
+}
+
+func isExist(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil || os.IsExist(err)
 }
 
 func setFilter() {
