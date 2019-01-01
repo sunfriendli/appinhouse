@@ -71,7 +71,7 @@ public class DynamoDBVersionStore implements IVersion {
                         .withWriteCapacityUnits((long) 1))
                 .withKeySchema(new KeySchemaElement().withAttributeName(VersionTable.SECONDARY_INDEX_VERSION).withKeyType(KeyType.HASH),
                         new KeySchemaElement().withAttributeName(VersionTable.HASH_KEY_APPID).withKeyType(KeyType.RANGE))
-                .withProjection(new Projection().withProjectionType(ProjectionType.KEYS_ONLY));
+                .withProjection(new Projection().withProjectionType(ProjectionType.ALL));
 
         //
         CreateTableRequest req = new CreateTableRequest()
@@ -128,15 +128,10 @@ public class DynamoDBVersionStore implements IVersion {
     public String GetPlatformList(String appId, String platform) {
         Index index = table.getIndex(indexName);
 
-        String[] fields = new String[]{VersionTable.HASH_KEY_APPID,VersionTable.SECONDARY_INDEX_VERSION,
-                VersionTable.RANGE_KEY_VERSION,VersionTable.ATTRIBUTE_JSON_INFO};
-
         QuerySpec querySpec = new QuerySpec();
         querySpec.withKeyConditionExpression("#platform = :v_platform and #id = :v_id")
-                .withProjectionExpression(String.join(",",fields))
                 .withNameMap(new NameMap().with("#platform", VersionTable.SECONDARY_INDEX_VERSION).with("#id", VersionTable.HASH_KEY_APPID))
                 .withValueMap(new ValueMap().withString(":v_platform", platform).withString(":v_id", appId));
-
 
         ItemCollection<QueryOutcome> items = index.query(querySpec);
 
