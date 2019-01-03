@@ -1,6 +1,6 @@
 {
   "http.host": "0.0.0.0",
-  "http.port": 8081,
+  "http.port": 8443,
   "dynamodb.region": "local",
   "dynamodb.local.host": "localhost",
   "dynamodb.local.port": 8000,

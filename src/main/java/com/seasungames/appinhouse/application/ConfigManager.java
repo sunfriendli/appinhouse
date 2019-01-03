@@ -5,19 +5,15 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 
 public class ConfigManager {
-    private static final Logger log = LoggerFactory.getLogger(ConfigManager.class);
 
-    private static JsonObject jsonConfig;
+    private JsonObject jsonConfig;
 
-    public static void AsyncLoadConfig(Vertx vertx, Handler<AsyncResult<Void>> resultHandler) {
+    public void AsyncLoadConfig(Vertx vertx, Handler<AsyncResult<Void>> resultHandler) {
         jsonConfig = vertx.getOrCreateContext().config();
 
         if (jsonConfig.isEmpty()) {
-            log.warn("use this configuration just launch your application with : java -jar target/Your.jar -conf src/main/resources/conf.json");
             vertx.fileSystem().readFile("conf.json", ar -> {
                 if (ar.succeeded()) {
                     jsonConfig = new JsonObject(ar.result());
@@ -35,32 +31,31 @@ public class ConfigManager {
     /***
      * Configuration API
      * */
-
-    public static int httpPort() {
+    public int httpPort() {
         return jsonConfig.getInteger("http.port", 8082);
     }
 
-    public static String dynamoDBRegion() {
+    public String dynamoDBRegion() {
         return jsonConfig.getString("dynamodb.region", "local");
     }
 
-    public static String dynamoDBLocalhost() {
+    public String dynamoDBLocalhost() {
         return jsonConfig.getString("dynamodb.local.host", "localhost");
     }
 
-    public static int dynamoDBLocalPort() {
-        return jsonConfig.getInteger("dynamodb.local.port",8000);
+    public int dynamoDBLocalPort() {
+        return jsonConfig.getInteger("dynamodb.local.port", 8000);
     }
 
-    public static long dynamoDBTableReadThroughput() {
-        return jsonConfig.getLong("dynamodb.tableReadThroughput",1L);
+    public long dynamoDBTableReadThroughput() {
+        return jsonConfig.getLong("dynamodb.tableReadThroughput", 1L);
     }
 
-    public static long dynamoDBTableWriteThroughput() {
-        return jsonConfig.getLong("dynamodb.tableWriteThroughput",1L);
+    public long dynamoDBTableWriteThroughput() {
+        return jsonConfig.getLong("dynamodb.tableWriteThroughput", 1L);
     }
 
-    public static boolean createDynamoDBTableOnStartup() {
-        return jsonConfig.getBoolean("dynamodb.createTableOnStartup",false);
+    public boolean createDynamoDBTableOnStartup() {
+        return jsonConfig.getBoolean("dynamodb.createTableOnStartup", false);
     }
 }
