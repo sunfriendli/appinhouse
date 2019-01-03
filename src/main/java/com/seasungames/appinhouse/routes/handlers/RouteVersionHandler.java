@@ -9,7 +9,7 @@ import io.vertx.ext.web.RoutingContext;
 /**
  * Created by lile on 12/27/2018
  */
-public class RouteVersionHandler extends IRouteHandler {
+public class RouteVersionHandler extends RouteHandler {
 
     private final DynamoDBManager dbManager;
 

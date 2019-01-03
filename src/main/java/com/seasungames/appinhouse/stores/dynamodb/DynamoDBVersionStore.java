@@ -8,38 +8,38 @@ import com.amazonaws.services.dynamodbv2.document.utils.NameMap;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.*;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
-import com.seasungames.appinhouse.application.ConfigManager;
+import com.seasungames.appinhouse.application.Configuration;
 import com.seasungames.appinhouse.application.PlatformConstant;
 import com.seasungames.appinhouse.models.VersionVo;
-import com.seasungames.appinhouse.stores.IVersion;
+import com.seasungames.appinhouse.stores.Version;
 import com.seasungames.appinhouse.stores.dynamodb.tables.VersionTable;
 import io.vertx.core.json.JsonArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.inject.Inject;
 import java.util.*;
 
 /**
  * Created by lile on 12/28/2018
  */
-public class DynamoDBVersionStore implements IVersion {
+public class DynamoDBVersionStore implements Version {
 
     private static final Logger LOG = LogManager.getLogger(DynamoDBAppStore.class);
 
     private final String tableName = "versions";
 
-    @Inject
-    public ConfigManager conf;
+    public Configuration conf;
 
     private Table table;
     private AmazonDynamoDB ddb;
 
-    public DynamoDBVersionStore(AmazonDynamoDB ddb) {
+    public DynamoDBVersionStore(AmazonDynamoDB ddb, Configuration conf) {
         this.ddb = ddb;
+        this.conf = conf;
+
         table = new DynamoDB(ddb).getTable(tableName);
 
-        if(conf.createDynamoDBTableOnStartup()) {
+        if(conf.dynamodbcreateTableOnStartup()) {
             CreateTable();
         }
     }
@@ -69,8 +69,8 @@ public class DynamoDBVersionStore implements IVersion {
         CreateTableRequest req = new CreateTableRequest()
                 .withTableName(tableName)
                 .withProvisionedThroughput(new ProvisionedThroughput()
-                        .withReadCapacityUnits(conf.dynamoDBTableReadThroughput())
-                        .withWriteCapacityUnits(conf.dynamoDBTableWriteThroughput()))
+                        .withReadCapacityUnits(conf.dynamodbTableReadThroughput())
+                        .withWriteCapacityUnits(conf.dynamodbTableWriteThroughput()))
                 .withAttributeDefinitions(attributeDefinitions)
                 .withKeySchema(tableKeySchema);
 

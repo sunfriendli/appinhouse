@@ -9,14 +9,13 @@ import com.amazonaws.services.dynamodbv2.document.utils.NameMap;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.*;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
-import com.seasungames.appinhouse.application.ConfigManager;
+import com.seasungames.appinhouse.application.Configuration;
 import com.seasungames.appinhouse.models.AppVo;
-import com.seasungames.appinhouse.stores.IAppStore;
+import com.seasungames.appinhouse.stores.App;
 import com.seasungames.appinhouse.stores.dynamodb.tables.AppTable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,22 +23,23 @@ import java.util.Map;
 /**
  * Created by lile on 12/28/2018
  */
-public class DynamoDBAppStore implements IAppStore {
+public class DynamoDBAppStore implements App {
     private static final Logger LOG = LogManager.getLogger(DynamoDBAppStore.class);
 
     private final String tableName = "apps";
 
-    @Inject
-    public ConfigManager conf;
+    private Configuration conf;
 
     private Table table;
     private AmazonDynamoDB ddb;
 
-    public DynamoDBAppStore(AmazonDynamoDB ddb) {
+    public DynamoDBAppStore(AmazonDynamoDB ddb, Configuration conf) {
         this.ddb = ddb;
+        this.conf = conf;
+
         table = new DynamoDB(ddb).getTable(tableName);
 
-        if (conf.createDynamoDBTableOnStartup()) {
+        if (conf.dynamodbcreateTableOnStartup()) {
             CreateTable();
         }
     }
@@ -52,8 +52,8 @@ public class DynamoDBAppStore implements IAppStore {
                 .withKeySchema(new KeySchemaElement(AppTable.HASH_KEY_APPID, KeyType.HASH))
                 .withAttributeDefinitions(new AttributeDefinition(AppTable.HASH_KEY_APPID, ScalarAttributeType.S))
                 .withProvisionedThroughput(new ProvisionedThroughput()
-                        .withReadCapacityUnits(conf.dynamoDBTableReadThroughput())
-                        .withWriteCapacityUnits(conf.dynamoDBTableWriteThroughput()));
+                        .withReadCapacityUnits(conf.dynamodbTableReadThroughput())
+                        .withWriteCapacityUnits(conf.dynamodbTableWriteThroughput()));
 
         try {
             if (TableUtils.createTableIfNotExists(this.ddb, req)) {

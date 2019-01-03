@@ -12,8 +12,6 @@ import com.seasungames.appinhouse.routes.handlers.RouteVersionHandler;
 
 import io.vertx.ext.web.RoutingContext;
 
-import javax.inject.Inject;
-
 /**
  * Created by lile on 12/27/2018
  */
@@ -23,11 +21,11 @@ public class RoutesManager {
 
     private final Router router;
 
-    @Inject
-    public DynamoDBManager dbManager;
+    DynamoDBManager dbManager;
 
-    public RoutesManager(Vertx vertx) {
+    public RoutesManager(Vertx vertx, DynamoDBManager dbManager) {
         this.router = Router.router(vertx);
+        this.dbManager = dbManager;
     }
 
     public Router GetRouter() {
