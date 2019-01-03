@@ -15,27 +15,27 @@ public interface Configuration extends Config{
     String httpHost();
 
     @Key("http.port")
-    @DefaultValue("8080")
+    @DefaultValue("8443")
     int httpPort();
 
     @Key("dynamodb.region")
-    @DefaultValue("8080")
+    @DefaultValue("local")
     String dynamodbRegion();
 
     @Key("dynamodb.local.host")
     @DefaultValue("localhost")
-    int dynamodbLocalHost();
+    String dynamodbLocalHost();
 
     @Key("dynamodb.local.port")
     @DefaultValue("8000")
     int dynamodbLocalPort();
 
     @Key("dynamodb.tableReadThroughput")
-    @DefaultValue("1L")
+    @DefaultValue("1")
     Long dynamodbTableReadThroughput();
 
     @Key("dynamodb.tableWriteThroughput")
-    @DefaultValue("1L")
+    @DefaultValue("1")
     Long dynamodbTableWriteThroughput();
 
     @Key("dynamodb.createTableOnStartup")
