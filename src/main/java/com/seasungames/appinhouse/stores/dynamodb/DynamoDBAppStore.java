@@ -40,11 +40,11 @@ public class DynamoDBAppStore implements App {
         table = new DynamoDB(ddb).getTable(tableName);
 
         if (conf.dynamodbcreateTableOnStartup()) {
-            CreateTable();
+            createTable();
         }
     }
 
-    private void CreateTable() {
+    private void createTable() {
         LOG.info("Creating dynamodb table: " + tableName);
 
         CreateTableRequest req = new CreateTableRequest()
@@ -70,7 +70,7 @@ public class DynamoDBAppStore implements App {
      **/
 
     @Override
-    public List<AppVo> GetAppsList() {
+    public List<AppVo> getAppsList() {
         List<AppVo> appLists = new ArrayList<>();
         AppVo appVO = null;
 
@@ -93,7 +93,7 @@ public class DynamoDBAppStore implements App {
     }
 
     @Override
-    public int CreateApps(AppVo vo) {
+    public int createApps(AppVo vo) {
         try {
             table.putItem(new Item().withPrimaryKey(AppTable.HASH_KEY_APPID, vo.getAppId())
                     .withString(AppTable.ATTRIBUTE_DESC, vo.getDesc())
@@ -105,7 +105,7 @@ public class DynamoDBAppStore implements App {
     }
 
     @Override
-    public int DeleteApps(String appId) {
+    public int deleteApps(String appId) {
         DeleteItemSpec deleteItemSpec = new DeleteItemSpec()
                 .withPrimaryKey(new PrimaryKey(AppTable.HASH_KEY_APPID, appId));
 
@@ -118,7 +118,7 @@ public class DynamoDBAppStore implements App {
     }
 
     @Override
-    public int UpdateApps(AppVo vo) {
+    public int updateApps(AppVo vo) {
         UpdateItemSpec updateItemSpec = new UpdateItemSpec()
                 .withPrimaryKey(new PrimaryKey(AppTable.HASH_KEY_APPID, vo.getAppId()))
                 .withUpdateExpression("set #desc = :d, #alias = :a")
@@ -135,7 +135,7 @@ public class DynamoDBAppStore implements App {
     }
 
     @Override
-    public String GetApps(String appId) {
+    public String getApps(String appId) {
         GetItemSpec spec = new GetItemSpec().withPrimaryKey(AppTable.HASH_KEY_APPID, appId);
 
         try {

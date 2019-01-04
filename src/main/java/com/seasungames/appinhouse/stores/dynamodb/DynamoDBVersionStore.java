@@ -40,11 +40,11 @@ public class DynamoDBVersionStore implements Version {
         table = new DynamoDB(ddb).getTable(tableName);
 
         if(conf.dynamodbcreateTableOnStartup()) {
-            CreateTable();
+            createTable();
         }
     }
 
-    private void CreateTable() {
+    private void createTable() {
         LOG.info("Creating dynamodb table: " + tableName);
 
         // Attribute definitions
@@ -83,7 +83,7 @@ public class DynamoDBVersionStore implements Version {
         }
     }
 
-    private String GetPrimaryKey(String id, String platform) {
+    private String getPrimaryKey(String id, String platform) {
         return id + "_" + platform;
     }
 
@@ -92,8 +92,8 @@ public class DynamoDBVersionStore implements Version {
      **/
 
     @Override
-    public VersionVo GetOneApp(String id, String platform, String version) {
-        GetItemSpec spec = new GetItemSpec().withPrimaryKey(VersionTable.HASH_KEY_APPID, GetPrimaryKey(id, platform),
+    public VersionVo getOneApp(String id, String platform, String version) {
+        GetItemSpec spec = new GetItemSpec().withPrimaryKey(VersionTable.HASH_KEY_APPID, getPrimaryKey(id, platform),
                 VersionTable.RANGE_KEY_VERSION, version);
 
         try {
@@ -113,7 +113,7 @@ public class DynamoDBVersionStore implements Version {
     }
 
     @Override
-    public int CreateVersion(VersionVo vo) {
+    public int createVersion(VersionVo vo) {
         final Map<String, Object> infoMap = new HashMap<>();
         infoMap.put(VersionTable.ATTRIBUTE_DOWNLOAD_URL, vo.getDownload_url());
         infoMap.put(VersionTable.ATTRIBUTE_JENKINS_URL, vo.getJenkins_url());
@@ -127,7 +127,7 @@ public class DynamoDBVersionStore implements Version {
 
         try {
             Item item = new Item().withPrimaryKey(VersionTable.HASH_KEY_APPID,
-                    GetPrimaryKey(vo.getAppId(), vo.getPlatform()), VersionTable.RANGE_KEY_VERSION, vo.getVersion())
+                    getPrimaryKey(vo.getAppId(), vo.getPlatform()), VersionTable.RANGE_KEY_VERSION, vo.getVersion())
                     .withString(VersionTable.ATTRIBUTE_PLATFORM, vo.getPlatform())
                     .withMap(VersionTable.ATTRIBUTE_JSON_INFO, infoMap);
 
@@ -141,7 +141,7 @@ public class DynamoDBVersionStore implements Version {
     }
 
     @Override
-    public String GetLatestList(String appId) {
+    public String getLatestList(String appId) {
         QuerySpec querySpec = new QuerySpec();
         ItemCollection<QueryOutcome> items = null;
         Iterator<Item> iterator = null;
@@ -151,7 +151,7 @@ public class DynamoDBVersionStore implements Version {
         for (PlatformConstant platform : PlatformConstant.values()) {
             querySpec.withKeyConditionExpression("#id = :v_id")
                     .withNameMap(new NameMap().with("#id", VersionTable.HASH_KEY_APPID))
-                    .withValueMap(new ValueMap().withString(":v_id", GetPrimaryKey(appId, platform.getPlatform())))
+                    .withValueMap(new ValueMap().withString(":v_id", getPrimaryKey(appId, platform.getPlatform())))
                     .withScanIndexForward(false)
                     .setMaxResultSize(1);
 
@@ -166,11 +166,11 @@ public class DynamoDBVersionStore implements Version {
     }
 
     @Override
-    public String GetPlatformList(String appId, String platform) {
+    public String getPlatformList(String appId, String platform) {
         QuerySpec querySpec = new QuerySpec();
         querySpec.withKeyConditionExpression("#id = :v_id")
                 .withNameMap(new NameMap().with("#id", VersionTable.HASH_KEY_APPID))
-                .withValueMap(new ValueMap().withString(":v_id", GetPrimaryKey(appId, platform)))
+                .withValueMap(new ValueMap().withString(":v_id", getPrimaryKey(appId, platform)))
                 .withScanIndexForward(false);
 
         ItemCollection<QueryOutcome> items = table.query(querySpec);

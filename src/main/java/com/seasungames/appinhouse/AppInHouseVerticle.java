@@ -49,7 +49,7 @@ public class AppInHouseVerticle extends AbstractVerticle {
     }
 
     private void startHttpsServer() {
-        webServer.requestHandler(routesManager.GetRouter())
+        webServer.requestHandler(routesManager.getRouter())
                 .listen(conf.httpPort(), ar -> {
                     if (ar.succeeded()) {
                         log.info("WebServer started listening at {}", conf.httpPort());

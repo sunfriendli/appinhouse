@@ -9,14 +9,14 @@ import java.util.List;
  */
 public interface App {
 
-    List<AppVo> GetAppsList();
+    List<AppVo> getAppsList();
 
-    int UpdateApps(AppVo vo);
+    int updateApps(AppVo vo);
 
-    int CreateApps(AppVo vo);
+    int createApps(AppVo vo);
 
-    int DeleteApps(String appId);
+    int deleteApps(String appId);
 
-    String GetApps(String appId);
+    String getApps(String appId);
 
 }

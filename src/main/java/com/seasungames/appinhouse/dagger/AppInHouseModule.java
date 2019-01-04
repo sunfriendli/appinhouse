@@ -29,7 +29,7 @@ public class AppInHouseModule {
     @Provides
     @Singleton
     RoutesManager provideRoutesManager(Vertx vertx, DynamoDBManager dbManager) {
-        return new RoutesManager(vertx, dbManager).SetRoutes();
+        return new RoutesManager(vertx, dbManager).setRoutes();
     }
 
     @Provides

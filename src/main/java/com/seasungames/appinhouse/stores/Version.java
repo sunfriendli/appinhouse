@@ -4,12 +4,12 @@ import com.seasungames.appinhouse.models.VersionVo;
 
 public interface Version {
 
-    String GetPlatformList(String appId, String platform);
+    String getPlatformList(String appId, String platform);
 
-    String GetLatestList(String appId);
+    String getLatestList(String appId);
 
-    int CreateVersion(VersionVo vo);
+    int createVersion(VersionVo vo);
 
-    VersionVo GetOneApp(String appId, String platform, String version);
+    VersionVo getOneApp(String appId, String platform, String version);
 
 }
