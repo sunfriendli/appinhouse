@@ -1,7 +1,7 @@
 package com.seasungames.appinhouse.routes.handlers;
 
 import com.seasungames.appinhouse.models.VersionVo;
-import com.seasungames.appinhouse.services.impl.VersionServiceImpl;
+import com.seasungames.appinhouse.services.VersionService;
 import com.seasungames.appinhouse.utils.PathUtils;
 import io.vertx.ext.web.RoutingContext;
 
@@ -10,9 +10,9 @@ import io.vertx.ext.web.RoutingContext;
  */
 public class RouteVersionHandler extends RouteHandler {
 
-    private final VersionServiceImpl versionService;
+    private final VersionService versionService;
 
-    public RouteVersionHandler(VersionServiceImpl versionService) {
+    public RouteVersionHandler(VersionService versionService) {
         this.versionService = versionService;
     }
 

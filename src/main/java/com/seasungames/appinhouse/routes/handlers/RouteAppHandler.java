@@ -1,5 +1,6 @@
 package com.seasungames.appinhouse.routes.handlers;
 
+import com.seasungames.appinhouse.services.AppService;
 import com.seasungames.appinhouse.services.impl.AppServiceImpl;
 import com.seasungames.appinhouse.utils.PathUtils;
 import io.vertx.ext.web.RoutingContext;
@@ -9,9 +10,9 @@ import io.vertx.ext.web.RoutingContext;
  */
 public class RouteAppHandler extends RouteHandler {
 
-    private final AppServiceImpl appService;
+    private final AppService appService;
 
-    public RouteAppHandler(AppServiceImpl appService) {
+    public RouteAppHandler(AppService appService) {
         this.appService = appService;
     }
 
