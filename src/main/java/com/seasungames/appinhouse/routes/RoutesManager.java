@@ -1,9 +1,6 @@
 package com.seasungames.appinhouse.routes;
 
 import com.seasungames.appinhouse.application.APIConstant;
-import com.seasungames.appinhouse.services.impl.AppServiceImpl;
-import com.seasungames.appinhouse.services.impl.VersionServiceImpl;
-import com.seasungames.appinhouse.stores.dynamodb.DynamoDBManager;
 import com.seasungames.appinhouse.utils.PathUtils;
 import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
@@ -14,7 +11,8 @@ import com.seasungames.appinhouse.routes.handlers.RouteAppHandler;
 import com.seasungames.appinhouse.routes.handlers.RouteVersionHandler;
 
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
+
+import javax.inject.Inject;
 
 /**
  * Created by lile on 12/27/2018
@@ -23,21 +21,20 @@ public class RoutesManager {
 
     private static final Logger log = LoggerFactory.getLogger(RoutesManager.class);
 
-    private final Router router;
+    @Inject
+    Router router;
 
-    private static final String API_APPS = "/api/apps";
-    private static final String API_VERSIONS = "/api/versions";
+    @Inject
+    RouteAppHandler appHandler;
 
-    DynamoDBManager dbManager;
-    private AppServiceImpl appService;
-    private VersionServiceImpl versionService;
+    @Inject
+    RouteVersionHandler versionHandler;
 
-    public RoutesManager(Vertx vertx, DynamoDBManager dbManager) {
-        this.router = Router.router(vertx);
-        this.dbManager = dbManager;
+    @Inject
+    Vertx vertx;
 
-        appService = new AppServiceImpl(this.dbManager.appTable);
-        versionService = new VersionServiceImpl(this.dbManager.versionTable);
+    public RoutesManager() {
+
     }
 
     public Router getRouter() {
@@ -45,10 +42,6 @@ public class RoutesManager {
     }
 
     public RoutesManager setRoutes() {
-        RouteAppHandler appHandler = new RouteAppHandler(appService);
-        RouteVersionHandler versionHandler = new RouteVersionHandler(versionService);
-
-        //webroot
         router.route(APIConstant.INDEX).handler(this::index);
         router.route(APIConstant.API_INDEX_APP).handler(appHandler::index);
         router.route(APIConstant.API_INDEX_VERSION).handler(versionHandler::index);
