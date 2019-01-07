@@ -33,13 +33,13 @@ public class RouteVersionHandler {
 
     private void apiLatestVersion(RoutingContext rc) {
         String appId = rc.request().getParam("id");
-        toResponseJson(rc,200,versionService.getLatestList(appId));
+        toResponseJson(rc, 200, versionService.getLatestList(appId));
     }
 
     private void apiHistoryVersion(RoutingContext rc) {
         String appId = rc.request().getParam("id");
         String platform = rc.request().getParam("platform");
-        toResponseJson(rc,200,versionService.getPlatformList(appId, platform));
+        toResponseJson(rc, 200, versionService.getPlatformList(appId, platform));
     }
 
     private void apiCreateVersion(RoutingContext rc) {
@@ -61,7 +61,7 @@ public class RouteVersionHandler {
         }
 
         versionService.createVersion(vo);
-        toResponseJson(rc,201);
+        toResponseJson(rc, 201);
     }
 
     private void getPlist(RoutingContext rc) {

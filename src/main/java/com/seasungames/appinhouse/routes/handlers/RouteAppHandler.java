@@ -35,12 +35,12 @@ public class RouteAppHandler {
      * API
      */
     private void apiGetApps(RoutingContext rc) {
-        rc.response().setStatusCode(200).end(appService.getAppsList());
+        toResponseJson(rc, 200, appService.getAppsList());
     }
 
     private void apiGetApp(RoutingContext rc) {
         String appId = rc.request().getParam("id");
-        toResponseJson(rc,200,appService.getApps(appId));
+        toResponseJson(rc, 200, appService.getApps(appId));
     }
 
     private void apiCreateApps(RoutingContext rc) {
@@ -49,7 +49,7 @@ public class RouteAppHandler {
         String alias = rc.request().getParam("alias");
 
         appService.createApps(appId, desc, alias);
-        toResponseJson(rc,201);
+        toResponseJson(rc, 201);
     }
 
     private void apiUpdateApps(RoutingContext rc) {
@@ -58,12 +58,12 @@ public class RouteAppHandler {
         String alias = rc.request().getParam("alias");
 
         appService.updateApps(appId, desc, alias);
-        toResponseJson(rc,200);
+        toResponseJson(rc, 200);
     }
 
     private void apiDeleteApps(RoutingContext rc) {
         String appId = rc.request().getParam("id");
         appService.deleteApps(appId);
-        toResponseJson(rc,204);
+        toResponseJson(rc, 204);
     }
 }
