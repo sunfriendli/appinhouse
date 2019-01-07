@@ -2,7 +2,6 @@ package com.seasungames.appinhouse.routes;
 
 import com.seasungames.appinhouse.application.APIConstant;
 import com.seasungames.appinhouse.utils.PathUtils;
-import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
@@ -29,9 +28,6 @@ public class RoutesManager {
 
     @Inject
     RouteVersionHandler versionHandler;
-
-    @Inject
-    Vertx vertx;
 
     public RoutesManager() {
 
