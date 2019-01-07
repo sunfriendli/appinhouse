@@ -7,13 +7,19 @@ import io.vertx.ext.web.RoutingContext;
  */
 public class RestApiUtils {
 
-    public static void toResponse(RoutingContext routingContext, int statusCode, String body) {
-        routingContext.response().putHeader("Content-Type", "application/json; charset=utf-8");
-        routingContext.response().setStatusCode(statusCode)
+    public static void toResponseJson(RoutingContext rc, int statusCode, String body) {
+        rc.response().putHeader("Content-Type", "application/json; charset=utf-8");
+        rc.response().setStatusCode(statusCode)
                 .end(body);
     }
 
-    public static void toResponse(RoutingContext routingContext, int statusCode) {
-        toResponse(routingContext, statusCode, "");
+    public static void toResponseJson(RoutingContext rc, int statusCode) {
+        toResponseJson(rc, statusCode, "");
+    }
+
+    public static void toResponseXML(RoutingContext rc, int statusCode, String body) {
+        rc.response().setStatusCode(200)
+                .putHeader("content-type", "application/x-plist; charset=utf-8")
+                .end(body);
     }
 }

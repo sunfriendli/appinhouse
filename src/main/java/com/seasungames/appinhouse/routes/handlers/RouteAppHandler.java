@@ -6,6 +6,8 @@ import com.seasungames.appinhouse.utils.PathUtils;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
+import static com.seasungames.appinhouse.utils.RestApiUtils.toResponseJson;
+
 /**
  * Created by lile on 12/27/2018
  */
@@ -38,7 +40,7 @@ public class RouteAppHandler {
 
     private void apiGetApp(RoutingContext rc) {
         String appId = rc.request().getParam("id");
-        rc.response().setStatusCode(200).end(appService.getApps(appId));
+        toResponseJson(rc,200,appService.getApps(appId));
     }
 
     private void apiCreateApps(RoutingContext rc) {
@@ -47,7 +49,7 @@ public class RouteAppHandler {
         String alias = rc.request().getParam("alias");
 
         appService.createApps(appId, desc, alias);
-        rc.response().setStatusCode(201).end();
+        toResponseJson(rc,201);
     }
 
     private void apiUpdateApps(RoutingContext rc) {
@@ -56,12 +58,12 @@ public class RouteAppHandler {
         String alias = rc.request().getParam("alias");
 
         appService.updateApps(appId, desc, alias);
-        rc.response().setStatusCode(200).end();
+        toResponseJson(rc,200);
     }
 
     private void apiDeleteApps(RoutingContext rc) {
         String appId = rc.request().getParam("id");
         appService.deleteApps(appId);
-        rc.response().setStatusCode(204).end();
+        toResponseJson(rc,204);
     }
 }
