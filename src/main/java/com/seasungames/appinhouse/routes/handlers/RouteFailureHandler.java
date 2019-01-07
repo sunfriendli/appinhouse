@@ -1,6 +1,7 @@
 package com.seasungames.appinhouse.routes.handlers;
 
 import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
+import com.seasungames.appinhouse.routes.exception.BadRequestException;
 import com.seasungames.appinhouse.routes.exception.ResourceNotFoundException;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
@@ -20,6 +21,8 @@ public class RouteFailureHandler implements Handler<RoutingContext> {
             restResponse(routingContext, 400, errorMessageToErrorBody("Validation failed"));
         } else if (failure instanceof AmazonDynamoDBException) {
             restResponse(routingContext, 400, errorMessageToErrorBody("DB Exception"));
+        } else if (failure instanceof BadRequestException) {
+            restResponse(routingContext, 400, errorMessageToErrorBody("Invalid Request"));
         } else if (failure instanceof ResourceNotFoundException) {
             restResponse(routingContext, 404, errorMessageToErrorBody(failure.getMessage()));
         } else {
