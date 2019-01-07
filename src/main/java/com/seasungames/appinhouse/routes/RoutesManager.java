@@ -54,11 +54,11 @@ public class RoutesManager {
          PUT:     Used for replacing resources or collections. For PUT requests with no body attribute, be sure to set the Content-Length header to zero.
          DELETE:  Used for deleting resources.
          ***/
-        router.get(APIConstant.API_GET_APPS).handler(appHandler::apiGetApps);
-        router.get(APIConstant.API_GET_APP).handler(appHandler::apiGetApp);
-        router.post(APIConstant.API_CREATE_APPS).handler(appHandler::apiCreateApps);
-        router.put(APIConstant.API_UPDATE_APPS).handler(appHandler::apiUpdateApps);
-        router.delete(APIConstant.API_DELETE_APPS).handler(appHandler::apiDeleteApps);
+        router.get(APIConstant.API_ALL_APPS).handler(appHandler::apiGetApps);
+        router.get(APIConstant.API_APPS).handler(appHandler::apiGetApp);
+        router.post(APIConstant.API_APPS).handler(appHandler::apiCreateApps);
+        router.put(APIConstant.API_APPS).handler(appHandler::apiUpdateApps);
+        router.delete(APIConstant.API_APPS).handler(appHandler::apiDeleteApps);
 
         router.get(APIConstant.API_GET_VERSIONS_LATEST).handler(versionHandler::apiLatestVersion);
         router.get(APIConstant.API_GET_VERSIONS_HISTORY).handler(versionHandler::apiHistoryVersion);
