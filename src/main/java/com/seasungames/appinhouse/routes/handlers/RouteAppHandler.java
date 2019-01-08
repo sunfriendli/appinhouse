@@ -4,6 +4,7 @@ import com.seasungames.appinhouse.application.APIConstant;
 import com.seasungames.appinhouse.routes.validations.impl.AppValidationHandler;
 import com.seasungames.appinhouse.services.AppService;
 import com.seasungames.appinhouse.utils.PathUtils;
+import io.vertx.core.json.Json;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
@@ -20,13 +21,12 @@ public class RouteAppHandler {
         router.route(APIConstant.INDEX_APP).handler(this::index);
 
         router.get(APIConstant.API_APPS)
-                .handler(AppValidationHandler.validateId())
                 .handler(this::apiGetApps);
         router.get(APIConstant.API_APPS + "/:id")
-                .handler(AppValidationHandler.validateAppForm())
+                .handler(AppValidationHandler.validateId())
                 .handler(this::apiGetApp);
         router.post(APIConstant.API_APPS)
-                .handler(AppValidationHandler.validateId())
+                .handler(AppValidationHandler.validateAppForm())
                 .handler(this::apiCreateApps);
         router.put(APIConstant.API_APPS + "/:id")
                 .handler(AppValidationHandler.validateId())
@@ -46,7 +46,8 @@ public class RouteAppHandler {
      * API
      */
     private void apiGetApps(RoutingContext rc) {
-        toResponseJson(rc, 200, appService.getAppsList());
+        String lastKey = rc.request().getParam("lastKey");
+        toResponseJson(rc, 200, Json.encodePrettily(appService.getAppsList(lastKey)));
     }
 
     private void apiGetApp(RoutingContext rc) {
