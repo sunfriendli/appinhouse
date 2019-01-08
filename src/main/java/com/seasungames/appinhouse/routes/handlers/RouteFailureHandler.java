@@ -21,7 +21,7 @@ public class RouteFailureHandler implements Handler<RoutingContext> {
         if (failure instanceof ValidationException) {
             toResponseJson(rc, 400, errorMessageToErrorBody(rc, "Validation failed"));
         } else if (failure instanceof AmazonDynamoDBException) {
-            toResponseJson(rc, 400, errorMessageToErrorBody(rc, "DB Exception"));
+            toResponseJson(rc, 400, errorMessageToErrorBody(rc, errorMessageToErrorBody(rc, failure.getMessage())));
         } else if (failure instanceof BadRequestException) {
             toResponseJson(rc, ((BadRequestException) failure).status, errorMessageToErrorBody(rc, failure.getMessage()));
         } else if (failure instanceof NotFoundException) {
