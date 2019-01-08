@@ -7,9 +7,8 @@ import com.seasungames.appinhouse.dagger.VertxModule;
 import com.seasungames.appinhouse.routes.RoutesManager;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 
