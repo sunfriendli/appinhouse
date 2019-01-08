@@ -1,8 +1,7 @@
 package com.seasungames.appinhouse.routes.handlers;
 
 import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
-import com.seasungames.appinhouse.routes.exception.impl.BadRequestException;
-import com.seasungames.appinhouse.routes.exception.impl.NotFoundException;
+import com.seasungames.appinhouse.routes.exception.HttpException;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -27,15 +26,13 @@ public class RouteFailureHandler implements Handler<RoutingContext> {
             toResponseJson(rc, 400, errorMessageToErrorBody(rc, "Validation failed"));
         } else if (failure instanceof AmazonDynamoDBException) {
             toResponseJson(rc, 400, errorMessageToErrorBody(rc, errorMessageToErrorBody(rc, failure.getMessage())));
-        } else if (failure instanceof BadRequestException) {
-            toResponseJson(rc, ((BadRequestException) failure).status, errorMessageToErrorBody(rc, failure.getMessage()));
-        } else if (failure instanceof NotFoundException) {
-            toResponseJson(rc, ((NotFoundException) failure).status, errorMessageToErrorBody(rc, failure.getMessage()));
-        } else {
+        } else if (failure instanceof HttpException) {
+            toResponseJson(rc, ((HttpException) failure).status, errorMessageToErrorBody(rc, failure.getMessage()));
+        }  else {
             toResponseJson(rc, 500, errorMessageToErrorBody(rc, failure.getMessage()));
         }
 
-        LOG.error("ExceptionError - {}: {}", failure.getClass().getSimpleName(), failure.getMessage());
+        LOG.error("RouteError - {}: {}", failure.getClass().getSimpleName(), failure.getMessage());
     }
 
     private String errorMessageToErrorBody(RoutingContext rc, String message) {
