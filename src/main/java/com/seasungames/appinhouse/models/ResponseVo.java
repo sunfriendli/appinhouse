@@ -1,31 +1,45 @@
 package com.seasungames.appinhouse.models;
 
-import io.vertx.core.json.JsonObject;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.vertx.core.json.Json;
 
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class ResponseVo<T> {
 
-    private JsonObject jsonObject;
+    private T data;
 
-    public ResponseVo() {
-        jsonObject = new JsonObject();
-    }
+    private String message;
+
+    private int code;
 
     public ResponseVo setData(T data) {
-        jsonObject.put("data", data);
+        this.data = data;
         return this;
+    }
+
+    public T getData() {
+        return data;
     }
 
     public ResponseVo setMessage(String message) {
-        jsonObject.put("message", message);
+        this.message = message;
         return this;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public ResponseVo setCode(int code) {
-        jsonObject.put("code", code);
+        this.code = code;
         return this;
     }
 
+    public int getCode() {
+        return code;
+    }
+
     public String toJson() {
-        return jsonObject.toString();
+        return Json.encode(this).toString();
     }
 }
