@@ -8,7 +8,7 @@ public interface AppService {
 
     AppListResponseVo getAppsList(String lastKey);
 
-    int updateApps(AppVo appVo);
+    AppResponseVo updateApps(AppVo appVo);
 
     int createApps(AppVo appVo);
 

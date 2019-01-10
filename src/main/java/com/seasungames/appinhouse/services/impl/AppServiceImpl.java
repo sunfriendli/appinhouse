@@ -24,7 +24,7 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    public int updateApps(AppVo appVo) {
+    public AppResponseVo updateApps(AppVo appVo) {
         return appTable.updateApps(appVo);
     }
 

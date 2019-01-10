@@ -134,17 +134,17 @@ public class DynamoDBAppStore implements AppStore {
     }
 
     @Override
-    public int updateApps(AppVo vo) {
+    public AppResponseVo updateApps(AppVo vo) {
         UpdateItemSpec updateItemSpec = new UpdateItemSpec()
                 .withPrimaryKey(new PrimaryKey(AppTable.HASH_KEY_APPID, vo.getAppId()))
                 .withConditionExpression(CONDITION_APP_EXIST)
                 .withUpdateExpression("set #desc = :v_desc, #alias = :v_alias")
                 .withNameMap(new NameMap().with("#desc", AppTable.ATTRIBUTE_DESC).with("#alias", AppTable.ATTRIBUTE_ALIAS))
-                .withValueMap(new ValueMap().withString(":desc", vo.getDesc()).withString(":alias", vo.getAlias()))
-                .withReturnValues(ReturnValue.UPDATED_NEW);
+                .withValueMap(new ValueMap().withString(":v_desc", vo.getDesc()).withString(":v_alias", vo.getAlias()))
+                .withReturnValues(ReturnValue.ALL_NEW);
 
-        table.updateItem(updateItemSpec);
-        return 0;
+        UpdateItemOutcome outcome = table.updateItem(updateItemSpec);
+        return Json.decodeValue(outcome.getItem().toJSON(), AppResponseVo.class);
     }
 
     @Override

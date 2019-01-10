@@ -11,7 +11,7 @@ public interface AppStore {
 
     AppListResponseVo getAppsList(String lastKey);
 
-    int updateApps(AppVo vo);
+    AppResponseVo updateApps(AppVo vo);
 
     int createApps(AppVo vo);
 

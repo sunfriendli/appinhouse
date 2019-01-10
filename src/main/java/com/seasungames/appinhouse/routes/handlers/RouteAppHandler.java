@@ -75,8 +75,10 @@ public class RouteAppHandler {
 
     private void apiUpdateApps(RoutingContext rc) {
         AppVo appVo = Json.decodeValue(rc.getBodyAsJson().toString(), AppVo.class);
-        appService.updateApps(appVo);
-        toResponseJson(rc, HttpStatus.SC_OK);
+
+        AppResponseVo appResponseVo = appService.updateApps(appVo);
+        ResponseVo<AppResponseVo> responseVo = new ResponseVo<>();
+        toResponseJson(rc, HttpStatus.SC_OK, responseVo.setData(appResponseVo).toJson());
     }
 
     private void apiDeleteApps(RoutingContext rc) {
