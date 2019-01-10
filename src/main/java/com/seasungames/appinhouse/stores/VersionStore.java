@@ -1,15 +1,15 @@
 package com.seasungames.appinhouse.stores;
 
 import com.seasungames.appinhouse.models.VersionVo;
-import io.vertx.core.json.JsonObject;
+import com.seasungames.appinhouse.models.response.VersionListResponseVo;
 
 import java.util.List;
 
 public interface VersionStore {
 
-    List<JsonObject> getPlatformList(String appId, String platform);
+    List<VersionListResponseVo> getPlatformList(String appId, String platform);
 
-    List<JsonObject> getLatestList(String appId);
+    List<VersionListResponseVo> getLatestList(String appId);
 
     int createVersion(VersionVo vo);
 
