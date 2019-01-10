@@ -12,7 +12,7 @@ import com.amazonaws.services.dynamodbv2.util.TableUtils;
 import com.seasungames.appinhouse.application.Configuration;
 import com.seasungames.appinhouse.application.PlatformEnum;
 import com.seasungames.appinhouse.models.VersionVo;
-import com.seasungames.appinhouse.models.response.VersionListResponseVo;
+import com.seasungames.appinhouse.models.response.VersionResponseVo;
 import com.seasungames.appinhouse.stores.VersionStore;
 import com.seasungames.appinhouse.stores.dynamodb.tables.VersionTable;
 import io.vertx.core.json.Json;
@@ -141,12 +141,12 @@ public class DynamoDBVersionStore implements VersionStore {
     }
 
     @Override
-    public List<VersionListResponseVo> getLatestList(String appId) {
+    public List<VersionResponseVo> getLatestList(String appId) {
         QuerySpec querySpec = new QuerySpec();
         ItemCollection<QueryOutcome> items;
         Iterator<Item> iterator;
 
-        List<VersionListResponseVo> versionListResponseVos = new ArrayList<>(PlatformEnum.values().length);
+        List<VersionResponseVo> versionListResponseVos = new ArrayList<>(PlatformEnum.values().length);
 
         for (PlatformEnum platform : PlatformEnum.values()) {
             querySpec.withKeyConditionExpression("#id = :v_id")
@@ -159,7 +159,7 @@ public class DynamoDBVersionStore implements VersionStore {
             iterator = items.iterator();
 
             while (iterator.hasNext()) {
-                VersionListResponseVo vo = Json.decodeValue(iterator.next().toJSON(), VersionListResponseVo.class);
+                VersionResponseVo vo = Json.decodeValue(iterator.next().toJSON(), VersionResponseVo.class);
                 versionListResponseVos.add(vo);
             }
         }
@@ -167,7 +167,7 @@ public class DynamoDBVersionStore implements VersionStore {
     }
 
     @Override
-    public List<VersionListResponseVo> getPlatformList(String appId, String platform) {
+    public List<VersionResponseVo> getPlatformList(String appId, String platform) {
         QuerySpec querySpec = new QuerySpec();
         querySpec.withKeyConditionExpression("#id = :v_id")
                 .withNameMap(new NameMap().with("#id", VersionTable.HASH_KEY_APPID))
@@ -176,10 +176,10 @@ public class DynamoDBVersionStore implements VersionStore {
 
         ItemCollection<QueryOutcome> items = table.query(querySpec);
         Iterator<Item> iterator = items.iterator();
-        List<VersionListResponseVo> versionListResponseVos = new ArrayList<>();
+        List<VersionResponseVo> versionListResponseVos = new ArrayList<>();
 
         while (iterator.hasNext()) {
-            VersionListResponseVo vo = Json.decodeValue(iterator.next().toJSON(), VersionListResponseVo.class);
+            VersionResponseVo vo = Json.decodeValue(iterator.next().toJSON(), VersionResponseVo.class);
             versionListResponseVos.add(vo);
         }
         return versionListResponseVos;

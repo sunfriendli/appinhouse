@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Created by lile on 1/10/2019
  */
-public class VersionListResponseVo {
+public class VersionResponseVo {
 
     private String Id;
 

@@ -1,7 +1,7 @@
 package com.seasungames.appinhouse.services.impl;
 
 import com.seasungames.appinhouse.models.VersionVo;
-import com.seasungames.appinhouse.models.response.VersionListResponseVo;
+import com.seasungames.appinhouse.models.response.VersionResponseVo;
 import com.seasungames.appinhouse.services.AppService;
 import com.seasungames.appinhouse.services.VersionService;
 import com.seasungames.appinhouse.stores.VersionStore;
@@ -23,12 +23,12 @@ public class VersionServiceImpl implements VersionService {
     }
 
     @Override
-    public List<VersionListResponseVo> getPlatformList(String appId, String platform) {
+    public List<VersionResponseVo> getPlatformList(String appId, String platform) {
         return versionTable.getPlatformList(appId, platform);
     }
 
     @Override
-    public List<VersionListResponseVo> getLatestList(String appId) {
+    public List<VersionResponseVo> getLatestList(String appId) {
          return versionTable.getLatestList(appId);
     }
 

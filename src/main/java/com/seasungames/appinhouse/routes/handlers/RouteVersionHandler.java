@@ -3,7 +3,7 @@ package com.seasungames.appinhouse.routes.handlers;
 import com.seasungames.appinhouse.application.APIConstant;
 import com.seasungames.appinhouse.models.VersionVo;
 import com.seasungames.appinhouse.models.response.ResponseVo;
-import com.seasungames.appinhouse.models.response.VersionListResponseVo;
+import com.seasungames.appinhouse.models.response.VersionResponseVo;
 import com.seasungames.appinhouse.routes.validations.impl.VersionValidationHandler;
 import com.seasungames.appinhouse.services.VersionService;
 import com.seasungames.appinhouse.utils.PathUtils;
@@ -48,7 +48,7 @@ public class RouteVersionHandler {
     private void apiLatestVersion(RoutingContext rc) {
         String appId = rc.request().getParam("id");
 
-        ResponseVo<List<VersionListResponseVo>> responseVo = new ResponseVo<>();
+        ResponseVo<List<VersionResponseVo>> responseVo = new ResponseVo<>();
         toResponseJson(rc, 200, responseVo.setData(versionService.getLatestList(appId)).toJson());
     }
 
@@ -56,7 +56,7 @@ public class RouteVersionHandler {
         String appId = rc.request().getParam("id");
         String platform = rc.request().getParam("platform");
 
-        ResponseVo<List<VersionListResponseVo>> responseVo = new ResponseVo<>();
+        ResponseVo<List<VersionResponseVo>> responseVo = new ResponseVo<>();
         toResponseJson(rc, 200, responseVo.setData(versionService.getPlatformList(appId, platform)).toJson());
     }
 
