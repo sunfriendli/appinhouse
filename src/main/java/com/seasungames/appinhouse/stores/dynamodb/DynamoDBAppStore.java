@@ -111,7 +111,7 @@ public class DynamoDBAppStore implements AppStore {
     }
 
     @Override
-    public int createApps(AppVo vo) {
+    public void createApps(AppVo vo) {
         Item item = new Item()
                 .withPrimaryKey(AppTable.HASH_KEY_APPID, vo.getAppId())
                 .withString(AppTable.ATTRIBUTE_DESC, vo.getDesc())
@@ -120,17 +120,15 @@ public class DynamoDBAppStore implements AppStore {
                 .withConditionExpression(CONDITION_APP_NOT_EXIST)
                 .withItem(item);
         table.putItem(putItemSpec);
-        return 0;
     }
 
     @Override
-    public int deleteApps(String appId) {
+    public void deleteApps(String appId) {
         DeleteItemSpec deleteItemSpec = new DeleteItemSpec()
                 .withConditionExpression(CONDITION_APP_EXIST)
                 .withPrimaryKey(new PrimaryKey(AppTable.HASH_KEY_APPID, appId));
 
         table.deleteItem(deleteItemSpec);
-        return 0;
     }
 
     @Override

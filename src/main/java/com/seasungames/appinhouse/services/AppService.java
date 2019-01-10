@@ -10,9 +10,9 @@ public interface AppService {
 
     AppResponseVo updateApps(AppVo appVo);
 
-    int createApps(AppVo appVo);
+    void createApps(AppVo appVo);
 
-    int deleteApps(String id);
+    void deleteApps(String id);
 
     AppResponseVo getApps(String id);
 
