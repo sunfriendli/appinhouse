@@ -43,7 +43,7 @@ public class RoutesManager {
         router.route().handler(BodyHandler.create());
         router.route().handler(LoggerHandler.create());
         router.route().handler(StaticHandler.create()
-                .setWebRoot("webroot").setIndexPage("index.html").setDefaultContentEncoding("UTF-8"));
+            .setWebRoot("webroot").setIndexPage("index.html").setDefaultContentEncoding("UTF-8"));
         router.route().failureHandler(new RouteFailureHandler());
         router.route().last().handler(rc -> rc.fail(new BadRequestException()));
     }
