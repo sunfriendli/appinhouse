@@ -40,6 +40,20 @@ public abstract class BaseHandler {
         };
     }
 
+    protected Handler<AsyncResult<String>> resultXMLHandler(RoutingContext context) {
+        return ar -> {
+            if (ar.succeeded()) {
+                context.response()
+                    .setStatusCode(HttpResponseStatus.OK.code())
+                    .putHeader("content-type", "application/x-plist; charset=utf-8")
+                    .end(ar.result());
+            } else {
+                internalError(context, ar.cause());
+                ar.cause().printStackTrace();
+            }
+        };
+    }
+
     protected void internalError(RoutingContext context, Throwable ex) {
         context.response().setStatusCode(500)
             .putHeader("content-type", "application/json")
