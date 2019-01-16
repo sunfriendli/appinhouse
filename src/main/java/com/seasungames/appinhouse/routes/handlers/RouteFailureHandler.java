@@ -10,8 +10,6 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.api.validation.ValidationException;
 import io.vertx.serviceproxy.ServiceException;
 
-import static com.seasungames.appinhouse.utils.RestApiUtils.toResponseJson;
-
 /**
  * Created by lile on 1/7/2019
  */
@@ -29,13 +27,19 @@ public class RouteFailureHandler implements Handler<RoutingContext> {
             HttpException httpException = ((HttpException) failure);
             toResponseJson(rc, httpException.status, errorMessageToErrorBody(httpException.getMessage()));
         } else if (failure instanceof ServiceException) {
-            ServiceException serviceException = (ServiceException)failure;
+            ServiceException serviceException = (ServiceException) failure;
             toResponseJson(rc, HttpResponseStatus.INTERNAL_SERVER_ERROR.code(), errorMessageToErrorBody(serviceException.getMessage()));
         } else {
             toResponseJson(rc, HttpResponseStatus.INTERNAL_SERVER_ERROR.code(), errorMessageToErrorBody(failure.getMessage()));
         }
         failure.printStackTrace();
         LOG.error("Error - {}: {}", failure.getClass().getSimpleName(), failure.getMessage());
+    }
+
+    public void toResponseJson(RoutingContext rc, int statusCode, String body) {
+        rc.response().putHeader("Content-Type", "application/json; charset=utf-8");
+        rc.response().setStatusCode(statusCode)
+            .end(body);
     }
 
     private String errorMessageToErrorBody(String message) {
