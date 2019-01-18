@@ -82,6 +82,11 @@
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
+      <artifactId>vertx-service-discovery</artifactId>
+      <version>${vertx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
       <artifactId>vertx-junit5</artifactId>
       <version>${vertx.version}</version>
       <scope>test</scope>
@@ -115,18 +120,6 @@
       <artifactId>dagger</artifactId>
       <version>${dagger.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.google.dagger</groupId>
-      <artifactId>dagger-compiler</artifactId>
-      <version>${dagger.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${google.guava.version}</version>
-      <scope>provided</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.aeonbits.owner</groupId>
@@ -152,10 +145,24 @@
             <source>${java.version}</source>
             <target>${java.version}</target>
             <compilerArgument>-Xlint:unchecked</compilerArgument>
-            <annotationProcessors>
-              <annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>
-              <annotationProcessor>dagger.internal.codegen.ComponentProcessor</annotationProcessor>
-            </annotationProcessors>
+            <annotationProcessorPaths>
+              <path>
+                <groupId>com.google.dagger</groupId>
+                <artifactId>dagger-compiler</artifactId>
+                <version>${dagger.version}</version>
+              </path>
+              <path>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-codegen</artifactId>
+                <version>${vertx.version}</version>
+                <classifier>processor</classifier>
+              </path>
+              <path>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-service-proxy</artifactId>
+                <version>${vertx.version}</version>
+              </path>
+            </annotationProcessorPaths>
           </configuration>
         </plugin>
       </plugins>
