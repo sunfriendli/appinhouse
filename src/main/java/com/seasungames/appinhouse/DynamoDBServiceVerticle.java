@@ -28,15 +28,8 @@ public class DynamoDBServiceVerticle extends AbstractVerticle {
     @Override
     public void start(Future<Void> startFuture) throws Exception {
         injectDependencies();
-
-        new ServiceBinder(vertx)
-            .setAddress(AppDBService.SERVICE_ADDRESS)
-            .register(AppDBService.class, appDBService);
-
-        new ServiceBinder(vertx)
-            .setAddress(VersionDBService.SERVICE_ADDRESS)
-            .register(VersionDBService.class, versionDBService);
-
+        startAppDBService();
+        startVersionDBService();
         startFuture.complete();
     }
 
@@ -44,6 +37,18 @@ public class DynamoDBServiceVerticle extends AbstractVerticle {
         DBComponent component = DaggerDBComponent.builder()
             .build();
         component.inject(this);
+    }
+
+    private void startAppDBService() {
+        new ServiceBinder(vertx)
+            .setAddress(AppDBService.SERVICE_ADDRESS)
+            .register(AppDBService.class, appDBService);
+    }
+
+    private void startVersionDBService() {
+        new ServiceBinder(vertx)
+            .setAddress(VersionDBService.SERVICE_ADDRESS)
+            .register(VersionDBService.class, versionDBService);
     }
 
     @Override
