@@ -1,9 +1,9 @@
 package com.seasungames.appinhouse.routes.handlers;
 
-import com.seasungames.appinhouse.models.ResponseVo;
 import com.seasungames.appinhouse.routes.exception.HttpException;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
+import io.vertx.core.json.DecodeException;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
@@ -13,7 +13,7 @@ import io.vertx.serviceproxy.ServiceException;
 /**
  * Created by lile on 1/7/2019
  */
-public class RouteFailureHandler implements Handler<RoutingContext> {
+public class RouteFailureHandler extends BaseHandler implements Handler<RoutingContext> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RouteFailureHandler.class);
 
@@ -22,27 +22,38 @@ public class RouteFailureHandler implements Handler<RoutingContext> {
         Throwable failure = rc.failure();
 
         if (failure instanceof ValidationException) {
-            toResponseJson(rc, HttpResponseStatus.BAD_REQUEST.code(), errorMessageToErrorBody("Validation failed"));
+            handleException(rc, (ValidationException) failure);
         } else if (failure instanceof HttpException) {
-            HttpException httpException = ((HttpException) failure);
-            toResponseJson(rc, httpException.status, errorMessageToErrorBody(httpException.getMessage()));
+            handleException(rc, (HttpException) failure);
+        } else if (failure instanceof DecodeException) {
+            handleException(rc, (DecodeException) failure);
         } else if (failure instanceof ServiceException) {
-            ServiceException serviceException = (ServiceException) failure;
-            toResponseJson(rc, HttpResponseStatus.INTERNAL_SERVER_ERROR.code(), errorMessageToErrorBody(serviceException.getMessage()));
+            handleException(rc, (ServiceException) failure);
         } else {
-            toResponseJson(rc, HttpResponseStatus.INTERNAL_SERVER_ERROR.code(), errorMessageToErrorBody(failure.getMessage()));
+            handleException(rc, failure);
         }
+
         failure.printStackTrace();
         LOG.error("Error - {}: {}", failure.getClass().getSimpleName(), failure.getMessage());
     }
 
-    public void toResponseJson(RoutingContext rc, int statusCode, String body) {
-        rc.response().putHeader("Content-Type", "application/json; charset=utf-8");
-        rc.response().setStatusCode(statusCode)
-            .end(body);
+    private void handleException(RoutingContext rc, ValidationException e) {
+        toResponseJson(rc, HttpResponseStatus.BAD_REQUEST.code(), "Validation failed");
     }
 
-    private String errorMessageToErrorBody(String message) {
-        return new ResponseVo().setMessage(message).toJson();
+    private void handleException(RoutingContext rc, DecodeException e) {
+        toResponseJson(rc, HttpResponseStatus.BAD_REQUEST.code(), "Failed to decode Json");
+    }
+
+    private void handleException(RoutingContext rc, HttpException e) {
+        toResponseJson(rc, e.status, e.getMessage());
+    }
+
+    private void handleException(RoutingContext rc, ServiceException e) {
+        toResponseJson(rc, HttpResponseStatus.INTERNAL_SERVER_ERROR.code(), e.getMessage());
+    }
+
+    private void handleException(RoutingContext rc, Throwable e) {
+        toResponseJson(rc, HttpResponseStatus.INTERNAL_SERVER_ERROR.code(), e.getMessage());
     }
 }
