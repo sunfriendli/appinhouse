@@ -1,6 +1,7 @@
-package com.seasungames.appinhouse.routes.handlers;
+package com.seasungames.appinhouse.routes.handlers.impl;
 
 import com.seasungames.appinhouse.routes.exception.HttpException;
+import com.seasungames.appinhouse.routes.handlers.BaseHandler;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.core.json.DecodeException;
