@@ -34,8 +34,7 @@ public class DynamoDBServiceVerticle extends AbstractVerticle {
     }
 
     private void injectDependencies() {
-        DBComponent component = DaggerDBComponent.builder()
-            .build();
+        DBComponent component = DaggerDBComponent.builder().build();
         component.inject(this);
     }
 
