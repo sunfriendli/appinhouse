@@ -45,7 +45,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="pull-right">
-                        <button style="padding: 15px;" type="button" class="btn btn-w-m btn-primary" onclick="createApp()">创建应用
+                        <button style="padding: 15px;" type="button" class="btn btn-w-m btn-primary" onclick="onCreateApp()">创建应用
                         </button>
                     </div>
                     <h4 class="text-navy"><i class="fa fa-info-circle"></i> 项目列表</h4>
@@ -118,14 +118,14 @@
                             .addClass('btn btn-info')
                             .text('修改')
                             .on('click', function () {
-                                modifyApp(item.id)
+                                onModifyApp(item.id)
                             });
 
                         var deleteButton = $('<button/>')
                             .addClass('btn btn-danger')
                             .text('删除')
                             .on('click', function () {
-                                deleteApp(item.id)
+                                onDeleteApp(item.id)
                             });
 
                         var row =
@@ -143,9 +143,10 @@
         });
     }
 
-    function createApp() {
+    function onCreateApp() {
         $.get("html/appinfo.html",function (data) {
             $("#modal_content").html(data);
+            $("#app_owner").val("0");
             $("#app_modal_title").text("创建应用");
             $('#app_modal').modal({
                 show: true
@@ -153,10 +154,10 @@
         })
     }
 
-    function modifyApp(appID) {
+    function onModifyApp(appID) {
         $.get("html/appinfo.html",function (data) {
             $("#modal_content").html(data);
-            //set attr
+            $("#app_owner").val(appID);
             $("#app_modal_title").text("修改应用");
             $('#app_modal').modal({
                 show: true
@@ -164,7 +165,7 @@
         })
     }
 
-    function deleteApp(appID) {
+    function onDeleteApp(appID) {
         swal({
             title: "执行删除操作",
             text: "确定要删除选中内容?",
