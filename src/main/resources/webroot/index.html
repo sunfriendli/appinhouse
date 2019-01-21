@@ -12,12 +12,14 @@
     <link rel="stylesheet" href="/css/modal.css">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/sweetalert.css">
+    <link rel="stylesheet" href="/css/toastr.min.css">
 
     <script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/js/utils.js"></script>
     <script type="text/javascript" src="/js/sweetalert.min.js"></script>
     <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/js/toastr.min.js"></script>
 
     <style type="text/css">
         body.stop-scrolling {height:auto !important; overflow:visible !important;}
@@ -27,7 +29,7 @@
 <body class="top-navigation pace-done">
 <!--header-->
 <div class="wrapper">
-    <div id="page-wrapper" class="gray-bg" style="min-height: 1089px;">
+    <div id="page-wrapper" class="gray-bg" style="min-height: 756px;">
         <div class="row border-bottom white-bg">
             <nav class="navbar navbar-static-top" role="navigation">
                 <div class="navbar-header">
@@ -76,7 +78,7 @@
             </div>
         </div><!-- content -->
         <div class="footer">
-            <div class="pull-right">
+            <div>
                 <strong>Copyright</strong> 西山居 Company © 2019-2020
             </div>
         </div>
@@ -91,7 +93,17 @@
 
     var app_url = "http://127.0.0.1:8081/api/apps/";
 
-    $(function () {
+    $(document).ready(function() {
+        setTimeout(function () {
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                showMethod: 'slideDown',
+                timeOut: 4000
+            };
+            toastr.success('西山居', 'Welcome to AppInHouse');
+        }, 1300);
+
         reqAppList();
     });
 
@@ -129,7 +141,7 @@
                     var row =
                         $(
                             '<tr>' +
-                            '<td width="25%"><h3 class="font-bold no-margins" ><a href="/html/version.html?app_id=' + item.id + '" >' + appname + '</a></h3></td>' +
+                            '<td width="25%"><h3 class="font-bold no-margins" ><a class="text-info" href="http://127.0.0.1:8081/version/' + item.id + '" >' + appname + '</a></h3></td>' +
                             '<td width="25%"><h3 class="font-bold no-margins">' + item.desc + '</h3></td>' +
                             '<td width="25%"><h3 class="font-bold no-margins">' + item.id + '</h3></td>' +
                             '</tr>'
