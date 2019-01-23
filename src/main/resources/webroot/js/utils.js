@@ -6,12 +6,12 @@ function getQueryString(name) {
 }
 
 function getAppIdByPathParams() {
-    var src = window.location.toString();
+    var src = "http://127.0.0.1:8081/version/rog1"//window.location.toString();
     var index = src.indexOf('/version/');
     if(index == -1) {
         return null;
     } else {
-        appID = src.substr(index);
+        appID = src.substr(index + 9);
         return appID;
     }
 }
