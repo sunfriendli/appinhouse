@@ -54,8 +54,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="pull-right">
-                        <button type="button" class="btn btn-w-m btn-primary" onclick="onCreateApp()">创建应用
-                        </button>
+                        <button type="button" class="btn btn-w-m btn-primary" onclick="onCreateApp()"><i class="fa fa-plus"></i>创建应用</button>
                     </div>
                     <h3 class="text-navy"><i class="fa fa-info-circle"></i> 项目列表</h3>
                 </div>
@@ -143,7 +142,8 @@
                     var row =
                         $(
                             '<tr>' +
-                            '<td width="25%"><h3 class="font-bold no-margins" ><a class="text-info" href="http://10.230.66.40:8091/html/version.html" >' + appname + '</a></h3></td>' +
+                            '<td width="25%"><h3 class="font-bold no-margins" ><a class="text-info" href="http://10.230.66.40:8091/html/version.html" >' + appname + '</a>' +
+                                '<i class="fa fa-hand-o-left fa"></i></h3></td>' +
                             '<td width="25%"><h3 class="font-bold no-margins">' + item.desc + '</h3></td>' +
                             '<td width="25%"><h3 class="font-bold no-margins">' + item.id + '</h3></td>' +
                             '</tr>'

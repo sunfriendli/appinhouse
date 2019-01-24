@@ -157,20 +157,27 @@
     }
 
     function genVersionHtml(platform, data) {
-        var list_body = $('#ios_tab_panel').find('.tab_list_body');
+        var list_body = $('#' + platform + '_tab_panel').find('.tab_list_body');
         list_body.empty();
         $.each(data, function (index, item) {
             var downloadButton = $('<a/>')
                 .addClass('btn btn-info')
-                .attr("href", getDownloadUrl())
-                .attr("download", "")
+                .attr("href", "http://10.230.66.40:8091/html/qrcode_download.html")
+                //.attr("href", item.info.download_url)
+                //.attr("download", "")
                 .text('下载');
 
             var qrcodeButton = $('<button data-toggle="modal" data-target="#myModal"/>')
                 .addClass('btn btn-primary')
                 .append($('<div class="fa fa-qrcode"/>'))
                 .on('click', function () {
-                    genQRCode()
+                    if (item.platform != 'ios') {
+                        //genAndroidQRCode(item.info.download_url);
+                        genAndroidQRCode("https://jenkins.intranet.rog2.org/job/Pirates/job/Client/job/android/job/master/lastSuccessfulBuild/artifact/pirates-master-b4896-20190124-development.apk");
+                    } else {
+                        alert('IOS');
+                        genIOSQRCode(item.platform, item.version)
+                    }
                 });
             var row =
                 $(
@@ -186,17 +193,23 @@
         });
     }
 
-    function getDownloadUrl(platform, version) {
-        return "https://s3.intranet.rog2.org/software/ue4/Lightmass4.20/Lightmass4.20.zip";
-        if (platform == "ios") {
-
-        } else {
-
-        }
+    function genAndroidQRCode(download_url) {
+        var params = "?url=" + download_url;
+        $('#qrcode_modal').empty();
+        $('#qrcode_modal').qrcode({
+            width: 200,
+            height: 200,
+            text: "http://10.230.66.40:8091/html/qrcode_download.html" + params
+        });
     }
 
-    function genQRCode(url) {
+    function genIOSQRCode(platform, version) {
+        var params = "?id=" + appID + "&platform=" + platform + "&version=" + version;
         $('#qrcode_modal').empty();
-        $('#qrcode_modal').qrcode({width: 100, height: 100, text: "http://10.230.66.40:8091/html/qrcode_download.html"});
+        $('#qrcode_modal').qrcode({
+            width: 200,
+            height: 200,
+            text: "http://10.230.66.40:8091/html/qrcode_download.html" + params
+        });
     }
 </script>
