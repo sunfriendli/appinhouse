@@ -53,16 +53,14 @@
             loadHtml();
             loadStyleText(cssText);
         } else {
-            if (getMobileOperatingSystem() === "Android") {
-                var download_url = getQueryString("url");
-                $('#download_btn').attr('href', download_url);
-            } else if (getMobileOperatingSystem() === "iOS") {
+            if (isAndroid()) {
+                $('#download_btn').attr('href', getQueryString("url"));
+            } else if (isIOS()) {
                 var app_id = getQueryString("id");
                 var platform = getQueryString('platform');
                 var version = getQueryString('version');
-                var url = "https://10.230.66.40/api/versions/" + app_id + "/" + platform + "/" + version + "/plist";
-                var ios_href = 'itms-services://?action=download-manifest&url=https://10.230.66.40/api/versions/rog1/ios/2.0/plist'
-                alert(ios_href);
+                var url = "/api/versions/" + app_id + "/" + platform + "/" + version + "/plist";
+                var ios_href = 'itms-services://?action=download-manifest&url=' + url;
                 $('#download_btn').attr('href', ios_href);
             }
         }
