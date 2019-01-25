@@ -51,7 +51,6 @@ public class RoutesManager implements Async {
     RouteVersionHandler versionHandler;
 
     @Inject
-    @Named("HTTP")
     HttpServer webServer;
 
     @Inject
