@@ -1,3 +1,4 @@
+
 function getQueryString(name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
     var r = window.location.search.substr(1).match(reg);
@@ -6,7 +7,7 @@ function getQueryString(name) {
 }
 
 function getAppIdByPathParams() {
-    var src = "http://127.0.0.1:8081/version/rog1"//window.location.toString();
+    var src = getServerUrl() + "/version/rog1";//window.location.toString();
     var index = src.indexOf('/version/');
     if(index == -1) {
         return null;
@@ -16,7 +17,7 @@ function getAppIdByPathParams() {
     }
 }
 
-function show_success(message, success_goto) {
+function showSuccess(message, success_goto) {
     swal({
         title: "操作成功!",
         text: message,
@@ -31,7 +32,7 @@ function show_success(message, success_goto) {
     });
 }
 
-function show_error(message, success_goto) {
+function showError(message, success_goto) {
     swal({
         title: "操作失败!",
         text: message,
@@ -76,4 +77,21 @@ function getMobileOperatingSystem() {
     }
 
     return "unknown";
+}
+
+function isAndroid() {
+    return getMobileOperatingSystem() === "Android";
+}
+
+function isIOS() {
+    return getMobileOperatingSystem() === "iOS";
+}
+
+function isWeChat() {
+    var ua = navigator.userAgent.toLowerCase();
+    if (ua.match(/MicroMessenger/i) == "micromessenger") {
+        return true;
+    } else {
+        return false;
+    }
 }

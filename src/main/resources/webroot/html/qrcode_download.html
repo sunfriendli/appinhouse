@@ -7,6 +7,7 @@
     <link rel="shortcut icon" href="/img/favicon_16.ico"/>
     <link rel="bookmark" href="/img/favicon_16.ico"/>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/style.css">
 
     <script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
@@ -31,14 +32,14 @@
     <div class="widget red-bg p-lg text-center">
         <div class="m-b-md">
             <i class="fa fa-bell fa-4x"></i>
-            <h1 class="m-xs">AppInHouse</h1>
+            <h1 class="m-xs">欢迎来到App下载页面</h1>
             <h3 class="font-bold no-margins">
-                App下载页面
+                AppInHouse
             </h3>
         </div>
     </div>
-    <div class="col-lg-12">
-        <a id="download_btn" type="button" class="btn btn-block btn-primary">Download App</a>
+    <div class="col-lg-6 text-center">
+        <a id="download_btn" type="button" class="btn btn-lg btn-warning"><i class="fa fa-download"></i>下载应用</a>
     </div>
 </div>
 </body>
@@ -46,9 +47,9 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        var isWeixin = is_weixin();
-        var cssText = "#weixin-tip{position: fixed; left:0; top:0; background: rgba(0,0,0,0.8); filter:alpha(opacity=80); width: 100%; height:100%; z-index: 100;} #weixin-tip p{text-align: center; margin-top: 10%; padding:0 5%;}";
-        if (isWeixin) {
+        if (isWeChat()) {
+            var cssText = "#weixin-tip{position: fixed; left:0; top:0; background: rgba(0,0,0,0.8); filter:alpha(opacity=80); width: 100%; height:100%; z-index: 100;} " +
+                "#weixin-tip p{text-align: center; margin-top: 10%; padding:0 5%;}";
             loadHtml();
             loadStyleText(cssText);
         } else {
@@ -63,25 +64,14 @@
                 var ios_href = 'itms-services://?action=download-manifest&url=https://10.230.66.40/api/versions/rog1/ios/2.0/plist'
                 alert(ios_href);
                 $('#download_btn').attr('href', ios_href);
-            } else {
-                alert('coming soon...');
             }
         }
     });
 
-    function is_weixin() {
-        var ua = navigator.userAgent.toLowerCase();
-        if (ua.match(/MicroMessenger/i) == "micromessenger") {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     function loadHtml() {
         var div = document.createElement('div');
         div.id = 'weixin-tip';
-        div.innerHTML = '<p><img src="/img/live_weixin.png" alt="微信打开"/></p>';
+        div.innerHTML = '<p><img src="/img/live_weixin.png"/></p>';
         document.body.appendChild(div);
     }
 
@@ -89,12 +79,8 @@
         var style = document.createElement('style');
         style.rel = 'stylesheet';
         style.type = 'text/css';
-        try {
-            style.appendChild(document.createTextNode(cssText));
-        } catch (e) {
-            style.styleSheet.cssText = cssText; //ie9以下
-        }
-        var head = document.getElementsByTagName("head")[0]; //head标签之间加上style样式
+        style.appendChild(document.createTextNode(cssText));
+        var head = document.getElementsByTagName("head")[0];
         head.appendChild(style);
     }
 </script>
