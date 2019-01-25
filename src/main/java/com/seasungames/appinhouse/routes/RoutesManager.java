@@ -21,7 +21,6 @@ import io.vertx.ext.web.handler.LoggerHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.HashSet;
 import java.util.Set;
 
