@@ -1,4 +1,3 @@
-
 function getQueryString(name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
     var r = window.location.search.substr(1).match(reg);
@@ -11,7 +10,7 @@ function getQueryString(name) {
  * **/
 function toRestAPI() {
     var args = new Array(arguments.length);
-    for(var i = 0; i < args.length; ++i) {
+    for (var i = 0; i < args.length; ++i) {
         args[i] = arguments[i];
     }
     return args.join('/');
@@ -20,7 +19,7 @@ function toRestAPI() {
 function getAppIdByPathParams() {
     var src = "/version/rog1";//window.location.toString();
     var index = src.indexOf('/version/');
-    if(index == -1) {
+    if (index == -1) {
         return null;
     } else {
         appID = src.substr(index + 9);
@@ -28,22 +27,22 @@ function getAppIdByPathParams() {
     }
 }
 
-function showSuccess(message, success_goto) {
+function showSuccess(message, goto) {
     swal({
         title: "操作成功!",
         text: message,
         type: "success",
         confirmButtonText: "点击确认"
     }, function () {
-        if (typeof success_goto == 'function') {
-            success_goto();
+        if (typeof goto == 'function') {
+            goto();
         } else {
-            window.location.href = success_goto;
+            window.location.href = goto;
         }
     });
 }
 
-function showError(message, success_goto) {
+function showError(message, goto) {
     swal({
         title: "操作失败!",
         text: message,
@@ -51,11 +50,11 @@ function showError(message, success_goto) {
         confirmButtonText: "确认",
         confirmButtonColor: '#f27474'
     }, function () {
-        if(null != success_goto) {
-            if (typeof success_goto == 'function') {
-                success_goto();
+        if (null != goto) {
+            if (typeof goto == 'function') {
+                goto();
             } else {
-                window.location.href = success_goto;
+                window.location.href = goto;
             }
         }
     });
