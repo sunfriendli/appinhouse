@@ -11,16 +11,9 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/modal.css">
-    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/sweetalert.css">
     <link rel="stylesheet" href="/css/toastr.min.css">
-
-    <script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
-    <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
-    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/js/utils.js"></script>
-    <script type="text/javascript" src="/js/sweetalert.min.js"></script>
-    <script type="text/javascript" src="/js/toastr.min.js"></script>
+    <link rel="stylesheet" href="/css/style.css">
 
     <style type="text/css">
         body.stop-scrolling {
@@ -31,16 +24,12 @@
 </head>
 
 <body class="top-navigation pace-done">
-<!--header-->
-<div class="wrapper">
+
+<div id="wrapper">
     <div id="page-wrapper" class="gray-bg">
         <div class="row border-bottom">
             <nav class="navbar navbar-static-top white-bg" role="navigation">
                 <div class="navbar-header">
-                    <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse"
-                            class="navbar-toggle collapsed" type="button">
-                        <i class="fa fa-reorder"></i>
-                    </button>
                     <a href="#" class="navbar-brand">西山居</a>
                 </div>
                 <div class="navbar-collapse collapse" id="navbar">
@@ -59,7 +48,7 @@
                     <div class="panel-heading">
                         <div class="pull-right">
                             <button type="button" class="btn btn-w-m btn-primary" onclick="onCreateApp()"><i
-                                class="fa fa-plus"></i>创建应用
+                                    class="fa fa-plus"></i>创建应用
                             </button>
                         </div>
                         <h3 class="text-navy"><i class="fa fa-info-circle"></i> 项目列表</h3>
@@ -94,8 +83,19 @@
 
     </div>
 </div>
-</body>
-</html>
+
+<!-- Mainly scripts -->
+<script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script type="text/javascript" src="/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="/js/sweetalert.min.js"></script>
+<script type="text/javascript" src="/js/toastr.min.js"></script>
+<script type="text/javascript" src="/js/appinhouse.js"></script>
+<script type="text/javascript" src="/js/utils.js"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
         setTimeout(function () {
@@ -113,10 +113,9 @@
 
     function reqAppList(page) {
         var suffix = page ? ("?last_key=" + $('#page').val()) : "";
-        var url = '/api/apps/' + suffix;
         $.ajax({
             type: 'GET',
-            url: url,
+            url: toRestAPI('/api/apps', suffix),
             dateType: "json",
             success: function (data) {
                 $('#list_body').empty();
@@ -139,11 +138,10 @@
                             onDeleteApp(item.id)
                         });
 
-                    var href = '/version/' + item.id;
                     var row =
                         $(
                             '<tr>' +
-                            '<td width="25%"><h3 class="font-bold no-margins" ><a class="text-info" href=' + href + ' >' + appname + '</a>' +
+                            '<td width="25%"><h3 class="font-bold no-margins" ><a class="text-info" href=' + toRestAPI('/version', item.id) + ' >' + appname + '</a>' +
                             '<i class="fa fa-hand-o-left fa"></i></h3></td>' +
                             '<td width="25%"><h3 class="font-bold no-margins">' + item.desc + '</h3></td>' +
                             '<td width="25%"><h3 class="font-bold no-margins">' + item.id + '</h3></td>' +
@@ -168,10 +166,9 @@
     }
 
     function requestCreateApp() {
-        var url = '/api/apps/';
         $.ajax({
             type: "POST",
-            url: url,
+            url: toRestAPI('/api/apps'),
             data: JSON.stringify(formData2Json("app_create_form")),
             dataType: "text",
             statusCode: {
@@ -190,13 +187,11 @@
     }
 
     function onModifyApp(appID) {
-        var url = '/api/apps/' + appID;
         $.ajax({
             type: "GET",
-            url: url,
+            url: toRestAPI('/api/apps', appID),
             dateType: "json",
             success: function (result) {
-                //request app info html
                 $.get("html/appinfo.html", function (data) {
                     $("#modal_content").html(data);
                     $("#app_owner").val(appID);
@@ -214,10 +209,9 @@
     }
 
     function requestModifyApp(appID) {
-        var url = '/api/apps/' + appID;
         $.ajax({
             type: "PUT",
-            url: url,
+            url: toRestAPI('/api/apps', appID),
             data: JSON.stringify(formData2Json("app_create_form")),
             dataType: "json",
             success: function () {
@@ -243,10 +237,9 @@
             closeOnConfirm: false
 
         }, function () {
-            var url = '/api/apps/' + appID;
             $.ajax({
                 type: 'DELETE',
-                url: url,
+                url: toRestAPI('/api/apps', appID),
                 dateType: "json",
                 success: function (data) {
                     showSuccess("删除成功", function () {
@@ -256,5 +249,7 @@
             });
         });
     }
-
 </script>
+
+</body>
+</html>

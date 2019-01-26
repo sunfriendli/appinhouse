@@ -6,8 +6,19 @@ function getQueryString(name) {
     return null;
 }
 
+/**
+ * https://stackoverflow.com/questions/960866/how-can-i-convert-the-arguments-object-to-an-array-in-javascript
+ * **/
+function toRestAPI() {
+    var args = new Array(arguments.length);
+    for(var i = 0; i < args.length; ++i) {
+        args[i] = arguments[i];
+    }
+    return args.join('/');
+}
+
 function getAppIdByPathParams() {
-    var src = getServerUrl() + "/version/rog1";//window.location.toString();
+    var src = "/version/rog1";//window.location.toString();
     var index = src.indexOf('/version/');
     if(index == -1) {
         return null;

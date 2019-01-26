@@ -12,19 +12,11 @@
     <link rel="stylesheet" href="/css/sweetalert.css">
     <link rel="stylesheet" href="/css/modal.css">
     <link rel="stylesheet" href="/css/style.css">
-
-    <script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
-    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/js/utils.js"></script>
-    <script type="text/javascript" src="/js/sweetalert.min.js"></script>
-    <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
-    <script type="text/javascript" src="/js/jquery.qrcode.min.js"></script>
-
 </head>
 
-<body class="top-navigation pace-done">
+<body class="top-navigation pace-done white-bg">
 
-<div class="wrapper">
+<div id="wrapper">
     <div id="page-wrapper" class="gray-bg">
         <div class="row border-bottom white-bg">
             <nav class="navbar navbar-static-top" role="navigation">
@@ -57,11 +49,11 @@
                             <div class="tabs-container">
                                 <ul class="nav nav-tabs">
                                     <li class="active"><a data-toggle="tab" href="#ios" aria-expanded="true"> <i
-                                        class="fa fa-apple"></i>IOS</a></li>
+                                            class="fa fa-apple"></i>IOS</a></li>
                                     <li class=""><a data-toggle="tab" href="#android" aria-expanded="false"><i
-                                        class="fa fa-android"></i>Android</a></li>
+                                            class="fa fa-android"></i>Android</a></li>
                                     <li class=""><a data-toggle="tab" href="#window" aria-expanded="false"><i
-                                        class="fa fa-windows"></i>Window</a></li>
+                                            class="fa fa-windows"></i>Window</a></li>
                                 </ul>
                                 <div class="tab-content">
                                     <div id="ios" class="tab-pane active">
@@ -104,8 +96,16 @@
     </div>
 </div>
 
-</body>
-</html>
+<!-- Mainly scripts -->
+<script type="text/javascript" src="/js/jquery-2.1.1.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script type="text/javascript" src="/js/sweetalert.min.js"></script>
+<script type="text/javascript" src="/js/jquery.qrcode.min.js"></script>
+<script type="text/javascript" src="/js/appinhouse.js"></script>
+<script type="text/javascript" src="/js/utils.js"></script>
 
 <script type="text/javascript">
     var appID = -1;
@@ -142,10 +142,9 @@
     }
 
     function reqVersionList(appId, platform) {
-        var url = "/api/versions/" + appId + "/" + platform + "/history";
         $.ajax({
             type: "GET",
-            url: url,
+            url: toRestAPI('/api/versions', appId, platform, 'history'),
             dataType: "json",
             success: function (result) {
                 genVersionHtml(platform, result.data);
@@ -209,3 +208,6 @@
         return "?id=" + appID + "&platform=" + platform + "&version=" + version;
     }
 </script>
+
+</body>
+</html>
