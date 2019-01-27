@@ -46,7 +46,7 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-lg-12">
-                            <div id="tabs" class="tabs-container">
+                            <div class="tabs-container">
                                 <ul class="nav nav-tabs">
                                     <li class="active"><a data-toggle="tab" href="#ios" aria-expanded="true"> <i
                                             class="fa fa-apple"></i>IOS</a></li>
@@ -112,7 +112,7 @@
     var last_keys = {};
     var platform_name = "ios";
     var scrollLoad = false;
-    $(function () {
+    $(document).ready(function () {
         //init loadmore
         $(window).scroll(function () {
             if (scrollLoad && $(window).scrollTop() >= $(document).height() - $(window).height()) {
