@@ -117,7 +117,7 @@
         $(window).scroll(function () {
             if (scrollLoad && $(window).scrollTop() >= $(document).height() - $(window).height()) {
                 scrollLoad = false;
-                reqVersionList(appID,platform_name,last_keys[platform_name]);
+                reqVersionList(appID, platform_name, last_keys[platform_name]);
                 console.log("load more");
             }
         });
@@ -127,8 +127,10 @@
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             var target = $(e.target).attr("href");
             platform_name = target.slice(1, target.length);
-            if(last_keys[platform_name] === undefined) {
+            if (last_keys[platform_name] === undefined) {
                 reqVersionList(appID, platform_name);
+            } else {
+                scrollLoad = !isEmpty(last_keys[platform_name]);
             }
         });
         //request first data
